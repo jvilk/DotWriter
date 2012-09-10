@@ -34,7 +34,7 @@ const std::string& IdManager::GetSubgraphId() {
   return GetSubgraphId();
 }
 
-const std::string& IdManager::ValidateCustomId(std::string& customId) {
+const std::string& IdManager::ValidateCustomId(std::string customId) {
   std::pair<const std::string&, bool> retVal = RegisterId(customId);
   if (retVal.second) {
     return retVal.first;

@@ -12,37 +12,37 @@ namespace DotWriter {
  */
 class Node {
 private:
-  const std::string _id;
+  const std::string& _id; // Reference to string stored in Graph's _idManager.
   std::string _label;
   NodeStyle::e _style;
 
 protected:
   // Nodes should only be created / destroyed via Graph.
   // Hence, these are protected.
-  Node(std::string label = "") :
-    _label(label) {
+  Node(const std::string& id, std::string label = "") :
+    _id(id), _label(label) {
 
   }
   
   virtual ~Node();
 
 public:
-  const std::string toString();
+  std::string ToString();
 
   /** Simple getters / setters **/
-  void setStyle(NodeStyle::e style) {
+  void SetStyle(NodeStyle::e style) {
     _style = style;
   }
 
-  std::string& getLabel() {
+  const std::string& GetLabel() {
     return _label;
   }
 
-  void setLabel(const std::string& label) {
+  void SetLabel(std::string label) {
     _label = label;
   };
 
-  const std::string& getId() {
+  const std::string& GetId() {
     return _id;
   }
 };

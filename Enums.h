@@ -51,7 +51,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(GEdgeArrowTypeName::e);
+  const char* ToString(EdgeArrowTypeName::e);
 };
 
 struct EdgeStyle {
@@ -70,7 +70,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(GEdgeStyle::e val);
+  const char* ToString(EdgeStyle::e val);
 };
 
 struct NodeStyle {
@@ -92,7 +92,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(GNodeStyle::e val);
+  const char* ToString(NodeStyle::e val);
 };
 
 struct NodeShape {
@@ -140,7 +140,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(GNodeShape::e val);
+  const char* ToString(NodeShape::e val);
 };
 
 /**
@@ -815,7 +815,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(GColor::e val);
+  const char* ToString(Color::e val);
 };
 
 }  // namespace DotWriter

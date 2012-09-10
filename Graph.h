@@ -8,34 +8,16 @@
 #ifndef DOTWRITER_GRAPH_H_
 #define DOTWRITER_GRAPH_H_
 
-#include "Enums.h"
-#include "Edge.h"
-#include "IdManager.h"
-
 #include <set>
 #include <string>
 #include <vector>
 #include <map>
 
-/**
- * TODO: Have an enum of attributes. Default to 0 for each? Make sure the
- * default is sane (or EMPTY)
- * node->setAttribute(GNodeAttribute.BLAH, Value)
- *
- * Graph Attributes:
- *  * fontcolor
- * Node Attributes:
- *  * Style
- *  * fontcolor
- *  * Shape
- * Edge Attributes:
- *  * Style
- *  * fontcolor
- *  * arrowhead
- *  * arrowsize
- * Make a UGraph for undirected graphs.
- * Clusters?
- */
+#include "Enums.h"
+#include "Edge.h"
+#include "IdManager.h"
+#include "Subgraph.h"
+#include "AttributeSet.h"
 
 namespace DotWriter {
 
@@ -46,57 +28,83 @@ class Graph {
 private:
   bool _isDigraph;
   IdManager _idManager;
-  const std::string& _id;
-  std::string _label;
-  Color::e _fontColor;
-  std::set<Node *> _nodes;
-  std::set<Edge *> _edges;
-  std::set<Graph *> _subgraphs;
+  const std::string& _id;  // Reference to unique ID stored in the _idManager.
+                           // Not really all that important, as you don't
+                           // reference this in the DOT file. Dotty seems to
+                           // want one on the master graph regardless.
+  // I use vector since output order matters.
+  std::vector<Node *> _nodes;
+  std::vector<Edge *> _edges;
+  std::vector<Graph *> _subgraphs;
+  GraphAttributeSet _attributes;
+  NodeAttributeSet _defaultNodeAttributes;
+  EdgeAttributeSet _defaultEdgeAttributes;
 
 public:
+  /**
+   * Constructs a new Graph object.
+   * - isDigraph: Set to 'true' if this is a directed graph.
+   */
   Graph(bool isDigraph = false) :
-    _isDigraph(isDigraph), _idManager(IdManager()) {
-    _id = _idManager.ValidateCustomId("Graph");
+    _isDigraph(isDigraph), _idManager(IdManager()),
+    _id(_idManager.ValidateCustomId("Graph")),
+    _attributes(GraphAttributeSet()),
+    _defaultNodeAttributes(NodeAttributeSet()),
+    _defaultEdgeAttributes(EdgeAttributeSet()) {
+  }
+
+  /**
+   * Constructs a new Graph object.
+   * - isDigraph: Set to 'true' if this is a directed graph.
+   * - label: Text that is printed somewhere adjacent to the graph.
+   */
+  Graph(bool isDigraph, std::string label) :
+    _isDigraph(isDigraph), _idManager(IdManager()),
+    _id(_idManager.ValidateCustomId("Graph")),
+    _attributes(GraphAttributeSet()),
+    _defaultNodeAttributes(NodeAttributeSet()),
+    _defaultEdgeAttributes(EdgeAttributeSet()) {
+      // TODO(jvilk): Deal with label.
   }
 
   /** Simple getters and setters **/
 
-  bool isDigraph() {
+  bool IsDigraph() {
     return _isDigraph;
   }
 
-  void setFontColor(Color::e fontColor) {
-    _fontColor = fontColor;
-  }
-
-  Color::e getFontColor() {
-    return _fontColor;
-  }
-
-  const std::string& getId() {
+  const std::string& GetId() {
     return _id;
   }
 
-  const std::string& getLabel() {
-    return _label;
-  }
+  // TODO(jvilk): Deal with these.
+  const std::string& GetLabel();
 
-  void setLabel(std::string label) {
-    _label = label;
-  }
+  void SetLabel(std::string label);
+
+  /**
+   * Create a new subgraph on this graph.
+   */
+  Subgraph* AddSubgraph();
+
+  /**
+   * Remove the given subgraph from this graph.
+   */
+  void RemoveSubgraph(Subgraph* subgraph);
 
   /**
    * Constructs a Node object, adds it to the graph, and returns it.
    */
-  Node * addNode();
+  Node* AddNode();
+
   /**
    * Constructs a Node object with the given ID, adds it to the graph, and
    * returns it.
    *
    * If the given ID is not unique, it will be uniquified by appending a number
-   * to the end of the ID. Try not to rely on this feature, though.
+   * to the end of the ID.
    */
-  Node * addNode(std::string id);
+  Node* AddNode(std::string id);
 
   /**
    * Removes the node from the graph.
@@ -105,19 +113,20 @@ public:
    * to/from it. Also, note that it is currently more expensive than you may
    * expect -- O(|E|).
    */
-  void removeNode(Node *);
+  void RemoveNode(Node* node);
 
   /**
    * Add an edge to the graph. Returns a reference to the edge that can be
    * manipulated to change edge properties.
    */
-  Edge * addEdge(Node * src, Node * dst, std::string label = NULL);
+  Edge* AddEdge(Node* src, Node* dst);
+  Edge* AddEdge(Node* src, Node* dst, std::string label);
 
   /**
    * Removes the edge from the graph. Note that this also deletes the GEdge
    * object.
    */
-  void removeEdge(Edge *);
+  void RemoveEdge(Edge* edge);
 
   /**
    * Removes any edges from src to dst from the graph. Note that this version
@@ -126,25 +135,19 @@ public:
    * If this is not a digraph, then removeEdge(src, dst) has the same semantics
    * as removeEdge(dst, src).
    */
-  void removeEdge(Node * src, Node * dst);
+  void RemoveEdge(Node* src, Node* dst);
 
   /**
    * Returns a string representation of the graph in DOT file format.
    */
-  std::string toString();
-
-  /**
-   * Returns a string representation of the graph as a subgraph section
-   * of a DOT file.
-   */
-  std::string toStringSubgraph();
+  std::string ToString();
 
   /**
    * Writes the graph to the specified filename in the DOT format.
    *
    * Returns true if successful, false otherwise.
    */
-  bool writeToFile(std::string& filename);
+  bool WriteToFile(std::string& filename);
 
 };
 

@@ -75,7 +75,7 @@ public:
    * This checks if the ID is unique. If it is not, it will append a number to
    * it until it is unique.
    */
-  const std::string& ValidateCustomId(std::string& customId);
+  const std::string& ValidateCustomId(std::string customId);
 };
 
 }  // namespace DotWriter
