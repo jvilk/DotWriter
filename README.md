@@ -1,3 +1,5 @@
+IMPORTANT NOTE: This is used as a scratchpad during development to keep track of things. Do not listen to it; it lies. :)
+
 DotWriter
 =========
 DotWriter is a simple C++ API for creating DOT files for use in programs such as GraphViz. Express a graph in terms of nodes, edges, and subgraphs, and then DotWriter can generate a DOT file for you.
