@@ -13,7 +13,7 @@ private:
   Node * _src;
   Node * _dst;
 
-protected:
+public:
   Edge(Node * src, Node * dst) {
     _src = src;
     _dst = dst;
@@ -21,7 +21,6 @@ protected:
 
   virtual ~Edge();
 
-public:
   Node * getSource() {
     return _src;
   }

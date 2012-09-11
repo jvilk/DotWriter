@@ -28,9 +28,7 @@ private:
   NodeAttributeSet _defaultNodeAttributes;
   EdgeAttributeSet _defaultEdgeAttributes;
 
-protected:
-  // We protect the Subgraph constructor because it should only be called by
-  // Graph.
+public:
   Subgraph(const std::string& id, std::string label = "") : _id(id),
     _attributes(SubgraphAttributeSet()),
     _defaultNodeAttributes(NodeAttributeSet()),
@@ -38,7 +36,8 @@ protected:
       // TODO(jvilk): Deal with label.
   }
 
-public:
+  virtual ~Subgraph();
+
   /** Getters and setters **/
   const std::string& GetId() {
     return _id;

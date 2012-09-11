@@ -51,7 +51,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(EdgeArrowTypeName::e);
+  static const char* ToString(EdgeArrowTypeName::e);
 };
 
 struct EdgeStyle {
@@ -70,7 +70,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(EdgeStyle::e val);
+  static const char* ToString(EdgeStyle::e val);
 };
 
 struct NodeStyle {
@@ -92,7 +92,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(NodeStyle::e val);
+  static const char* ToString(NodeStyle::e val);
 };
 
 struct NodeShape {
@@ -140,7 +140,7 @@ private:
     static const char* strings[];
 
 public:
-  const char* ToString(NodeShape::e val);
+  static const char* ToString(NodeShape::e val);
 };
 
 /**
@@ -812,10 +812,180 @@ struct Color {
   };
 
 private:
-    static const char* strings[];
+  static const char* strings[];
 
 public:
-  const char* ToString(Color::e val);
+  static const char* ToString(Color::e val);
+};
+
+struct AttributeType {
+  enum e {
+    DAMPING,
+    K,
+    URL,
+    AREA,
+    ARROWHEAD,
+    ARROWSIZE,
+    ARROWTAIL,
+    ASPECT,
+    BB,
+    BGCOLOR,
+    CENTER,
+    CHARSET,
+    CLUSTERRANK,
+    COLOR,
+    COLORSCHEME,
+    COMMENT,
+    COMPOUND,
+    CONCENTRATE,
+    CONSTRAINT,
+    DECORATE,
+    DEFAULTDIST,
+    DIM,
+    DIMEN,
+    DIR,
+    DIREDGECONSTRAINTS,
+    DISTORTION,
+    DPI,
+    EDGEURL,
+    EDGEHREF,
+    EDGETARGET,
+    EDGETOOLTIP,
+    EPSILON,
+    ESEP,
+    FILLCOLOR,
+    FIXEDSIZE,
+    FONTCOLOR,
+    FONTNAME,
+    FONTNAMES,
+    FONTPATH,
+    FONTSIZE,
+    FORCELABELS,
+    GRADIENTANGLE,
+    GROUP,
+    HEADURL,
+    HEADCLIP,
+    HEADHREF,
+    HEADLABEL,
+    HEADPORT,
+    HEADTARGET,
+    HEADTOOLTIP,
+    HEIGHT,
+    HREF,
+    ID,
+    IMAGE,
+    IMAGEPATH,
+    IMAGESCALE,
+    LABEL,
+    LABELURL,
+    LABEL_SCHEME,
+    LABELANGLE,
+    LABELDISTANCE,
+    LABELFLOAT,
+    LABELFONTCOLOR,
+    LABELFONTNAME,
+    LABELFONTSIZE,
+    LABELHREF,
+    LABELJUST,
+    LABELLOC,
+    LABELTARGET,
+    LABELTOOLTIP,
+    LANDSCAPE,
+    LAYER,
+    LAYERS,
+    LAYERSELECT,
+    LAYERSEP,
+    LAYOUT,
+    LEN,
+    LEVELS,
+    LEVELSGAP,
+    LHEAD,
+    LHEIGHT,
+    LP,
+    LTAIL,
+    LWIDTH,
+    MARGIN,
+    MAXITER,
+    MCLIMIT,
+    MINDIST,
+    MINLEN,
+    MODE,
+    MODEL,
+    MOSEK,
+    NODESEP,
+    NOJUSTIFY,
+    NORMALIZE,
+    NSLIMIT,
+    NSLIMIT1,
+    ORDERING,
+    ORIENTATION,
+    OUTPUTORDER,
+    OVERLAP,
+    OVERLAP_SCALING,
+    PACK,
+    PACKMODE,
+    PAD,
+    PAGE,
+    PAGEDIR,
+    PENCOLOR,
+    PENWIDTH,
+    PERIPHERIES,
+    PIN,
+    POS,
+    QUADTREE,
+    QUANTUM,
+    RANK,
+    RANKDIR,
+    RANKSEP,
+    RATIO,
+    RECTS,
+    REGULAR,
+    REMINCROSS,
+    REPULSIVEFORCE,
+    RESOLUTION,
+    ROOT,
+    ROTATE,
+    ROTATION,
+    SAMEHEAD,
+    SAMETAIL,
+    SAMPLEPOINTS,
+    SCALE,
+    SEARCHSIZE,
+    SEP,
+    SHAPE,
+    SHOWBOXES,
+    SIDES,
+    SIZE,
+    SKEW,
+    SMOOTHING,
+    SORTV,
+    SPLINES,
+    START,
+    STYLE,
+    STYLESHEET,
+    TAILURL,
+    TAILCLIP,
+    TAILHREF,
+    TAILLABEL,
+    TAILPORT,
+    TAILTARGET,
+    TAILTOOLTIP,
+    TARGET,
+    TOOLTIP,
+    TRUECOLOR,
+    VERTICES,
+    VIEWPORT,
+    VORO_MARGIN,
+    WEIGHT,
+    WIDTH,
+    XLABEL
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(AttributeType::e val);
 };
 
 }  // namespace DotWriter

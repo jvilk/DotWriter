@@ -16,17 +16,12 @@ private:
   std::string _label;
   NodeStyle::e _style;
 
-protected:
-  // Nodes should only be created / destroyed via Graph.
-  // Hence, these are protected.
+public:
   Node(const std::string& id, std::string label = "") :
     _id(id), _label(label) {
-
   }
-  
   virtual ~Node();
 
-public:
   std::string ToString();
 
   /** Simple getters / setters **/
