@@ -13,6 +13,7 @@
 #define DOTWRITER_ATTRIBUTESET_H_
 
 #include <algorithm>
+#include <stdexcept>
 #include <vector>
 
 #include "Attribute.h"
@@ -20,6 +21,23 @@
 #include "Util.h"
 
 namespace DotWriter {
+
+class InvalidAttributeValueException : public std::runtime_error
+{
+private:
+  AttributeType::e _type;
+
+public:
+  InvalidAttributeValueException(AttributeType::e type,
+    const std::string& message) : std::runtime_error(message),
+    _type(type) {
+  }
+
+  virtual const char* what() const throw()
+  {
+    return "";
+  }
+};
 
 class AttributeSet {
 private:
