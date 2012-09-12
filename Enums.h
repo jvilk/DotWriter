@@ -158,6 +158,22 @@ public:
   static const char* ToString(Charset::e val);
 };
 
+struct OutputMode {
+  enum e {
+    DEFAULT,
+    BREADTHFIRST,
+    NODESFIRST,
+    EDGESFIRST,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(OutputMode::e val);
+};
+
 struct ClusterMode {
   enum e {
     DEFAULT,

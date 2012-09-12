@@ -41,6 +41,10 @@ public:
     }
   }
 
+  // TODO: If they add one, how do I expose removing it?
+  // Not to mention escaping input...
+  void AddCustomAttribute(std::string name, std::string val);
+
 protected:
   void AddAttribute(Attribute* attribute) {
     _attributes.push_back(attribute);
@@ -652,7 +656,10 @@ public:
    * Specify order in which nodes and edges are drawn.
    * TODO(jvilk): What does the value mean...
    */
-  void SetOutputOrder(OutputMode::e val);
+  void SetOutputOrder(OutputMode::e val) {
+    AddEnumAttribute<OutputMode::e, OutputMode>(AttributeType::OUTPUTORDER,
+      val);
+  }
 
   /**
    * Determines if and how node overlaps should be removed. Nodes are first
@@ -719,19 +726,135 @@ public:
    * layout. The similar properties hold for the y coordinates. This is not
    * quite true for the "porth*" cases. For these, orthogonal ordering is only
    * preserved among nodes related by an edge.
+   *
+   * TODO(jvilk): Try to add validation code to this...
    */
-  void SetOverlap(std::string val);
-  void SetOverlap(bool val);
-  void SetOverlapScaling(double val);
-  void SetOverlapScaling(bool val);
-  void SetPack(bool val);
-  void SetPack(int val);
-  void SetPackMode(PackMode::e val);
-  void SetPackMode(double val);
-  void SetPad(double val);
-  void SetPad(double x, double y);
-  void SetPage(double val);
-  void SetPage(double x, double y);
+  void SetOverlap(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::OVERLAP, val);
+  }
+
+  /**
+   * When overlap=prism, the layout is scaled by this factor, thereby removing a
+   * fair amount of node overlap, and making node overlap removal faster and
+   * better able to retain the graph's shape.
+   *
+   * If overlap_scaling is negative, the layout is scaled by -1*overlap_scaling
+   * times the average label size. If overlap_scaling is positive, the layout is
+   * scaled by overlap_scaling. If overlap_scaling is zero, no scaling is done.
+   */
+  void SetOverlapScaling(double val) {
+    AddFirstClassAttribute<double>(AttributeType::OVERLAP_SCALING, val);
+  }
+
+  /**
+   * This is true if the value of pack is "true" (case-insensitive) or a
+   * non-negative integer. If true, each connected component of the graph is
+   * laid out separately, and then the graphs are packed together. If pack has
+   * an integral value, this is used as the size, in points, of a margin around
+   * each part; otherwise, a default margin of 8 is used. If pack is interpreted
+   * as false, the entire graph is laid out together. The granularity and method
+   * of packing is influenced by the packmode attribute.
+   *
+   * For layouts which always do packing, such as twopi, the pack attribute is
+   * just used to set the margin.
+   */
+  void SetPack(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::PACK, val);
+  }
+  void SetPack(int val) {
+    AddFirstClassAttribute<int>(AttributeType::PACK, val);
+  }
+
+  /**
+   * This indicates how connected components should be packed. Note that
+   * defining packmode will automatically turn on packing as though one had set
+   * pack=true.
+   *
+   * The modes "node", "clust" or "graph" specify that the components should be
+   * packed together tightly, using the specified granularity. A value of "node"
+   * causes packing at the node and edge level, with no overlapping of these
+   * objects. This produces a layout with the least area, but it also allows
+   * interleaving, where a node of one component may lie between two nodes in
+   * another component. A value of "graph" does a packing using the bounding box
+   * of the component. Thus, there will be a rectangular region around a
+   * component free of elements of any other component. A value of "clust"
+   * guarantees that top-level clusters are kept intact. What effect a value has
+   * also depends on the layout algorithm. For example, neato does not support
+   * clusters, so a value of "clust" will have the same effect as the default
+   * "node" value.
+   *
+   * The mode "array(_flag)?(%d)?" indicates that the components should be
+   * packed at the graph level into an array of graphs. By default, the
+   * components are in row-major order, with the number of columns roughly the
+   * square root of the number of components. If the optional flags contains
+   * 'c', then column-major order is used. Finally, if the optional integer
+   * suffix is used, this specifies the number of columns for row-major or the
+   * number of rows for column-major. Thus, the mode "array_c4" indicates array
+   * packing, with 4 rows, starting in the upper left and going down the first
+   * column, then down the second column, etc., until all components are used.
+   *
+   * If a graph is smaller than the array cell it occupies, it is centered by
+   * default. The optional flags may contain 't', 'b', 'l', or 'r', indicating
+   * that the graphs should be aligned along the top, bottom, left or right,
+   * respectively.
+   *
+   * If the optional flags contains 'u', this causes the insertion order of
+   * elements in the array to be determined by user-supplied values. Each
+   * component can specify its sort value by a non-negative integer using the
+   * sortv attribute. Components are inserted in order, starting with the one
+   * with the smallest sort value. If no sort value is specified, zero is used.
+   *
+   * TODO(jvilk): Create a custom type for this rather than use a string.
+   */
+  void SetPackMode(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::PACKMODE, val);
+  }
+
+  /**
+   * The pad attribute specifies how much, in inches, to extend the drawing area
+   * around the minimal area needed to draw the graph. If the pad is a single
+   * double, both the x and y pad values are set equal to the given value. This
+   * area is part of the drawing and will be filled with the background color,
+   * if appropriate.
+   *
+   * Normally, a small pad is used for aesthetic reasons, especially when a
+   * background color is used, to avoid having nodes and edges abutting the
+   * boundary of the drawn region.
+   */
+  void SetPad(double x, double y) {
+    AddPointAttribute(AttributeType::PAD, x, y);
+  }
+
+  /**
+   * Width and height of output pages, in inches. If only a single value is
+   * given, this is used for both the width and height.
+   *
+   * If this is set and is smaller than the size of the layout, a rectangular
+   * array of pages of the specified page size is overlaid on the layout, with
+   * origins aligned in the lower-left corner, thereby partitioning the layout
+   * into pages. The pages are then produced one at a time, in pagedir order.
+   *
+   * At present, this only works for PostScript output. For other types of
+   * output, one should use another tool to split the output into multiple
+   * output files. Or use the viewport to generate multiple files.
+   */
+  void SetPage(double x, double y) {
+    AddPointAttribute(AttributeType::PAGE, x, y);
+  }
+
+  /**
+   * If the page attribute is set and applicable, this attribute specifies the
+   * order in which the pages are emitted. This is limited to one of the 8 row
+   * or column major orders.
+   *
+   * "BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT". These specify the 8 row or
+   * column major orders for traversing a rectangular array, the first character
+   * corresponding to the major order and the second to the minor order. Thus,
+   * for "BL", the major order is from bottom to top, and the minor order is
+   * from left to right. This means the bottom row is traversed first, from left
+   * to right, then the next row up, from left to right, and so on, until the 
+   * topmost row is traversed.
+   */
   void SetPageDir(PageDir::e val);
   void SetQuadTree(QuadType::e val);
   void SetQuadTree(bool val);

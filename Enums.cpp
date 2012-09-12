@@ -19,6 +19,7 @@ const char* LabelLoc::strings[] = {"", "t", "b", "c"};
 const char* Mode::strings[] = {"", "major", "KK", "hier", "ipsep"};
 const char* Model::strings[] = {"", "circuit", "subset", "mds"};
 const char* Ordering::strings[] = {"", "out", "in"};
+const char* OutputMode::strings[] = {"", "breadthfirst", "nodesfirst", "edgesfirst"};
 
 const char* emptyString = "";
 
@@ -106,11 +107,12 @@ const char* Model::ToString(Model::e val) {
   return emptyString;
 }
 
-const char* Ordering::ToString(Ordering::e val) {
+const char* OutputMode::ToString(OutputMode::e val) {
   if (val < COUNT)
     return strings[val];
 
   return emptyString;
 }
+
 
 }  // namespace DotWriter
