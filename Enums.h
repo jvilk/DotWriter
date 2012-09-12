@@ -174,6 +174,22 @@ public:
   static const char* ToString(ClusterMode::e val);
 };
 
+struct LabelLoc {
+  enum e {
+    DEFAULT,
+    T,
+    B,
+    C,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(LabelLoc::e val);
+};
+
 struct DirEdgeConstraints {
   enum e {
     DEFAULT,
@@ -187,6 +203,54 @@ private:
 
 public:
   static const char* ToString(DirEdgeConstraints::e val);
+};
+
+struct Model {
+  enum e {
+    DEFAULT,
+    CIRCUIT,
+    SUBSET,
+    MDS,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Model::e val);
+};
+
+struct Ordering {
+  enum e {
+    DEFAULT,
+    OUT,
+    IN,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Ordering::e val);
+};
+
+struct Mode {
+  enum e {
+    DEFAULT,
+    MAJOR,
+    KK,
+    HIER,
+    IPSEP,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Mode::e val);
 };
 
 struct Justification {

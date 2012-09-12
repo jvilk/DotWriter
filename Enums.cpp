@@ -15,70 +15,102 @@ const char* Charset::strings[] = {"", "UTF-8", "Latin1"};
 const char* ClusterMode::strings[] = {"", "local", "global", "none"};
 const char* DirEdgeConstraints::strings[] = {"", "true", "hier"};
 const char* Justification::strings[] = {"", "l", "r"};
+const char* LabelLoc::strings[] = {"", "t", "b", "c"};
+const char* Mode::strings[] = {"", "major", "KK", "hier", "ipsep"};
+const char* Model::strings[] = {"", "circuit", "subset", "mds"};
+const char* Ordering::strings[] = {"", "out", "in"};
 
 const char* emptyString = "";
 
 const char* EdgeArrowTypeName::ToString(EdgeArrowTypeName::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* EdgeStyle::ToString(EdgeStyle::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* NodeStyle::ToString(NodeStyle::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* NodeShape::ToString(NodeShape::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* Color::ToString(Color::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* Charset::ToString(Charset::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* ClusterMode::ToString(ClusterMode::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* DirEdgeConstraints::ToString(DirEdgeConstraints::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
 }
 
 const char* Justification::ToString(Justification::e val) {
-    if (val < COUNT)
-        return strings[val];
+  if (val < COUNT)
+    return strings[val];
 
-    return emptyString;
+  return emptyString;
+}
+
+const char* LabelLoc::ToString(LabelLoc::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* Mode::ToString(Mode::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* Model::ToString(Model::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* Ordering::ToString(Ordering::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
 }
 
 }  // namespace DotWriter

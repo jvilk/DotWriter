@@ -6,6 +6,8 @@
  * Attribute descriptions lifted from:
  * http://www.graphviz.org/content/attrs
  *
+ * TODO(jvilk): Make errors explicit at runtime rather than silently fix them.
+ *
  * Author: John Vilk (jvilk@cs.umass.edu)
  */
 
@@ -20,24 +22,9 @@
 #include "Enums.h"
 #include "Util.h"
 
+using std::runtime_error;
+
 namespace DotWriter {
-
-class InvalidAttributeValueException : public std::runtime_error
-{
-private:
-  AttributeType::e _type;
-
-public:
-  InvalidAttributeValueException(AttributeType::e type,
-    const std::string& message) : std::runtime_error(message),
-    _type(type) {
-  }
-
-  virtual const char* what() const throw()
-  {
-    return "";
-  }
-};
 
 class AttributeSet {
 private:
@@ -83,6 +70,11 @@ protected:
   template<typename T, typename F>
   void AddEnumListAttribute(AttributeType::e type, const std::vector<T>& val) {
     Attribute* attr = new EnumListAttribute<T, F>(type, val);
+    AddAttribute(attr);
+  }
+
+  void AddPointAttribute(AttributeType::e type, double x, double y) {
+    Attribute* attr = new PointAttribute(type, x, y);
     AddAttribute(attr);
   }
 };
@@ -434,33 +426,300 @@ public:
    * bottom of the node, respectively. In the default case, the label is
    * vertically centered. 
    */
-  void SetLabelLoc(std::string val);
-  void SetLandscape(bool val);
-  //Layers
-  //Layerselect
-  //Layersep
-  void SetLayout(std::string val);
-  void SetLevels(int val);
-  void SetLevelsGap(double val);
-  void SetLHeight(double val);
-  void SetLP(double x, double y);
-  void SetLWidth(double val);
-  void SetMargin(double val);
-  void SetMargin(double x, double y);
-  void SetMaxIter(int val);
-  void SetMCLimit(double val);
-  void SetMinDist(double val);
-  void SetMode(std::string val);
-  void SetModel(std::string val);
-  void SetMosek(bool val);
-  void SetNodeSep(double val);
-  void SetNoJustify(bool val);
-  void SetNormalize(bool val);
-  void SetNsLimit(double val);
-  void SetNsLimit1(double val);
-  void SetOrdering(std::string val);
+  void SetLabelLoc(LabelLoc::e val) {
+    if (val != LabelLoc::C) {
+      AddEnumAttribute<LabelLoc::e, LabelLoc>(AttributeType::LABELLOC, val);
+    }
+  }
+
+  /**
+   * Specifies the name of the layout algorithm to use, such as "dot" or
+   * "neato". Normally, graphs should be kept independent of a type of layout.
+   * In some cases, however, it can be convenient to embed the type of layout
+   * desired within the graph. For example, a graph containing position
+   * information from a layout might want to record what the associated layout
+   * algorithm was.
+   *
+   * This attribute takes precedence over the -K flag or the actual command name
+   * used.
+   */
+  void SetLayout(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::LAYOUT, val);
+  }
+
+  /**
+   * Number of levels allowed in the multilevel scheme.
+   */
+  void SetLevels(int val) {
+    AddFirstClassAttribute<int>(AttributeType::LEVELS, val);
+  }
+
+  /**
+   * Specifies strictness of level constraints in neato when mode="ipsep" or
+   * "hier". Larger positive values mean stricter constraints, which demand more
+   * separation between levels. On the other hand, negative values will relax
+   * the constraints by allowing some overlap between the levels.
+   */
+  void SetLevelsGap(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LEVELSGAP, val);
+  }
+
+  /**
+   * Height of graph or cluster label, in inches.
+   */
+  void SetLHeight(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LHEIGHT, val);
+  }
+
+  /**
+   * Label position, in points. The position indicates the center of the label.
+   */
+  void SetLP(double x, double y) {
+    AddPointAttribute(AttributeType::LP, x, y);
+  }
+
+  /**
+   * Width of graph or cluster label, in inches.
+   */
+  void SetLWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LWIDTH, val);
+  }
+
+  /**
+   * For graphs, this sets x and y margins of canvas, in inches. If the margin
+   * is a single double, both margins are set equal to the given value.
+   * 
+   * Note that the margin is not part of the drawing but just empty space left
+   * around the drawing. It basically corresponds to a translation of drawing,
+   * as would be necessary to center a drawing on a page. Nothing is actually
+   * drawn in the margin. To actually extend the background of a drawing, see
+   * the pad attribute.
+   *
+   * For clusters, this specifies the space between the nodes in the cluster and
+   * the cluster bounding box. By default, this is 8 points.
+   *
+   * For nodes, this attribute specifies space left around the node's label. By
+   * default, the value is 0.11,0.055.
+   */
+  void SetMargin(double val) {
+    AddFirstClassAttribute<double>(AttributeType::MARGIN, val);
+  }
+  void SetMargin(double x, double y) {
+    AddPointAttribute(AttributeType::MARGIN, x, y);
+  }
+
+  /**
+   * Sets the number of iterations used.
+   */
+  void SetMaxIter(int val) {
+    AddFirstClassAttribute<int>(AttributeType::MAXITER, val);
+  }
+
+  /**
+   * Multiplicative scale factor used to alter the MinQuit (default = 8) and
+   * MaxIter (default = 24) parameters used during crossing minimization. These
+   * correspond to the number of tries without improvement before quitting and
+   * the maximum number of iterations in each pass.
+   */
+  void SetMCLimit(double val) {
+    AddFirstClassAttribute<double>(AttributeType::MCLIMIT, val);
+  }
+
+  /**
+   * Specifies the minimum separation between all nodes.
+   */
+  void SetMinDist(double val) {
+    AddFirstClassAttribute<double>(AttributeType::MINDIST, val);
+  }
+
+  /**
+   * Technique for optimizing the layout. For neato, if mode is "major", neato
+   * uses stress majorization. If mode is "KK", neato uses a version of the
+   * gradient descent method. The only advantage to the latter technique is that
+   * it is sometimes appreciably faster for small (number of nodes < 100)
+   * graphs. A significant disadvantage is that it may cycle.
+   * 
+   * There are two experimental modes in neato, "hier", which adds a top-down
+   * directionality similar to the layout used in dot, and "ipsep", which allows
+   * the graph to specify minimum vertical and horizontal distances between
+   * nodes. (See the sep attribute.) "len" attribute.
+   */
+  void SetMode(Mode::e val) {
+    AddEnumAttribute<Mode::e, Mode>(AttributeType::MODE, val);
+  }
+
+  /**
+   * This value specifies how the distance matrix is computed for the input
+   * graph. The distance matrix specifies the ideal distance between every pair
+   * of nodes. neato attemps to find a layout which best achieves these
+   * distances. By default, it uses the length of the shortest path, where the
+   * length of each edge is given by its len attribute. If model is "circuit",
+   * neato uses the circuit resistance model to compute the distances. This
+   * tends to emphasize clusters. If model is "subset", neato uses the subset
+   * model. This sets the edge length to be the number of nodes that are
+   * neighbors of exactly one of the end points, and then calculates the
+   * shortest paths. This helps to separate nodes with high degree.
+   *
+   * For more control of distances, one can use model=mds. In this case, the len
+   * of an edge is used as the ideal distance between its vertices. A shortest
+   * path calculation is only used for pairs of nodes not connected by an edge.
+   * Thus, by supplying a complete graph, the input can specify all of the
+   * relevant distances.
+   */
+  void SetModel(Model::e val) {
+    AddEnumAttribute<Model::e, Model>(AttributeType::MODEL, val);
+  }
+
+  /**
+   * If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true, the
+   * Mosek software (www.mosek.com) is use to solve the ipsep constraints.
+   */
+  void SetMosek(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::MOSEK, val);
+  }
+
+  /**
+   * In dot, this specifies the minimum space between two adjacent nodes in the
+   * same rank, in inches.
+   *
+   * For other layouts, this affects the spacing between loops on a single node,
+   * or multiedges between a pair of nodes
+   */
+  void SetNodeSep(double val) {
+    AddFirstClassAttribute<double>(AttributeType::NODESEP, val);
+  }
+
+  /**
+   * By default, the justification of multi-line labels is done within the
+   * largest context that makes sense. Thus, in the label of a polygonal node, a
+   * left-justified line will align with the left side of the node (shifted by
+   * the prescribed margin). In record nodes, left-justified line will line up
+   * with the left side of the enclosing column of fields. If nojustify is
+   * "true", multi-line labels will be justified in the context of itself. For
+   * example, if the attribute is set, the first label line is long, and the
+   * second is shorter and left-justified, the second will align with the
+   * left-most character in the first line, regardless of how large the node
+   * might be.
+   */
+  void SetNoJustify(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+  }
+
+  /**
+   * If set, normalize coordinates of final layout so that the first point is at
+   * the origin, and then rotate the layout so that the first edge is
+   * horizontal.
+   */
+  void SetNormalize(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::NORMALIZE, val);
+  }
+
+  /**
+   * Used to set number of iterations in network simplex applications. nslimit
+   * is used in computing node x coordinates, nslimit1 for ranking nodes. If
+   * defined, # iterations = nslimit(1) * # nodes; otherwise, # iterations =
+   * MAXINT.
+   */
+  void SetNsLimit(double val) {
+    AddFirstClassAttribute<double>(AttributeType::NSLIMIT, val);
+  }
+  void SetNsLimit1(double val) {
+    AddFirstClassAttribute<double>(AttributeType::NSLIMIT1, val);
+  }
+
+  /**
+   * If the value of the attribute is "out", then the outedges of a node, that
+   * is, edges with the node as its tail node, must appear left-to-right in the
+   * same order in which they are defined in the input. If the value of the
+   * attribute is "in", then the inedges of a node must appear left-to-right in
+   * the same order in which they are defined in the input. If defined as a
+   * graph or subgraph attribute, the value is applied to all nodes in the graph
+   * or subgraph. Note that the graph attribute takes precedence over the node
+   * attribute.
+   */
+  void SetOrdering(Ordering::e val) {
+    AddEnumAttribute<Ordering::e, Ordering>(AttributeType::ORDERING, val);
+  }
+
+  /**
+   * If "[lL]*", set graph orientation to landscape Used only if rotate is not
+   * defined.
+   * TODO(jvilk): Huh.
+   */
   void SetOrientation(std::string val);
+
+  /**
+   * Specify order in which nodes and edges are drawn.
+   * TODO(jvilk): What does the value mean...
+   */
   void SetOutputOrder(OutputMode::e val);
+
+  /**
+   * Determines if and how node overlaps should be removed. Nodes are first
+   * enlarged using the sep attribute. If "true" , overlaps are retained. If the
+   * value is "scale", overlaps are removed by uniformly scaling in x and y. If
+   * the value converts to "false", and it is available, Prism, a proximity
+   * graph-based algorithm, is used to remove node overlaps. This can also be
+   * invoked explicitly with "overlap=prism". This technique starts with a small
+   * scaling up, controlled by the overlap_scaling attribute, which can remove a
+   * significant portion of the overlap. The prism option also accepts an
+   * optional non-negative integer suffix. This can be used to control the
+   * number of attempts made at overlap removal. By default, overlap="prism" is
+   * equivalent to overlap="prism1000". Setting overlap="prism0" causes only the
+   * scaling phase to be run.
+   *
+   * If Prism is not available, or the version of Graphviz is earlier than 2.28,
+   * "overlap=false" uses a Voronoi-based technique. This can always be invoked
+   * explicitly with "overlap=voronoi".
+   *
+   * If the value is "scalexy", x and y are separately scaled to remove
+   * overlaps.
+   *
+   * If the value is "compress", the layout will be scaled down as much as
+   * possible without introducing any overlaps, obviously assuming there are
+   * none to begin with.
+   *
+   * N.B.The remaining allowed values of overlap correspond to algorithms which,
+   * at present, can produce bad aspect ratios. In addition, we deprecate the
+   * use of the "ortho*" and "portho*".
+   *
+   * If the value is "vpsc", overlap removal is done as a quadratic optimization
+   * to minimize node displacement while removing node overlaps.
+   *
+   * If the value is "orthoxy" or "orthoyx", overlaps are moved by optimizing
+   * two constraint problems, one for the x axis and one for the y. The suffix
+   * indicates which axis is processed first. If the value is "ortho", the
+   * technique is similar to "orthoxy" except a heuristic is used to reduce the
+   * bias between the two passes. If the value is "ortho_yx", the technique is
+   * the same as "ortho", except the roles of x and y are reversed. The values
+   * "portho", "porthoxy", "porthoxy", and "portho_yx" are similar to the
+   * previous four, except only pseudo-orthogonal ordering is enforced.
+   *
+   * If the layout is done by neato with mode="ipsep", then one can use
+   * overlap=ipsep. In this case, the overlap removal constraints are
+   * incorporated into the layout algorithm itself. N.B. At present, this only
+   * supports one level of clustering.
+   *
+   * Except for fdp and sfdp, the layouts assume overlap="true" as the default.
+   * Fdp first uses a number of passes using a built-in, force-directed
+   * technique to try to remove overlaps. Thus, fdp accepts overlap with an
+   * integer prefix followed by a colon, specifying the number of tries. If
+   * there is no prefix, no initial tries will be performed. If there is nothing
+   * following a colon, none of the above methods will be attempted. By default,
+   * fdp uses overlap="9:prism". Note that overlap="true", overlap="0:true" and
+   * overlap="0:" all turn off all overlap removal.
+   *
+   * By default, sfdp uses overlap="prism0".
+   *
+   * Except for the Voronoi and prism methods, all of these transforms preserve
+   * the orthogonal ordering of the original layout. That is, if the x
+   * coordinates of two nodes are originally the same, they will remain the
+   * same, and if the x coordinate of one node is originally less than the x
+   * coordinate of another, this relation will still hold in the transformed
+   * layout. The similar properties hold for the y coordinates. This is not
+   * quite true for the "porth*" cases. For these, orthogonal ordering is only
+   * preserved among nodes related by an edge.
+   */
   void SetOverlap(std::string val);
   void SetOverlap(bool val);
   void SetOverlapScaling(double val);
