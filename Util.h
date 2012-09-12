@@ -12,7 +12,7 @@ namespace DotWriter {
  * Taken from:
  * http://stackoverflow.com/questions/3418231/c-replace-part-of-a-string-with-another-string
  */
-void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+void ReplaceAll(std::string& str, const std::string& from, const std::string& to) {
     if (from.empty())
         return;
 
@@ -31,8 +31,8 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
  *
  * This is used to sanitize IDs and labels during DOT file writing.
  */
-std::string sanitizeString(std::string& label) {
-    replaceAll(label, "\"", "\\\"");
+std::string SanitizeString(std::string& label) {
+    ReplaceAll(label, "\"", "\\\"");
     return label;
 }
 

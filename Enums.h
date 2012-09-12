@@ -48,7 +48,7 @@ struct EdgeArrowTypeName {
   };
 
 private:
-    static const char* strings[];
+  static const char* strings[];
 
 public:
   static const char* ToString(EdgeArrowTypeName::e);
@@ -67,7 +67,7 @@ struct EdgeStyle {
   };
 
 private:
-    static const char* strings[];
+  static const char* strings[];
 
 public:
   static const char* ToString(EdgeStyle::e val);
@@ -89,7 +89,7 @@ struct NodeStyle {
   };
 
 private:
-    static const char* strings[];
+  static const char* strings[];
 
 public:
   static const char* ToString(NodeStyle::e val);
@@ -141,6 +141,67 @@ private:
 
 public:
   static const char* ToString(NodeShape::e val);
+};
+
+struct Charset {
+  enum e {
+    DEFAULT,
+    UTF8,
+    LATIN1,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Charset::e val);
+};
+
+struct ClusterMode {
+  enum e {
+    DEFAULT,
+    LOCAL,
+    GLOBAL,
+    NONE,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(ClusterMode::e val);
+};
+
+struct DirEdgeConstraints {
+  enum e {
+    DEFAULT,
+    TRUE,
+    HIER,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(DirEdgeConstraints::e val);
+};
+
+struct Justification {
+  enum e {
+    DEFAULT,
+    LEFT,
+    RIGHT,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Justification::e val);
 };
 
 /**

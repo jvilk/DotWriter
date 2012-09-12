@@ -32,6 +32,8 @@ public:
   Attribute(AttributeType::e type) : _type(type) {
   }
 
+  virtual ~Attribute() {};
+
   /**
    * Returns the name of the attribute.
    */
@@ -51,7 +53,7 @@ public:
  * T is the enum type, and F is the struct that houses its ToString() method.
  */
 template <typename T, typename F>
-class EnumAttribute : Attribute {
+class EnumAttribute : public Attribute {
 private:
   T _value;
 
@@ -76,7 +78,7 @@ public:
  * T is the enum type, and F is the struct that houses its ToString() method.
  */
 template <typename T, typename F>
-class EnumListAttribute : Attribute {
+class EnumListAttribute : public Attribute {
 private:
   std::vector<T> _values;
 
@@ -131,7 +133,7 @@ public:
  * datatypes in C++, e.g. int, double, etc.
  */
 template <typename T>
-class FirstClassAttribute : Attribute {
+class FirstClassAttribute : public Attribute {
 private:
   T _value;
 
@@ -156,7 +158,7 @@ public:
  * This attribute is represented as a list of first-class C++ datatypes.
  */
 template <typename T>
-class FirstClassListAttribute : Attribute {
+class FirstClassListAttribute : public Attribute {
 private:
   std::vector<T> _values;
 
@@ -206,7 +208,7 @@ public:
   }
 };
 
-class AddDoubleAttribute : Attribute {
+class AddDoubleAttribute : public Attribute {
 private:
   double _value;
 
@@ -226,7 +228,7 @@ public:
   }
 };
 
-class PointAttribute : Attribute {
+class PointAttribute : public Attribute {
 private:
   double _x, _y;
 
@@ -250,7 +252,7 @@ public:
   }
 };
 
-class AddPointAttribute : Attribute {
+class AddPointAttribute : public Attribute {
 private:
   double _x, _y;
 
@@ -274,7 +276,7 @@ public:
   }
 };
 
-class PointListAttribute : Attribute {
+class PointListAttribute : public Attribute {
 private:
   std::vector<std::pair<double, double> > _values;
 
