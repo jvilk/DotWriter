@@ -1,6 +1,4 @@
 /**
- * GEnums.h
- *
  * Stores all of the support enums used in the graph library.
  *
  * DO NOT CHANGE THE ORDER OF THE ENUMS WITHOUT CHANGING THE STRINGS STORED IN

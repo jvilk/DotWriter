@@ -1,5 +1,7 @@
 #include "IdManager.h"
 
+#include <sstream>
+
 namespace DotWriter {
 
 const std::string& IdManager::GetNodeId() {

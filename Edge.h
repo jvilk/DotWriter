@@ -1,9 +1,6 @@
 #ifndef DOTWRITER_EDGE_H_
 #define DOTWRITER_EDGE_H_
 
-#include <ostream>
-
-#include "Node.h"
 #include "AttributeSet.h"
 
 namespace DotWriter {
@@ -52,17 +49,7 @@ public:
     return _attributes;
   }
 
-  void Print(bool isDirected, std::ostream& out) {
-    out << _src->GetId() << (isDirected ? "->" : "--") << _dst->GetId();
-
-    if (!_attributes.Empty()) {
-      out << " [";
-      _attributes.Print(out);
-      out << "]";
-    }
-
-    out << ";\n";
-  }
+  void Print(bool isDirected, std::ostream& out);
 };
 
 }  // namespace DotWriter

@@ -6,6 +6,8 @@
 #include "Graph.h"
 #include "Subgraph.h"
 #include "Cluster.h"
+#include "Node.h"
+#include "Edge.h"
 
 namespace DotWriter {
 
@@ -74,6 +76,57 @@ void Graph::RemoveCluster(Cluster* cluster) {
     _clusters.erase(it);
 
   delete cluster;
+}
+
+Node* Graph::AddNode() {
+  Node* node = new Node(_idManager->GetNodeId());
+  _nodes.push_back(node);
+  return node;
+}
+
+Node* Graph::AddNode(const std::string& label) {
+  Node* node = new Node(_idManager->GetNodeId(), label);
+  _nodes.push_back(node);
+  return node;
+}
+
+Node* Graph::AddNode(const std::string& label, const std::string& id) {
+  Node* node = new Node(_idManager->ValidateCustomId(id), label);
+  _nodes.push_back(node);
+  return node;
+}
+
+void Graph::RemoveNode(Node* node) {
+  std::vector<Node*>::iterator it = std::find(_nodes.begin(), _nodes.end(),
+    node);
+
+  if (it != _nodes.end()) {
+    _nodes.erase(it);
+  }
+
+  delete node;
+}
+
+Edge* Graph::AddEdge(Node* src, Node* dst) {
+  Edge* edge = new Edge(src, dst);
+  _edges.push_back(edge);
+  return edge;
+}
+
+Edge* Graph::AddEdge(Node* src, Node* dst, const std::string& label) {
+  Edge* edge = new Edge(src, dst, label);
+  _edges.push_back(edge);
+  return edge;
+}
+
+void Graph::RemoveEdge(Edge* edge) {
+  std::vector<Edge*>::iterator it = std::find(_edges.begin(), _edges.end(),
+    edge);
+
+  if (it != _edges.end())
+    _edges.erase(it);
+
+  delete edge;
 }
 
 void Graph::PrintNECS(std::ostream& out) {

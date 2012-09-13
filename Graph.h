@@ -8,20 +8,19 @@
 #ifndef DOTWRITER_GRAPH_H_
 #define DOTWRITER_GRAPH_H_
 
-#include <set>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "Enums.h"
-#include "Edge.h"
-#include "IdManager.h"
 #include "AttributeSet.h"
+#include "IdManager.h"
 
 namespace DotWriter {
 
 class Subgraph;
 class Cluster;
+class Edge;
+class Node;
 
 /**
  * Represents a graph. It's a bag of nodes and edges, basically.
@@ -105,27 +104,14 @@ public:
   /**
    * Constructs a Node object, adds it to the graph, and returns it.
    */
-  Node* AddNode() {
-    Node* node = new Node(_idManager->GetNodeId());
-    _nodes.push_back(node);
-    return node;
-  }
+  Node* AddNode();
 
   /**
    * Constructs a Node object with the given label, adds it to the graph, and
    * returns it.
    */
-  Node* AddNode(const std::string& label) {
-    Node* node = new Node(_idManager->GetNodeId(), label);
-    _nodes.push_back(node);
-    return node;
-  }
-
-  Node* AddNode(const std::string& label, const std::string& id) {
-    Node* node = new Node(_idManager->ValidateCustomId(id), label);
-    _nodes.push_back(node);
-    return node;
-  }
+  Node* AddNode(const std::string& label);
+  Node* AddNode(const std::string& label, const std::string& id);
 
   /**
    * Removes the node from the graph.
@@ -135,45 +121,20 @@ public:
    * expect -- O(|E|).
    * TODO(jvilk): Actually delete those edges...
    */
-  void RemoveNode(Node* node) {
-    std::vector<Node*>::iterator it = std::find(_nodes.begin(), _nodes.end(),
-      node);
-
-    if (it != _nodes.end()) {
-      _nodes.erase(it);
-    }
-
-    delete node;
-  }
+  void RemoveNode(Node* node);
 
   /**
    * Add an edge to the graph. Returns a reference to the edge that can be
    * manipulated to change edge properties.
    */
-  Edge* AddEdge(Node* src, Node* dst) {
-    Edge* edge = new Edge(src, dst);
-    _edges.push_back(edge);
-    return edge;
-  }
-  Edge* AddEdge(Node* src, Node* dst, const std::string& label) {
-    Edge* edge = new Edge(src, dst, label);
-    _edges.push_back(edge);
-    return edge;
-  }
+  Edge* AddEdge(Node* src, Node* dst);
+  Edge* AddEdge(Node* src, Node* dst, const std::string& label);
 
   /**
    * Removes the edge from the graph. Note that this also deletes the GEdge
    * object.
    */
-  void RemoveEdge(Edge* edge) {
-    std::vector<Edge*>::iterator it = std::find(_edges.begin(), _edges.end(),
-      edge);
-
-    if (it != _edges.end())
-      _edges.erase(it);
-
-    delete edge;
-  }
+  void RemoveEdge(Edge* edge);
 
   /**
    * Removes any edges from src to dst from the graph. Note that this version

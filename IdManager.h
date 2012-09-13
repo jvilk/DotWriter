@@ -2,7 +2,6 @@
 #define DOTWRITER_IDMANAGER_H
 
 #include <string>
-#include <sstream>
 #include <set>
 
 namespace DotWriter {
