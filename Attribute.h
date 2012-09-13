@@ -45,7 +45,7 @@ public:
    * Prints the DOT representation of this attribute to the output stream.
    * (e.g. AttributeName = Value)
    */
-  virtual void ToString(std::ostream& out) = 0;
+  virtual void Print(std::ostream& out) = 0;
 };
 
 /**
@@ -72,7 +72,7 @@ public:
   /**
    * Prints the DOT representation of this attribute to the output stream.
    */
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << _type << _equals << _value;
   };
 };
@@ -97,8 +97,10 @@ public:
     _value = value;
   }
 
-  virtual void ToString(std::ostream& out) {
-    out << GetName() << "=" << F::ToString(_value);
+  virtual void Print(std::ostream& out) {
+    if (_value != F::DEFAULT) {
+      out << GetName() << "=" << F::ToString(_value);
+    }
   }
 };
 
@@ -135,7 +137,7 @@ public:
     _values.push_back(value);
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     if (_values.empty()) return;
 
     out << GetName() << "=";
@@ -171,7 +173,7 @@ public:
     return _value;
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=" << (_value ? "true" : "false");
   }
 };
@@ -194,7 +196,7 @@ public:
     return _value;
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=" << _value;
   }
 };
@@ -231,7 +233,7 @@ public:
     _values.push_back(value);
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     if (_values.empty()) return;
 
     out << GetName() << "=";
@@ -263,7 +265,7 @@ public:
     _value = value;
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=+" << _value;
   }
 };
@@ -285,7 +287,7 @@ public:
     _y = y;
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=" << _x << "," << _y;
   }
 };
@@ -307,7 +309,7 @@ public:
     _y = y;
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=+" << _x << "," << _y;
   }
 };
@@ -327,7 +329,7 @@ public:
     _values.push_back(std::pair<double,double>(x, y));
   }
 
-  virtual void ToString(std::ostream& out) {
+  virtual void Print(std::ostream& out) {
     out << GetName() << "=";
 
     // This is a *space* separated list.

@@ -57,6 +57,8 @@ public:
 
   }
 
+  virtual ~IdManager() {};
+
   /**
    * Get a unique node ID. Used when the user does not specify
    * an ID.

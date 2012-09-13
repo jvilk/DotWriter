@@ -4,11 +4,10 @@
 namespace DotWriter {
 
 /**
- * Prints out a string representation of the node (essentially, a line describing it for the DOT file).
- *
- * Don't make fun of me for emulating a Java thing...
+ * Prints out a string representation of the node (essentially, a line
+ * describing it for the DOT file).
  */
-void Node::ToString(std::ostream& out) {
+void Node::Print(std::ostream& out) {
     //Node identifier in the DOT file.
     out << GetId();
 
@@ -17,9 +16,11 @@ void Node::ToString(std::ostream& out) {
         _attributes.AddCustomAttribute("label", GetLabel());
     }
 
-    out << "[";
-    _attributes.ToString(out);
-    out << "]";
+    if (!_attributes.Empty()) {
+      out << " [";
+      _attributes.Print(out);
+      out << "]";
+    }
 
     //Line ending semicolon and newline.
     out << ";\n";

@@ -16,27 +16,30 @@
 #include "Enums.h"
 #include "Edge.h"
 #include "IdManager.h"
-#include "Subgraph.h"
 #include "AttributeSet.h"
 
 namespace DotWriter {
+
+class Subgraph;
+class Cluster;
 
 /**
  * Represents a graph. It's a bag of nodes and edges, basically.
  */
 class Graph {
-private:
+protected:
   bool _isDigraph;
-  IdManager _idManager;
+  IdManager* _idManager;   // Managed by root graph.
   const std::string& _id;  // Reference to unique ID stored in the _idManager.
                            // Not really all that important, as you don't
                            // reference this in the DOT file. Dotty seems to
                            // want one on the master graph regardless.
   // I use vector since output order matters.
+  std::string _label;
   std::vector<Node *> _nodes;
   std::vector<Edge *> _edges;
   std::vector<Subgraph *> _subgraphs;
-  GraphAttributeSet _attributes;
+  std::vector<Cluster *> _clusters;
   NodeAttributeSet _defaultNodeAttributes;
   EdgeAttributeSet _defaultEdgeAttributes;
 
@@ -44,37 +47,23 @@ public:
   /**
    * Constructs a new Graph object.
    * - isDigraph: Set to 'true' if this is a directed graph.
+   * - label: Text that is printed somewhere adjacent to the graph.
+   * - id: Custom id (optional)
    */
-  Graph(bool isDigraph = false) :
-    _isDigraph(isDigraph), _idManager(IdManager()),
-    _id(_idManager.ValidateCustomId("Graph")),
-    _attributes(GraphAttributeSet()),
+  Graph(IdManager* idManager, bool isDigraph = false, std::string label = "",
+    std::string id = "Graph") :
+    _isDigraph(isDigraph), _idManager(idManager),
+    _id(_idManager->ValidateCustomId(id)), _label(label),
     _defaultNodeAttributes(NodeAttributeSet()),
     _defaultEdgeAttributes(EdgeAttributeSet()) {
   }
 
-  /**
-   * Constructs a new Graph object.
-   * - isDigraph: Set to 'true' if this is a directed graph.
-   * - label: Text that is printed somewhere adjacent to the graph.
-   */
-  Graph(bool isDigraph, std::string label) :
-    _isDigraph(isDigraph), _idManager(IdManager()),
-    _id(_idManager.ValidateCustomId("Graph")),
-    _attributes(GraphAttributeSet()),
-    _defaultNodeAttributes(NodeAttributeSet()),
-    _defaultEdgeAttributes(EdgeAttributeSet()) {
-      // TODO(jvilk): Deal with label.
-  }
+  virtual ~Graph();
 
   /** Simple getters and setters **/
 
   bool IsDigraph() {
     return _isDigraph;
-  }
-
-  GraphAttributeSet& GetAttributes() {
-    return _attributes;
   }
 
   EdgeAttributeSet& GetDefaultEdgeAttributes() {
@@ -92,43 +81,32 @@ public:
   /**
    * Create a new subgraph on this graph.
    */
-  Subgraph* AddSubgraph() {
-    Subgraph* sg = new Subgraph(_idManager.GetSubgraphId());
-    _subgraphs.push_back(sg);
-    return sg;
-  }
-
-  Subgraph* AddSubgraph(const std::string& label) {
-    Subgraph* sg = new Subgraph(_idManager.GetSubgraphId(), label);
-    _subgraphs.push_back(sg);
-    return sg;
-  }
-
-  Subgraph* AddSubgraph(const std::string& label, const std::string& id) {
-    std::string sanitizedId = _idManager.ValidateCustomId(id);
-    Subgraph* sg = new Subgraph(sanitizedId, label);
-    _subgraphs.push_back(sg);
-    return sg;
-  }
+  Subgraph* AddSubgraph(bool isDigraph = false, std::string label = "");
+  Subgraph* AddSubgraph(bool isDigraph, const std::string& label,
+    const std::string& id);
 
   /**
    * Remove the given subgraph from this graph.
    */
-  void RemoveSubgraph(Subgraph* subgraph) {
-    std::vector<Subgraph*>::iterator it = std::find(_subgraphs.begin(),
-      _subgraphs.end(), subgraph);
+  void RemoveSubgraph(Subgraph* subgraph);
 
-    if (it != _subgraphs.end())
-      _subgraphs.erase(it);
+  /**
+   * Create a new cluster on this graph.
+   */
+  Cluster* AddCluster(bool isDigraph = false, std::string label = "");
+  Cluster* AddCluster(bool isDigraph, const std::string& label,
+    const std::string& id);
 
-    delete subgraph;
-  }
+  /**
+   * Remove the given cluster from this graph.
+   */
+  void RemoveCluster(Cluster* cluster);
 
   /**
    * Constructs a Node object, adds it to the graph, and returns it.
    */
   Node* AddNode() {
-    Node* node = new Node(_idManager.GetNodeId());
+    Node* node = new Node(_idManager->GetNodeId());
     _nodes.push_back(node);
     return node;
   }
@@ -138,13 +116,13 @@ public:
    * returns it.
    */
   Node* AddNode(const std::string& label) {
-    Node* node = new Node(_idManager.GetNodeId(), label);
+    Node* node = new Node(_idManager->GetNodeId(), label);
     _nodes.push_back(node);
     return node;
   }
 
   Node* AddNode(const std::string& label, const std::string& id) {
-    Node* node = new Node(_idManager.ValidateCustomId(id), label);
+    Node* node = new Node(_idManager->ValidateCustomId(id), label);
     _nodes.push_back(node);
     return node;
   }
@@ -155,6 +133,7 @@ public:
    * Note that this function deletes the node object, and removes all edges
    * to/from it. Also, note that it is currently more expensive than you may
    * expect -- O(|E|).
+   * TODO(jvilk): Actually delete those edges...
    */
   void RemoveNode(Node* node) {
     std::vector<Node*>::iterator it = std::find(_nodes.begin(), _nodes.end(),
@@ -202,22 +181,17 @@ public:
    *
    * If this is not a digraph, then removeEdge(src, dst) has the same semantics
    * as removeEdge(dst, src).
-   * TODO(jvilk): Implement;
+   * TODO(jvilk): Implement.
    */
   //void RemoveEdge(Node* src, Node* dst);
 
-  /**
-   * Prints the graph in DOT file format to the output stream.
-   */
-  //void ToString(std::ostream& out);
+  virtual void Print(std::ostream& out) = 0;
 
+protected:
   /**
-   * Writes the graph to the specified filename in the DOT format.
-   *
-   * Returns true if successful, false otherwise.
+   * Prints nodes, edges, cluster subgraphs, and subgraphs.
    */
-  bool WriteToFile(std::string& filename);
-
+  void PrintNECS(std::ostream& out);
 };
 
 

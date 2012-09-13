@@ -52,10 +52,16 @@ public:
     return _attributes;
   }
 
-  void ToString(std::ostream& out) {
-    out << _src->GetId() << "->" << _dst->GetId() << " [";
-    _attributes.ToString(out);
-    out << "];\n";
+  void Print(bool isDirected, std::ostream& out) {
+    out << _src->GetId() << (isDirected ? "->" : "--") << _dst->GetId();
+
+    if (!_attributes.Empty()) {
+      out << " [";
+      _attributes.Print(out);
+      out << "]";
+    }
+
+    out << ";\n";
   }
 };
 

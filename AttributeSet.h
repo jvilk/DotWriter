@@ -44,15 +44,19 @@ public:
     }
   }
 
+  bool Empty() {
+    return _attributes.empty();
+  }
+
   void AddCustomAttribute(const std::string& name, const std::string& val) {
     AddAttribute(new CustomAttribute(name, val));
   }
 
-  void ToString(std::ostream& out) {
+  void Print(std::ostream& out) {
     std::vector<Attribute*>::iterator it;
     for (it = _attributes.begin(); it != _attributes.end(); it++) {
       Attribute* at = *it;
-      at->ToString(out);
+      at->Print(out);
 
       if (it+1 != _attributes.end())
         out << ",";

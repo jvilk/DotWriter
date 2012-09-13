@@ -23,7 +23,7 @@ public:
   }
   virtual ~Node() {};
 
-  void ToString(std::ostream& out);
+  void Print(std::ostream& out);
 
   /** Simple getters / setters **/
   const std::string& GetLabel() {
