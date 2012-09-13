@@ -129,16 +129,39 @@ public:
 };
 
 /**
- * Represents an attribute for attributes that can be represented as first-class
- * datatypes in C++, e.g. int, double, etc.
+ * Used for boolean attributes
+ */
+class BoolAttribute : public Attribute {
+private:
+  bool _value;
+
+public:
+  BoolAttribute(AttributeType::e type, bool value) : Attribute(type),
+    _value(value) {
+
+  }
+
+  bool GetValue() {
+    return _value;
+  }
+
+  std::string ToString() {
+    std::stringstream ss;
+    ss << GetName() << "=" << (_value ? "true" : "false");
+    return ss.str();
+  }
+};
+
+/**
+ * Used for attributes that can just be piped to an output stream with no fuss.
  */
 template <typename T>
-class FirstClassAttribute : public Attribute {
+class SimpleAttribute : public Attribute {
 private:
   T _value;
 
 public:
-  FirstClassAttribute(AttributeType::e type, T value) : Attribute(type),
+  SimpleAttribute(AttributeType::e type, T value) : Attribute(type),
     _value(value) {
 
   }
@@ -155,19 +178,19 @@ public:
 };
 
 /**
- * This attribute is represented as a list of first-class C++ datatypes.
+ * Same as SimpleAttribute, but it's a list of those sort of attributes.
  */
 template <typename T>
-class FirstClassListAttribute : public Attribute {
+class SimpleListAttribute : public Attribute {
 private:
   std::vector<T> _values;
 
 public:
-  FirstClassListAttribute(AttributeType::e type, T value) : Attribute(type) {
+  SimpleListAttribute(AttributeType::e type, T value) : Attribute(type) {
     AddValue(value);
   }
 
-  FirstClassListAttribute(AttributeType::e type, const std::vector<T>& values) :
+  SimpleListAttribute(AttributeType::e type, const std::vector<T>& values) :
     Attribute(type) {
     // Copies contents of the input vector.
     _values = values;

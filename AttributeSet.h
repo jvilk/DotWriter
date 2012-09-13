@@ -60,16 +60,21 @@ protected:
     }
   }
 
-  template<typename T>
-  void AddFirstClassAttribute(AttributeType::e type, T val) {
-    Attribute* attr = new FirstClassAttribute<T>(type, val);
+  void AddBoolAttribute(AttributeType::e type, bool val) {
+    Attribute* attr = new BoolAttribute(type, val);
     AddAttribute(attr);
   }
 
   template<typename T>
-  void AddFirstClassListAttribute(AttributeType::e type,
+  void AddSimpleAttribute(AttributeType::e type, T val) {
+    Attribute* attr = new SimpleAttribute<T>(type, val);
+    AddAttribute(attr);
+  }
+
+  template<typename T>
+  void AddSimpleListAttribute(AttributeType::e type,
     const std::vector<T>& vals) {
-    Attribute* attr = new FirstClassListAttribute<T>(type, vals);
+    Attribute* attr = new SimpleListAttribute<T>(type, vals);
     AddAttribute(attr);
   }
 
@@ -111,7 +116,7 @@ public:
    * system tends to ``cool'', thereby preventing cycling. 
    */
   void SetDamping(double val) {
-    AddFirstClassAttribute<double>(AttributeType::DAMPING, val);
+    AddSimpleAttribute<double>(AttributeType::DAMPING, val);
   }
 
   /**
@@ -121,7 +126,7 @@ public:
    * override this value for adjacent nodes. 
    */
   void SetK(double val) {
-    AddFirstClassAttribute<double>(AttributeType::K, val);
+    AddSimpleAttribute<double>(AttributeType::K, val);
   }
 
   /**
@@ -148,7 +153,7 @@ public:
    */
   void SetURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+    AddSimpleAttribute<std::string>(AttributeType::URL, val);
   }
 
   /**
@@ -183,7 +188,7 @@ public:
    * If true, the drawing is centered in the output canvas. 
    */
   void ShouldCenter(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::CENTER, val);
+    AddBoolAttribute(AttributeType::CENTER, val);
   }
 
   /**
@@ -214,14 +219,14 @@ public:
    * Comments are inserted into output. Device-dependent 
    */
   void SetComment(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::COMMENT, val);
+    AddSimpleAttribute<std::string>(AttributeType::COMMENT, val);
   }
 
   /**
    * If true, allow edges between clusters. (See lhead and ltail) 
    */
   void SetCompound(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::COMPOUND, val);
+    AddBoolAttribute(AttributeType::COMPOUND, val);
   }
 
   /**
@@ -230,7 +235,7 @@ public:
    * latter feature is not yet available outside of dot. 
    */
   void SetConcentrate(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::CONCENTRATE, val);
+    AddBoolAttribute(AttributeType::CONCENTRATE, val);
   }
 
   /**
@@ -239,7 +244,7 @@ public:
    * pack=false. 
    */
   void SetDefaultDist(double val) {
-    AddFirstClassAttribute<double>(AttributeType::DEFAULTDIST, val);
+    AddSimpleAttribute<double>(AttributeType::DEFAULTDIST, val);
   }
 
   /**
@@ -248,7 +253,7 @@ public:
    */
   void SetDim(unsigned val) {
     if (val > 10) val = 10;
-    AddFirstClassAttribute<unsigned>(AttributeType::DIM, val);
+    AddSimpleAttribute<unsigned>(AttributeType::DIM, val);
   }
 
   /**
@@ -265,7 +270,7 @@ public:
    */
   void SetDimen(int val) {
     if (val > 10) val = 10;
-    AddFirstClassAttribute<unsigned>(AttributeType::DIMEN, val);
+    AddSimpleAttribute<unsigned>(AttributeType::DIMEN, val);
   }
 
   /**
@@ -288,7 +293,7 @@ public:
    * number of points or inches. 
    */
   void SetDPI(double val) {
-    AddFirstClassAttribute<double>(AttributeType::DPI, val);
+    AddSimpleAttribute<double>(AttributeType::DPI, val);
   }
 
   /**
@@ -296,7 +301,7 @@ public:
    * epsilon, the algorithm stops.
    */
   void SetEpsilon(double val) {
-    AddFirstClassAttribute<double>(AttributeType::EPSILON, val);
+    AddSimpleAttribute<double>(AttributeType::EPSILON, val);
   }
 
   /**
@@ -334,7 +339,7 @@ public:
    * support various aliases for the common fonts. 
    */
   void SetFontName(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTNAME, val);
   }
 
   /**
@@ -349,7 +354,7 @@ public:
    * that support these richer fontname spaces. 
    */
   void SetFontNames(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTNAMES, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTNAMES, val);
   }
 
   /**
@@ -360,14 +365,14 @@ public:
    * attribute of the root graph. 
    */
   void SetFontPath(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTPATH, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTPATH, val);
   }
 
   /**
    * Font size, in points, used for text. 
    */
   void SetFontSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::FONTSIZE, val);
   }
 
   /**
@@ -375,7 +380,7 @@ public:
    * with nodes or other labels. 
    */
   void SetForceLabels(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::FORCELABELS, val);
+    AddBoolAttribute(AttributeType::FORCELABELS, val);
   }
 
   /**
@@ -389,7 +394,7 @@ public:
    * If unset, the default angle is 0. 
    */
   void SetGradientAngle(int val) {
-    AddFirstClassAttribute<int>(AttributeType::GRADIENTANGLE, val);
+    AddSimpleAttribute<int>(AttributeType::GRADIENTANGLE, val);
   }
 
   /**
@@ -405,7 +410,7 @@ public:
    * about OS-specifiy malarky. 
    */
   void SetImagePath(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::IMAGEPATH, val);
+    AddSimpleAttribute<std::string>(AttributeType::IMAGEPATH, val);
   }
 
   /**
@@ -419,7 +424,7 @@ public:
    */
   void SetLabelScheme(unsigned val) {
     if (val > 3) val = 3;
-    AddFirstClassAttribute<unsigned>(AttributeType::LABEL_SCHEME, val);
+    AddSimpleAttribute<unsigned>(AttributeType::LABEL_SCHEME, val);
   }
 
   /**
@@ -466,14 +471,14 @@ public:
    * used.
    */
   void SetLayout(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::LAYOUT, val);
+    AddSimpleAttribute<std::string>(AttributeType::LAYOUT, val);
   }
 
   /**
    * Number of levels allowed in the multilevel scheme.
    */
   void SetLevels(int val) {
-    AddFirstClassAttribute<int>(AttributeType::LEVELS, val);
+    AddSimpleAttribute<int>(AttributeType::LEVELS, val);
   }
 
   /**
@@ -483,14 +488,14 @@ public:
    * the constraints by allowing some overlap between the levels.
    */
   void SetLevelsGap(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LEVELSGAP, val);
+    AddSimpleAttribute<double>(AttributeType::LEVELSGAP, val);
   }
 
   /**
    * Height of graph or cluster label, in inches.
    */
   void SetLHeight(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LHEIGHT, val);
+    AddSimpleAttribute<double>(AttributeType::LHEIGHT, val);
   }
 
   /**
@@ -504,7 +509,7 @@ public:
    * Width of graph or cluster label, in inches.
    */
   void SetLWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LWIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::LWIDTH, val);
   }
 
   /**
@@ -530,7 +535,7 @@ public:
    * Sets the number of iterations used.
    */
   void SetMaxIter(int val) {
-    AddFirstClassAttribute<int>(AttributeType::MAXITER, val);
+    AddSimpleAttribute<int>(AttributeType::MAXITER, val);
   }
 
   /**
@@ -540,14 +545,14 @@ public:
    * the maximum number of iterations in each pass.
    */
   void SetMCLimit(double val) {
-    AddFirstClassAttribute<double>(AttributeType::MCLIMIT, val);
+    AddSimpleAttribute<double>(AttributeType::MCLIMIT, val);
   }
 
   /**
    * Specifies the minimum separation between all nodes.
    */
   void SetMinDist(double val) {
-    AddFirstClassAttribute<double>(AttributeType::MINDIST, val);
+    AddSimpleAttribute<double>(AttributeType::MINDIST, val);
   }
 
   /**
@@ -593,7 +598,7 @@ public:
    * Mosek software (www.mosek.com) is use to solve the ipsep constraints.
    */
   void SetMosek(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::MOSEK, val);
+    AddBoolAttribute(AttributeType::MOSEK, val);
   }
 
   /**
@@ -604,7 +609,7 @@ public:
    * or multiedges between a pair of nodes
    */
   void SetNodeSep(double val) {
-    AddFirstClassAttribute<double>(AttributeType::NODESEP, val);
+    AddSimpleAttribute<double>(AttributeType::NODESEP, val);
   }
 
   /**
@@ -620,7 +625,7 @@ public:
    * might be.
    */
   void SetNoJustify(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+    AddBoolAttribute(AttributeType::NOJUSTIFY, val);
   }
 
   /**
@@ -629,7 +634,7 @@ public:
    * horizontal.
    */
   void SetNormalize(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::NORMALIZE, val);
+    AddBoolAttribute(AttributeType::NORMALIZE, val);
   }
 
   /**
@@ -639,10 +644,10 @@ public:
    * MAXINT.
    */
   void SetNsLimit(double val) {
-    AddFirstClassAttribute<double>(AttributeType::NSLIMIT, val);
+    AddSimpleAttribute<double>(AttributeType::NSLIMIT, val);
   }
   void SetNsLimit1(double val) {
-    AddFirstClassAttribute<double>(AttributeType::NSLIMIT1, val);
+    AddSimpleAttribute<double>(AttributeType::NSLIMIT1, val);
   }
 
   /**
@@ -744,7 +749,7 @@ public:
    * TODO(jvilk): Try to add validation code to this...
    */
   void SetOverlap(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::OVERLAP, val);
+    AddSimpleAttribute<std::string>(AttributeType::OVERLAP, val);
   }
 
   /**
@@ -757,7 +762,7 @@ public:
    * scaled by overlap_scaling. If overlap_scaling is zero, no scaling is done.
    */
   void SetOverlapScaling(double val) {
-    AddFirstClassAttribute<double>(AttributeType::OVERLAP_SCALING, val);
+    AddSimpleAttribute<double>(AttributeType::OVERLAP_SCALING, val);
   }
 
   /**
@@ -773,10 +778,10 @@ public:
    * just used to set the margin.
    */
   void SetPack(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::PACK, val);
+    AddBoolAttribute(AttributeType::PACK, val);
   }
   void SetPack(int val) {
-    AddFirstClassAttribute<int>(AttributeType::PACK, val);
+    AddSimpleAttribute<int>(AttributeType::PACK, val);
   }
 
   /**
@@ -821,7 +826,7 @@ public:
    * TODO(jvilk): Create a custom type for this rather than use a string.
    */
   void SetPackMode(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::PACKMODE, val);
+    AddSimpleAttribute<std::string>(AttributeType::PACKMODE, val);
   }
 
   /**
@@ -885,7 +890,7 @@ public:
    * multiples of the quantum. 
    */
   void SetQuantum(double val) {
-    AddFirstClassAttribute<double>(AttributeType::QUANTUM, val);
+    AddSimpleAttribute<double>(AttributeType::QUANTUM, val);
   }
 
   /**
@@ -915,10 +920,10 @@ public:
    * remainder. 
    */
   void SetRankSep(double val) {
-    AddFirstClassAttribute<double>(AttributeType::RANKSEP, val);
+    AddSimpleAttribute<double>(AttributeType::RANKSEP, val);
   }
   void SetRankSep(const std::vector<double>& val) {
-    AddFirstClassListAttribute<double>(AttributeType::RANKSEP, val);
+    AddSimpleListAttribute<double>(AttributeType::RANKSEP, val);
   }
 
   /**
@@ -965,7 +970,7 @@ public:
    * only works in dot. 
    */
   void SetRatio(double val) {
-    AddFirstClassAttribute<double>(AttributeType::RATIO, val);
+    AddSimpleAttribute<double>(AttributeType::RATIO, val);
   }
   void SetRatio(Ratio::e val) {
     AddEnumAttribute<Ratio::e, Ratio>(AttributeType::RATIO, val);
@@ -976,7 +981,7 @@ public:
    * time.
    */
   void SetReMinCross(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::REMINCROSS, val);
+    AddBoolAttribute(AttributeType::REMINCROSS, val);
   }
 
   /**
@@ -985,7 +990,7 @@ public:
    * effect at the expense of less clustering. 
    */
   void SetRepulsiveForce(double val) {
-    AddFirstClassAttribute<double>(AttributeType::REPULSIVEFORCE, val);
+    AddSimpleAttribute<double>(AttributeType::REPULSIVEFORCE, val);
   }
 
   /**
@@ -1002,14 +1007,14 @@ public:
    */
   void SetRoot(Node* node) {
     //TODO(jvilk): If node is deleted, this is not cleaned up...
-    AddFirstClassAttribute<std::string>(AttributeType::ROOT, node->GetId());
+    AddSimpleAttribute<std::string>(AttributeType::ROOT, node->GetId());
   }
 
   /**
    * If 90, set drawing orientation to landscape. 
    */
   void SetRotate(int val) {
-    AddFirstClassAttribute<int>(AttributeType::ROTATE, val);
+    AddSimpleAttribute<int>(AttributeType::ROTATE, val);
   }
 
   /**
@@ -1017,7 +1022,7 @@ public:
    * number of degrees. 
    */
   void SetRotation(double val) {
-    AddFirstClassAttribute<double>(AttributeType::ROTATION, val);
+    AddSimpleAttribute<double>(AttributeType::ROTATION, val);
   }
 
   /**
@@ -1038,7 +1043,7 @@ public:
    * search when looking for one with minimum cut value. 
    */
   void SetSearchSize(int val) {
-    AddFirstClassAttribute<int>(AttributeType::SEARCHSIZE, val);
+    AddSimpleAttribute<int>(AttributeType::SEARCHSIZE, val);
   }
   void SetSearchSize(double val) {
     AddAddDoubleAttribute(AttributeType::SEARCHSIZE, val);
@@ -1069,7 +1074,7 @@ public:
    */
   void SetShowBoxes(unsigned val) {
     if (val > 2) val = 2;
-    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+    AddSimpleAttribute<unsigned>(AttributeType::SHOWBOXES, val);
   }
 
   /**
@@ -1102,7 +1107,7 @@ public:
    * insertion order among the components, with smaller values inserted first. 
    */
   void SetSortV(int val) {
-    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+    AddSimpleAttribute<int>(AttributeType::SORTV, val);
   }
 
   /**
@@ -1157,7 +1162,7 @@ public:
    * TODO(jvilk): Make this an object for validation purposes.
    */
   void SetStart(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::START, val);
+    AddSimpleAttribute<std::string>(AttributeType::START, val);
   }
 
   /**
@@ -1188,14 +1193,14 @@ public:
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
   void SetStyle(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLE, val);
   }
 
   /**
    * A URL or pathname specifying an XML style sheet, used in SVG output. 
    */
   void SetStyleSheet(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLESHEET, val);
   }
 
   /**
@@ -1203,7 +1208,7 @@ public:
    * browser is used for the URL. See W3C documentation. 
    */
   void SetTarget(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLESHEET, val);
   }
 
   /**
@@ -1223,7 +1228,7 @@ public:
    * problem. 
    */
   void SetTrueColor(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::TRUECOLOR, val);
+    AddBoolAttribute(AttributeType::TRUECOLOR, val);
   }
 
   // TODO(jvilk): Implement this type.
@@ -1234,7 +1239,7 @@ public:
    * technique. dim' = (1+2*margin)*dim. 
    */
   void SetVoroMargin(double val) {
-    AddFirstClassAttribute<double>(AttributeType::VORO_MARGIN,val);
+    AddSimpleAttribute<double>(AttributeType::VORO_MARGIN,val);
   }
 
 };
@@ -1259,7 +1264,7 @@ public:
    * override this value for adjacent nodes. 
    */
   void SetK(double val) {
-    AddFirstClassAttribute<double>(AttributeType::K, val);
+    AddSimpleAttribute<double>(AttributeType::K, val);
   }
 
   /**
@@ -1286,7 +1291,7 @@ public:
    */
   void SetURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+    AddSimpleAttribute<std::string>(AttributeType::URL, val);
   }
 
   /**
@@ -1294,7 +1299,7 @@ public:
    * patchwork. 
    */
   void SetArea(double val) {
-    AddFirstClassAttribute<double>(AttributeType::AREA, val);
+    AddSimpleAttribute<double>(AttributeType::AREA, val);
   }
 
   /**
@@ -1391,14 +1396,14 @@ public:
    * support various aliases for the common fonts. 
    */
   void SetFontName(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTNAME, val);
   }
 
   /**
    * Font size, in points, used for text. 
    */
   void SetFontSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::FONTSIZE, val);
   }
 
   /**
@@ -1412,7 +1417,7 @@ public:
    * If unset, the default angle is 0. 
    */
   void SetGradientAngle(int val) {
-    AddFirstClassAttribute<int>(AttributeType::GRADIENTANGLE, val);
+    AddSimpleAttribute<int>(AttributeType::GRADIENTANGLE, val);
   }
 
   /**
@@ -1451,7 +1456,7 @@ public:
    * Height of graph or cluster label, in inches.
    */
   void SetLHeight(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LHEIGHT, val);
+    AddSimpleAttribute<double>(AttributeType::LHEIGHT, val);
   }
 
   /**
@@ -1465,7 +1470,7 @@ public:
    * Width of graph or cluster label, in inches.
    */
   void SetLWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LWIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::LWIDTH, val);
   }
 
   /**
@@ -1500,7 +1505,7 @@ public:
    * might be.
    */
   void SetNoJustify(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+    AddBoolAttribute(AttributeType::NOJUSTIFY, val);
   }
 
   /**
@@ -1526,7 +1531,7 @@ public:
    * used, penwidth will be used. 
    */
   void SetPenWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::PENWIDTH, val);
   }
 
   /**
@@ -1538,7 +1543,7 @@ public:
    */
   void SetPeripheries(int val) {
     if (val > 1) val = 1;
-    AddFirstClassAttribute<int>(AttributeType::PERIPHERIES, val);
+    AddSimpleAttribute<int>(AttributeType::PERIPHERIES, val);
   }
 
   /**
@@ -1546,7 +1551,7 @@ public:
    * insertion order among the components, with smaller values inserted first. 
    */
   void SetSortV(int val) {
-    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+    AddSimpleAttribute<int>(AttributeType::SORTV, val);
   }
 
   /**
@@ -1577,7 +1582,7 @@ public:
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
   void SetStyle(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLE, val);
   }
 
   /**
@@ -1585,7 +1590,7 @@ public:
    * browser is used for the URL. See W3C documentation. 
    */
   void SetTarget(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLESHEET, val);
   }
 
   /**
@@ -1597,7 +1602,7 @@ public:
    */
   void SetTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::TOOLTIP, val);
   }
 };
 
@@ -1632,7 +1637,7 @@ public:
    */
   void SetURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+    AddSimpleAttribute<std::string>(AttributeType::URL, val);
   }
 
   /**
@@ -1640,7 +1645,7 @@ public:
    * patchwork. 
    */
   void SetArea(double val) {
-    AddFirstClassAttribute<double>(AttributeType::AREA, val);
+    AddSimpleAttribute<double>(AttributeType::AREA, val);
   }
 
   /**
@@ -1663,7 +1668,7 @@ public:
    * Comments are inserted into output. Device-dependent 
    */
   void SetComment(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::COMMENT, val);
+    AddSimpleAttribute<std::string>(AttributeType::COMMENT, val);
   }
 
   /**
@@ -1671,7 +1676,7 @@ public:
    * larger than bottom; negative values do the opposite. 
    */
   void SetDistortion(double val) {
-    AddFirstClassAttribute<double>(AttributeType::DISTORTION, val);
+    AddSimpleAttribute<double>(AttributeType::DISTORTION, val);
   }
 
   /**
@@ -1703,7 +1708,7 @@ public:
    * attributes only and is not expanded to contain the text label. 
    */
   void SetFixedSize(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::FIXEDSIZE, val);
+    AddBoolAttribute(AttributeType::FIXEDSIZE, val);
   }
 
   /**
@@ -1732,14 +1737,14 @@ public:
    * support various aliases for the common fonts. 
    */
   void SetFontName(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTNAME, val);
   }
 
   /**
    * Font size, in points, used for text. 
    */
   void SetFontSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::FONTSIZE, val);
   }
 
   /**
@@ -1753,7 +1758,7 @@ public:
    * If unset, the default angle is 0. 
    */
   void SetGradientAngle(int val) {
-    AddFirstClassAttribute<int>(AttributeType::GRADIENTANGLE, val);
+    AddSimpleAttribute<int>(AttributeType::GRADIENTANGLE, val);
   }
 
   /**
@@ -1764,7 +1769,7 @@ public:
    * TODO(jvilk): Perhaps expose nicely with an object?
    */
   void SetGroup(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::GROUP, val);
+    AddSimpleAttribute<std::string>(AttributeType::GROUP, val);
   }
 
   /**
@@ -1781,7 +1786,7 @@ public:
    * minimum of the two default values is used. 
    */
   void SetHeight(double val) {
-    AddFirstClassAttribute<double>(AttributeType::HEIGHT, val);
+    AddSimpleAttribute<double>(AttributeType::HEIGHT, val);
   }
 
   /**
@@ -1806,7 +1811,7 @@ public:
    * node of any shape, not just a rectangle. 
    */
   void SetImage(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::IMAGE, val);
+    AddSimpleAttribute<std::string>(AttributeType::IMAGE, val);
   }
 
   /**
@@ -1836,7 +1841,7 @@ public:
       AttributeType::IMAGESCALE, val);
   }
   void SetImageScale(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::IMAGESCALE, val);
+    AddBoolAttribute(AttributeType::IMAGESCALE, val);
   }
 
   /**
@@ -1890,7 +1895,7 @@ public:
    * might be.
    */
   void SetNoJustify(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+    AddBoolAttribute(AttributeType::NOJUSTIFY, val);
   }
 
   /**
@@ -1912,7 +1917,7 @@ public:
    * polygon sides, 0 degrees rotation results in a flat base. 
    */
   void SetOrientation(double val) {
-    AddFirstClassAttribute<double>(AttributeType::ORIENTATION, val);
+    AddSimpleAttribute<double>(AttributeType::ORIENTATION, val);
   }
 
   /**
@@ -1925,7 +1930,7 @@ public:
    * used, penwidth will be used. 
    */
   void SetPenWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::PENWIDTH, val);
   }
 
   /**
@@ -1936,7 +1941,7 @@ public:
    * the maximum peripheries value for clusters. 
    */
   void SetPeripheries(int val) {
-    AddFirstClassAttribute<int>(AttributeType::PERIPHERIES, val);
+    AddSimpleAttribute<int>(AttributeType::PERIPHERIES, val);
   }
 
   /**
@@ -1953,7 +1958,7 @@ public:
    * which can then be subtracted from all of the appropriate coordinates. 
    */
   void SetPin(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::PIN, val);
+    AddBoolAttribute(AttributeType::PIN, val);
   }
   
   /**
@@ -1989,7 +1994,7 @@ public:
    * will lie on a circle whose center is the center of the node. 
    */
   void SetRegular(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::REGULAR, val);
+    AddBoolAttribute(AttributeType::REGULAR, val);
   }
 
   /**
@@ -2006,7 +2011,7 @@ public:
    */
   void SetRoot(bool val) {
     //TODO(jvilk): If node is deleted, this is not cleaned up...
-    AddFirstClassAttribute<bool>(AttributeType::ROOT, val);
+    AddBoolAttribute(AttributeType::ROOT, val);
   }
 
   /**
@@ -2016,7 +2021,7 @@ public:
    * layout to avoid overlapping nodes, and in image maps. 
    */
   void SetSamplePoints(unsigned val) {
-    AddFirstClassAttribute<unsigned>(AttributeType::SAMPLEPOINTS, val);
+    AddSimpleAttribute<unsigned>(AttributeType::SAMPLEPOINTS, val);
   }
 
   /**
@@ -2032,14 +2037,14 @@ public:
    */
   void SetShowBoxes(unsigned val) {
     if (val > 2) val = 2;
-    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+    AddSimpleAttribute<unsigned>(AttributeType::SHOWBOXES, val);
   }
 
   /**
    * Number of sides if shape=polygon.
    */
   void SetSides(unsigned val) {
-    AddFirstClassAttribute<unsigned>(AttributeType::SIDES, val);
+    AddSimpleAttribute<unsigned>(AttributeType::SIDES, val);
   }
 
   /**
@@ -2047,7 +2052,7 @@ public:
    * right; negative to left. 
    */
   void SetSkew(double val) {
-    AddFirstClassAttribute<double>(AttributeType::SKEW, val);
+    AddSimpleAttribute<double>(AttributeType::SKEW, val);
   }
 
   /**
@@ -2055,7 +2060,7 @@ public:
    * insertion order among the components, with smaller values inserted first. 
    */
   void SetSortV(int val) {
-    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+    AddSimpleAttribute<int>(AttributeType::SORTV, val);
   }
 
   /**
@@ -2086,7 +2091,7 @@ public:
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
   void SetStyle(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLE, val);
   }
 
   /**
@@ -2094,7 +2099,7 @@ public:
    * browser is used for the URL. See W3C documentation. 
    */
   void SetTarget(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLESHEET, val);
   }
 
   /**
@@ -2106,7 +2111,7 @@ public:
    */
   void SetTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::TOOLTIP, val);
   }
 
   // TODO(jvilk): Implement this.
@@ -2126,7 +2131,7 @@ public:
    * minimum of the two default values is used. 
    */
   void SetWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::WIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::WIDTH, val);
   }
 
   /**
@@ -2143,7 +2148,7 @@ public:
    */
   void SetXLabel(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::XLABEL, val);
+    AddSimpleAttribute<std::string>(AttributeType::XLABEL, val);
   }
 };
 
@@ -2175,7 +2180,7 @@ public:
    */
   void SetURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+    AddSimpleAttribute<std::string>(AttributeType::URL, val);
   }
 
   /**
@@ -2191,7 +2196,7 @@ public:
    * Multiplicative scale factor for arrowheads. 
    */
   void SetArrowSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::ARROWSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::ARROWSIZE, val);
   }
 
   /**
@@ -2226,14 +2231,14 @@ public:
    * Comments are inserted into output. Device-dependent 
    */
   void SetComment(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::COMMENT, val);
+    AddSimpleAttribute<std::string>(AttributeType::COMMENT, val);
   }
 
   /**
    * If false, the edge is not used in ranking the nodes.
    */
   void SetConstraint(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::CONSTRAINT, val);
+    AddBoolAttribute(AttributeType::CONSTRAINT, val);
   }
 
   /**
@@ -2241,7 +2246,7 @@ public:
    * label, then going to the closest point of spline. 
    */
   void SetDecorate(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::DECORATE, val);
+    AddBoolAttribute(AttributeType::DECORATE, val);
   }
 
   /**
@@ -2261,7 +2266,7 @@ public:
    */
   void SetEdgeURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::EDGEURL, val);
+    AddSimpleAttribute<std::string>(AttributeType::EDGEURL, val);
   }
 
   /**
@@ -2273,7 +2278,7 @@ public:
    */
   void SetEdgeTarget(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::EDGETARGET, val);
+    AddSimpleAttribute<std::string>(AttributeType::EDGETARGET, val);
   }
 
   /**
@@ -2282,7 +2287,7 @@ public:
    */
   void SetEdgeTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::EDGETOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::EDGETOOLTIP, val);
   }
 
   /**
@@ -2335,14 +2340,14 @@ public:
    * support various aliases for the common fonts. 
    */
   void SetFontName(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+    AddSimpleAttribute<std::string>(AttributeType::FONTNAME, val);
   }
 
   /**
    * Font size, in points, used for text. 
    */
   void SetFontSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::FONTSIZE, val);
   }
 
   /**
@@ -2351,7 +2356,7 @@ public:
    */
   void SetHeadURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::HEADURL, val);
+    AddSimpleAttribute<std::string>(AttributeType::HEADURL, val);
   }
 
   /**
@@ -2360,7 +2365,7 @@ public:
    * center of a port, if applicable. 
    */
   void SetHeadClip(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::HEADCLIP, val);
+    AddBoolAttribute(AttributeType::HEADCLIP, val);
   }
 
   /**
@@ -2368,7 +2373,7 @@ public:
    */
   void SetHeadLabel(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::HEADLABEL, val);
+    AddSimpleAttribute<std::string>(AttributeType::HEADLABEL, val);
   }
 
   /**
@@ -2389,7 +2394,7 @@ public:
    */
   void SetHeadTarget(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::HEADTARGET, val);
+    AddSimpleAttribute<std::string>(AttributeType::HEADTARGET, val);
   }
 
   /**
@@ -2398,7 +2403,7 @@ public:
    */
   void SetHeadTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::HEADTOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::HEADTOOLTIP, val);
   }
 
   /**
@@ -2407,7 +2412,7 @@ public:
    */
   void SetLabelURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::LABELURL, val);
+    AddSimpleAttribute<std::string>(AttributeType::LABELURL, val);
   }
 
   /**
@@ -2422,7 +2427,7 @@ public:
    * clockwise. 
    */
   void SetLabelAngle(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LABELANGLE, val);
+    AddSimpleAttribute<double>(AttributeType::LABELANGLE, val);
   }
 
   /**
@@ -2431,7 +2436,7 @@ public:
    * 10 points. See labelangle for more details. 
    */
   void SetLabelDistance(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LABELDISTANCE, val);
+    AddSimpleAttribute<double>(AttributeType::LABELDISTANCE, val);
   }
 
   /**
@@ -2439,7 +2444,7 @@ public:
    * particular, it may appear on top of other edges. 
    */
   void SetLabelFloat(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::LABELFLOAT, val);
+    AddBoolAttribute(AttributeType::LABELFLOAT, val);
   }
 
   /**
@@ -2455,7 +2460,7 @@ public:
    * fontname. 
    */
   void SetLabelFontName(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::LABELFONTNAME, val);
+    AddSimpleAttribute<std::string>(AttributeType::LABELFONTNAME, val);
   }
 
   /**
@@ -2463,7 +2468,7 @@ public:
    * defaults to edge's fontsize. 
    */
   void SetLabelFontSize(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LABELFONTSIZE, val);
+    AddSimpleAttribute<double>(AttributeType::LABELFONTSIZE, val);
   }
 
   /**
@@ -2475,7 +2480,7 @@ public:
    */
   void SetLabelTarget(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::LABELTARGET, val);
+    AddSimpleAttribute<std::string>(AttributeType::LABELTARGET, val);
   }
 
   /**
@@ -2484,14 +2489,14 @@ public:
    */
   void SetLabelTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::LABELTOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::LABELTOOLTIP, val);
   }
 
   /**
    * Preferred edge length, in inches. 
    */
   void SetLen(double val) {
-    AddFirstClassAttribute<double>(AttributeType::LEN, val);
+    AddSimpleAttribute<double>(AttributeType::LEN, val);
   }
 
   /**
@@ -2500,7 +2505,7 @@ public:
    * boundary of the cluster.
    */
   void SetLHead(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::LHEAD, val);
+    AddSimpleAttribute<std::string>(AttributeType::LHEAD, val);
   }
 
   /**
@@ -2516,14 +2521,14 @@ public:
    * boundary of the cluster.
    */
   void SetLTail(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::LTAIL, val);
+    AddSimpleAttribute<std::string>(AttributeType::LTAIL, val);
   }
 
   /**
    * Minimum edge length (rank difference between head and tail). 
    */
   void SetMinLen(int val) {
-    AddFirstClassAttribute<int>(AttributeType::MINLEN, val);
+    AddSimpleAttribute<int>(AttributeType::MINLEN, val);
   }
 
   /**
@@ -2539,7 +2544,7 @@ public:
    * might be.
    */
   void SetNoJustify(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+    AddBoolAttribute(AttributeType::NOJUSTIFY, val);
   }
 
   /**
@@ -2552,7 +2557,7 @@ public:
    * used, penwidth will be used. 
    */
   void SetPenWidth(double val) {
-    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+    AddSimpleAttribute<double>(AttributeType::PENWIDTH, val);
   }
 
   /**
@@ -2585,7 +2590,7 @@ public:
    * point on the head. This has no effect on loops.
    */
   void SetSameHead(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::SAMEHEAD, val);
+    AddSimpleAttribute<std::string>(AttributeType::SAMEHEAD, val);
   }
 
   /**
@@ -2593,7 +2598,7 @@ public:
    * point on the tail. This has no effect on loops.
    */
   void SetSameTail(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::SAMETAIL, val);
+    AddSimpleAttribute<std::string>(AttributeType::SAMETAIL, val);
   }
 
   /**
@@ -2602,7 +2607,7 @@ public:
    */
   void SetShowBoxes(unsigned val) {
     if (val > 2) val = 2;
-    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+    AddSimpleAttribute<unsigned>(AttributeType::SHOWBOXES, val);
   }
 
   /**
@@ -2633,7 +2638,7 @@ public:
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
   void SetStyle(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLE, val);
   }
 
   /**
@@ -2642,7 +2647,7 @@ public:
    */
   void SetTailURL(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TAILURL, val);
+    AddSimpleAttribute<std::string>(AttributeType::TAILURL, val);
   }
 
   /**
@@ -2651,7 +2656,7 @@ public:
    * center of a port, if applicable. 
    */
   void SetTailClip(bool val) {
-    AddFirstClassAttribute<bool>(AttributeType::TAILCLIP, val);
+    AddBoolAttribute(AttributeType::TAILCLIP, val);
   }
 
   /**
@@ -2659,7 +2664,7 @@ public:
    */
   void SetTailLabel(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TAILLABEL, val);
+    AddSimpleAttribute<std::string>(AttributeType::TAILLABEL, val);
   }
 
   /**
@@ -2677,7 +2682,7 @@ public:
    * the value of the target is used. 
    */
   void SetTailTarget(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::TAILTARGET, val);
+    AddSimpleAttribute<std::string>(AttributeType::TAILTARGET, val);
   }
 
   /**
@@ -2686,7 +2691,7 @@ public:
    */
   void SetTailToolTip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TAILTOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::TAILTOOLTIP, val);
   }  
 
   /**
@@ -2694,7 +2699,7 @@ public:
    * browser is used for the URL. See W3C documentation. 
    */
   void SetTarget(std::string val) {
-    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+    AddSimpleAttribute<std::string>(AttributeType::STYLESHEET, val);
   }
 
   /**
@@ -2706,7 +2711,7 @@ public:
    */
   void SetTooltip(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+    AddSimpleAttribute<std::string>(AttributeType::TOOLTIP, val);
   }
 
   /**
@@ -2716,7 +2721,7 @@ public:
    * closer to that specified by the len attribute. 
    */
   void SetWeight(double val) {
-    AddFirstClassAttribute<double>(AttributeType::WEIGHT, val);
+    AddSimpleAttribute<double>(AttributeType::WEIGHT, val);
   }
 
   /**
@@ -2733,7 +2738,7 @@ public:
    */
   void SetXLabel(std::string val) {
     val = SanitizeString(val);
-    AddFirstClassAttribute<std::string>(AttributeType::XLABEL, val);
+    AddSimpleAttribute<std::string>(AttributeType::XLABEL, val);
   }
 };
 
