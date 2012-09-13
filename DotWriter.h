@@ -6,7 +6,7 @@
 #ifndef DOTWRITER_DOTWRITER_H_
 #define DOTWRITER_DOTWRITER_H_
 
-#include "Enum.h"
+#include "Enums.h"
 #include "Graph.h"
 #include "Edge.h"
 #include "Node.h"

@@ -16,20 +16,21 @@ namespace DotWriter {
  *
  * Returns false if the operation fails, e.g. due to being unable to open the file.
  */
-bool Graph::writeToFile(std::string& filename) {
+bool Graph::WriteToFile(std::string& filename) {
 	//Ensure that we can write to filename.
 	std::ofstream outFile;
 	outFile.open(filename.c_str(), std::ios::out);
 
 	if (outFile.fail()) return false;
 
-	outFile << "digraph " << getId() << " {\n";
+	outFile << "digraph " << GetId() << " {\n";
 
 	//Output nodes and their names.
 
 
 	//Output edges and their labels.
 
+  outFile << "}\n";
 	outFile.close();
 
 	return true;

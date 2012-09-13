@@ -7,6 +7,7 @@
  * http://www.graphviz.org/content/attrs
  *
  * TODO(jvilk): Make errors explicit at runtime rather than silently fix them.
+ * TODO(jvilk): Allow removal of attributes + redefining values.
  *
  * Author: John Vilk (jvilk@cs.umass.edu)
  */
@@ -15,18 +16,19 @@
 #define DOTWRITER_ATTRIBUTESET_H_
 
 #include <algorithm>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 
 #include "Attribute.h"
 #include "Enums.h"
 #include "Util.h"
-#include "Node.h"
 
 using std::runtime_error;
 
 namespace DotWriter {
 
+class Node;
 class AttributeSet {
 private:
   std::vector<Attribute*> _attributes;
@@ -42,9 +44,20 @@ public:
     }
   }
 
-  // TODO: If they add one, how do I expose removing it?
-  // Not to mention escaping input...
-  void AddCustomAttribute(std::string name, std::string val);
+  void AddCustomAttribute(const std::string& name, const std::string& val) {
+    AddAttribute(new CustomAttribute(name, val));
+  }
+
+  void ToString(std::ostream& out) {
+    std::vector<Attribute*>::iterator it;
+    for (it = _attributes.begin(); it != _attributes.end(); it++) {
+      Attribute* at = *it;
+      at->ToString(out);
+
+      if (it+1 != _attributes.end())
+        out << ",";
+    }
+  }
 
 protected:
   void AddAttribute(Attribute* attribute) {
@@ -106,7 +119,7 @@ protected:
   }
 };
 
-class GraphAttributeSet : AttributeSet {
+class GraphAttributeSet : public AttributeSet {
 public:
   GraphAttributeSet() { };
 
@@ -187,7 +200,7 @@ public:
   /**
    * If true, the drawing is centered in the output canvas. 
    */
-  void ShouldCenter(bool val) {
+  void SetCenter(bool val) {
     AddBoolAttribute(AttributeType::CENTER, val);
   }
 
@@ -1005,10 +1018,7 @@ public:
    * If the root attribute is defined as the empty string, twopi will reset it
    * to name of the node picked as the root node. 
    */
-  void SetRoot(Node* node) {
-    //TODO(jvilk): If node is deleted, this is not cleaned up...
-    AddSimpleAttribute<std::string>(AttributeType::ROOT, node->GetId());
-  }
+  void SetRoot(Node* node);
 
   /**
    * If 90, set drawing orientation to landscape. 
@@ -1244,7 +1254,7 @@ public:
 
 };
 
-class SubgraphAttributeSet : AttributeSet {
+class SubgraphAttributeSet : public AttributeSet {
 public:
   SubgraphAttributeSet() { };
 
@@ -1253,7 +1263,7 @@ public:
   }
 };
 
-class ClusterAttributeSet : AttributeSet {
+class ClusterAttributeSet : public AttributeSet {
 public:
   ClusterAttributeSet() { };
 
@@ -1606,7 +1616,7 @@ public:
   }
 };
 
-class NodeAttributeSet : AttributeSet {
+class NodeAttributeSet : public AttributeSet {
 private:
   std::vector<Attribute*> _attributes;
 
@@ -2152,7 +2162,7 @@ public:
   }
 };
 
-class EdgeAttributeSet : AttributeSet {
+class EdgeAttributeSet : public AttributeSet {
 public:
   EdgeAttributeSet() { };
 

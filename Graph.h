@@ -73,19 +73,27 @@ public:
     return _isDigraph;
   }
 
+  GraphAttributeSet& GetAttributes() {
+    return _attributes;
+  }
+
+  EdgeAttributeSet& GetDefaultEdgeAttributes() {
+    return _defaultEdgeAttributes;
+  }
+
+  NodeAttributeSet& GetDefaultNodeAttributes() {
+    return _defaultNodeAttributes;
+  }
+
   const std::string& GetId() {
     return _id;
   }
 
-  // TODO(jvilk): Deal with these.
-  const std::string& GetLabel();
-
-  void SetLabel(std::string label);
-
   /**
    * Create a new subgraph on this graph.
    */
-  Subgraph* AddSubgraph();
+  Subgraph* AddSubgraph() {
+  }
 
   /**
    * Remove the given subgraph from this graph.
@@ -138,9 +146,9 @@ public:
   void RemoveEdge(Node* src, Node* dst);
 
   /**
-   * Returns a string representation of the graph in DOT file format.
+   * Prints the graph in DOT file format to the output stream.
    */
-  std::string ToString();
+  void ToString(std::ostream& out);
 
   /**
    * Writes the graph to the specified filename in the DOT format.

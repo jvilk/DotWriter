@@ -1,7 +1,10 @@
 #ifndef DOTWRITER_EDGE_H_
 #define DOTWRITER_EDGE_H_
 
+#include <ostream>
+
 #include "Node.h"
+#include "AttributeSet.h"
 
 namespace DotWriter {
 
@@ -12,25 +15,47 @@ class Edge {
 private:
   Node * _src;
   Node * _dst;
+  std::string _label;
+  EdgeAttributeSet _attributes;
 
 public:
-  Edge(Node * src, Node * dst) {
-    _src = src;
-    _dst = dst;
+  Edge(Node * src, Node * dst) : _src(src), _dst(dst), _label("") {
   }
 
-  virtual ~Edge();
+  Edge(Node * src, Node * dst, const std::string& label) : _src(src), _dst(dst),
+    _label(label) {
+  }
 
-  Node * getSource() {
+  virtual ~Edge() {};
+
+  Node * GetSource() {
     return _src;
   }
 
-  Node * getDest() {
+  Node * GetDest() {
     return _dst;
   }
 
-  std::string toString() {
-    return "";
+  const std::string& GetLabel() {
+    return _label;
+  }
+
+  void SetLabel(const std::string& label) {
+    _label = label;
+  }
+
+  /**
+   * Returns the set of attributes for this edge.
+   * Manipulate this object to change the style of this edge.
+   */
+  EdgeAttributeSet& GetAttributes() {
+    return _attributes;
+  }
+
+  void ToString(std::ostream& out) {
+    out << _src->GetId() << "->" << _dst->GetId() << " [";
+    _attributes.ToString(out);
+    out << "];\n";
   }
 };
 

@@ -1,9 +1,10 @@
 #ifndef DOTWRITER_NODE_H_
 #define DOTWRITER_NODE_H_
 
-#include "Enums.h"
-
+#include <ostream>
 #include <string>
+
+#include "AttributeSet.h"
 
 namespace DotWriter {
 
@@ -14,21 +15,17 @@ class Node {
 private:
   const std::string& _id; // Reference to string stored in Graph's _idManager.
   std::string _label;
-  NodeStyle::e _style;
+  NodeAttributeSet _attributes;
 
 public:
   Node(const std::string& id, std::string label = "") :
     _id(id), _label(label) {
   }
-  virtual ~Node();
+  virtual ~Node() {};
 
-  std::string ToString();
+  void ToString(std::ostream& out);
 
   /** Simple getters / setters **/
-  void SetStyle(NodeStyle::e style) {
-    _style = style;
-  }
-
   const std::string& GetLabel() {
     return _label;
   }
@@ -39,6 +36,10 @@ public:
 
   const std::string& GetId() {
     return _id;
+  }
+
+  NodeAttributeSet& GetAttributes() {
+    return _attributes;
   }
 };
 

@@ -1,8 +1,6 @@
 #include "Node.h"
 #include "Util.h"
 
-#include <sstream>
-
 namespace DotWriter {
 
 /**
@@ -10,21 +8,21 @@ namespace DotWriter {
  *
  * Don't make fun of me for emulating a Java thing...
  */
-const std::string Node::toString() {
-    std::stringstream ss;
-
+void Node::ToString(std::ostream& out) {
     //Node identifier in the DOT file.
-    ss << "\tn" << getId();
+    out << GetId();
 
     //Label
-    if (getLabel() != "") {
-        ss << " [label=\"" << sanitizeLabel(getLabel()) << "\"]";
+    if (GetLabel() != "") {
+        _attributes.AddCustomAttribute("label", GetLabel());
     }
 
-    //Line ending semicolon and newline.
-    ss << ";\n";
+    out << "[";
+    _attributes.ToString(out);
+    out << "]";
 
-    return ss.str();
+    //Line ending semicolon and newline.
+    out << ";\n";
 }
 
 };  // namespace DotWriter

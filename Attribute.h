@@ -10,7 +10,7 @@
 
 #include <algorithm>
 #include <string>
-#include <sstream>
+#include <ostream>
 #include <vector>
 
 #include "Enums.h"
@@ -42,11 +42,42 @@ public:
   }
 
   /**
-   * Converts the attribute to string form for the DOT file, e.g.:
-   * AttributeName = value
+   * Prints the DOT representation of this attribute to the output stream.
+   * (e.g. AttributeName = Value)
    */
-  virtual std::string ToString() = 0;
+  virtual void ToString(std::ostream& out) = 0;
 };
+
+/**
+ * A custom attribute is just two strings.
+ */
+class CustomAttribute : public Attribute {
+private:
+  std::string _type;
+  std::string _value;
+  static const std::string _equals;
+
+public:
+  /**
+   * Constructs a custom attribute with the given type and value.
+   */
+  CustomAttribute(const std::string& type, const std::string& value) :
+    // TODO(jvilk): Make base Attribute class dumber; currently wasting
+    // space on having an enum in there.
+    Attribute(AttributeType::AREA), _type(type), _value(value) {
+  }
+
+  virtual ~CustomAttribute() {};
+
+  /**
+   * Prints the DOT representation of this attribute to the output stream.
+   */
+  virtual void ToString(std::ostream& out) {
+    out << _type << _equals << _value;
+  };
+};
+
+const std::string CustomAttribute::_equals = std::string("=");
 
 /**
  * Stores an enum attribute for the given enum.
@@ -66,10 +97,8 @@ public:
     _value = value;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=" << F::ToString(_value);
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=" << F::ToString(_value);
   }
 };
 
@@ -106,25 +135,22 @@ public:
     _values.push_back(value);
   }
 
-  std::string ToString() {
-    if (_values.empty()) return "";
+  virtual void ToString(std::ostream& out) {
+    if (_values.empty()) return;
 
-    std::stringstream ss;
-    ss << GetName() << "=";
+    out << GetName() << "=";
 
     // Print a colon-separated list of the values.
     typename std::vector<T>::iterator it;
     for (it = _values.begin(); it != _values.end(); it++) {
       T currentVal = *it;
       
-      ss << F::ToString(currentVal);
+      out << F::ToString(currentVal);
 
       // The last value does not need a colon after it.
       if (it+1 != _values.end())
-        ss << ":";
+        out << ":";
     }
-
-    return ss.str();
   }
 };
 
@@ -145,10 +171,8 @@ public:
     return _value;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=" << (_value ? "true" : "false");
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=" << (_value ? "true" : "false");
   }
 };
 
@@ -170,10 +194,8 @@ public:
     return _value;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=" << _value;
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=" << _value;
   }
 };
 
@@ -209,25 +231,22 @@ public:
     _values.push_back(value);
   }
 
-  std::string ToString() {
-    if (_values.empty()) return "";
+  virtual void ToString(std::ostream& out) {
+    if (_values.empty()) return;
 
-    std::stringstream ss;
-    ss << GetName() << "=";
+    out << GetName() << "=";
 
     // Print a colon-separated list of the values.
     typename std::vector<T>::iterator it;
     for (it = _values.begin(); it != _values.end(); it++) {
       T currentVal = *it;
       
-      ss << currentVal;
+      out << currentVal;
 
       // The last value does not need a colon after it.
       if (it+1 != _values.end())
-        ss << ":";
+        out << ":";
     }
-
-    return ss.str();
   }
 };
 
@@ -244,10 +263,8 @@ public:
     _value = value;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=+" << _value;
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=+" << _value;
   }
 };
 
@@ -268,10 +285,8 @@ public:
     _y = y;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=" << _x << "," << _y;
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=" << _x << "," << _y;
   }
 };
 
@@ -292,10 +307,8 @@ public:
     _y = y;
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=+" << _x << "," << _y;
-    return ss.str();
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=+" << _x << "," << _y;
   }
 };
 
@@ -314,23 +327,20 @@ public:
     _values.push_back(std::pair<double,double>(x, y));
   }
 
-  std::string ToString() {
-    std::stringstream ss;
-    ss << GetName() << "=";
+  virtual void ToString(std::ostream& out) {
+    out << GetName() << "=";
 
     // This is a *space* separated list.
     std::vector<std::pair<double, double> >::iterator it;
     for (it = _values.begin(); it != _values.end(); it++) {
       std::pair<double, double> currentVal = *it;
-      ss << currentVal.first << "," << currentVal.second;
+      out << currentVal.first << "," << currentVal.second;
 
       // The last value does not need a space after it.
       if (it+1 != _values.end()) {
-        ss << " ";
+        out << " ";
       }
     }
-
-    return ss.str();
   }
 };
 
