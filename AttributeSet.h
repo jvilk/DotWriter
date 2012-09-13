@@ -71,6 +71,8 @@ protected:
     if (it != _attributes.end()) {
       _attributes.erase(it);
     }
+
+    delete attribute;
   }
 
   void AddBoolAttribute(AttributeType::e type, bool val) {

@@ -35,7 +35,7 @@ private:
   // I use vector since output order matters.
   std::vector<Node *> _nodes;
   std::vector<Edge *> _edges;
-  std::vector<Graph *> _subgraphs;
+  std::vector<Subgraph *> _subgraphs;
   GraphAttributeSet _attributes;
   NodeAttributeSet _defaultNodeAttributes;
   EdgeAttributeSet _defaultEdgeAttributes;
@@ -93,26 +93,61 @@ public:
    * Create a new subgraph on this graph.
    */
   Subgraph* AddSubgraph() {
+    Subgraph* sg = new Subgraph(_idManager.GetSubgraphId());
+    _subgraphs.push_back(sg);
+    return sg;
+  }
+
+  Subgraph* AddSubgraph(const std::string& label) {
+    Subgraph* sg = new Subgraph(_idManager.GetSubgraphId(), label);
+    _subgraphs.push_back(sg);
+    return sg;
+  }
+
+  Subgraph* AddSubgraph(const std::string& label, const std::string& id) {
+    std::string sanitizedId = _idManager.ValidateCustomId(id);
+    Subgraph* sg = new Subgraph(sanitizedId, label);
+    _subgraphs.push_back(sg);
+    return sg;
   }
 
   /**
    * Remove the given subgraph from this graph.
    */
-  void RemoveSubgraph(Subgraph* subgraph);
+  void RemoveSubgraph(Subgraph* subgraph) {
+    std::vector<Subgraph*>::iterator it = std::find(_subgraphs.begin(),
+      _subgraphs.end(), subgraph);
+
+    if (it != _subgraphs.end())
+      _subgraphs.erase(it);
+
+    delete subgraph;
+  }
 
   /**
    * Constructs a Node object, adds it to the graph, and returns it.
    */
-  Node* AddNode();
+  Node* AddNode() {
+    Node* node = new Node(_idManager.GetNodeId());
+    _nodes.push_back(node);
+    return node;
+  }
 
   /**
-   * Constructs a Node object with the given ID, adds it to the graph, and
+   * Constructs a Node object with the given label, adds it to the graph, and
    * returns it.
-   *
-   * If the given ID is not unique, it will be uniquified by appending a number
-   * to the end of the ID.
    */
-  Node* AddNode(std::string id);
+  Node* AddNode(const std::string& label) {
+    Node* node = new Node(_idManager.GetNodeId(), label);
+    _nodes.push_back(node);
+    return node;
+  }
+
+  Node* AddNode(const std::string& label, const std::string& id) {
+    Node* node = new Node(_idManager.ValidateCustomId(id), label);
+    _nodes.push_back(node);
+    return node;
+  }
 
   /**
    * Removes the node from the graph.
@@ -121,20 +156,45 @@ public:
    * to/from it. Also, note that it is currently more expensive than you may
    * expect -- O(|E|).
    */
-  void RemoveNode(Node* node);
+  void RemoveNode(Node* node) {
+    std::vector<Node*>::iterator it = std::find(_nodes.begin(), _nodes.end(),
+      node);
+
+    if (it != _nodes.end()) {
+      _nodes.erase(it);
+    }
+
+    delete node;
+  }
 
   /**
    * Add an edge to the graph. Returns a reference to the edge that can be
    * manipulated to change edge properties.
    */
-  Edge* AddEdge(Node* src, Node* dst);
-  Edge* AddEdge(Node* src, Node* dst, std::string label);
+  Edge* AddEdge(Node* src, Node* dst) {
+    Edge* edge = new Edge(src, dst);
+    _edges.push_back(edge);
+    return edge;
+  }
+  Edge* AddEdge(Node* src, Node* dst, const std::string& label) {
+    Edge* edge = new Edge(src, dst, label);
+    _edges.push_back(edge);
+    return edge;
+  }
 
   /**
    * Removes the edge from the graph. Note that this also deletes the GEdge
    * object.
    */
-  void RemoveEdge(Edge* edge);
+  void RemoveEdge(Edge* edge) {
+    std::vector<Edge*>::iterator it = std::find(_edges.begin(), _edges.end(),
+      edge);
+
+    if (it != _edges.end())
+      _edges.erase(it);
+
+    delete edge;
+  }
 
   /**
    * Removes any edges from src to dst from the graph. Note that this version
@@ -142,13 +202,14 @@ public:
    *
    * If this is not a digraph, then removeEdge(src, dst) has the same semantics
    * as removeEdge(dst, src).
+   * TODO(jvilk): Implement;
    */
-  void RemoveEdge(Node* src, Node* dst);
+  //void RemoveEdge(Node* src, Node* dst);
 
   /**
    * Prints the graph in DOT file format to the output stream.
    */
-  void ToString(std::ostream& out);
+  //void ToString(std::ostream& out);
 
   /**
    * Writes the graph to the specified filename in the DOT format.
