@@ -28,7 +28,7 @@ bool RootGraph::WriteToFile(const std::string& filename) {
 }
 
 void RootGraph::Print(std::ostream& out) {
-  out << "digraph " << GetId() << " {\n";
+  out << (IsDigraph() ? "digraph " : "graph ") << GetId() << " {\n";
 
   if (!_attributes.Empty()) {
     out << "graph [";

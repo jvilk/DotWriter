@@ -55,7 +55,6 @@ class CustomAttribute : public Attribute {
 private:
   std::string _type;
   std::string _value;
-  static const std::string _equals;
 
 public:
   /**
@@ -73,11 +72,9 @@ public:
    * Prints the DOT representation of this attribute to the output stream.
    */
   virtual void Print(std::ostream& out) {
-    out << _type << _equals << _value;
+    out << _type << "=" << "\"" << _value << "\"";
   };
 };
-
-const std::string CustomAttribute::_equals = std::string("=");
 
 /**
  * Stores an enum attribute for the given enum.
@@ -99,7 +96,7 @@ public:
 
   virtual void Print(std::ostream& out) {
     if (_value != F::DEFAULT) {
-      out << GetName() << "=" << F::ToString(_value);
+      out << GetName() << "=\"" << F::ToString(_value) << "\"";
     }
   }
 };
@@ -197,7 +194,7 @@ public:
   }
 
   virtual void Print(std::ostream& out) {
-    out << GetName() << "=" << _value;
+    out << GetName() << "=\"" << _value << "\"";
   }
 };
 
@@ -243,7 +240,7 @@ public:
     for (it = _values.begin(); it != _values.end(); it++) {
       T currentVal = *it;
       
-      out << currentVal;
+      out << "\"" << currentVal << "\"";
 
       // The last value does not need a colon after it.
       if (it+1 != _values.end())

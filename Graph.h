@@ -50,7 +50,7 @@ public:
    * - id: Custom id (optional)
    */
   Graph(IdManager* idManager, bool isDigraph = false, std::string label = "",
-    std::string id = "Graph") :
+    std::string id = "somegraph") :
     _isDigraph(isDigraph), _idManager(idManager),
     _id(_idManager->ValidateCustomId(id)), _label(label),
     _defaultNodeAttributes(NodeAttributeSet()),

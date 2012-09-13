@@ -26,4 +26,4 @@ void Node::Print(std::ostream& out) {
     out << ";\n";
 }
 
-};  // namespace DotWriter
+}  // namespace DotWriter
