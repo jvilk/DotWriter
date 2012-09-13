@@ -311,67 +311,6 @@ public:
   }
 };
 
-// Have subtypes.
-// Have a factory?
-// User just wants to create a thing. Attribute::MakeDamping Attribute::MakeArrowSize.
-// They alias methods n such.
-// Probably should return *value*?  Otherwise user / program manages memory.
-// Factory classes need to take in the appropriate type (double / int / etc).
-
-/**
-Need POINTERS to attributes.
-Attribute is a pairing of a ATTRIBUTE enum, and some value.
-
-Layer-based attributes should be protected and only created by nodes n' such
-at time of ToString.
-
-Unique types:
-  Internal      User-facing        Idea
-* arrowType     Enum            setArrowType
-* aspectType    Enum            setAspectType
-* clusterMode   enum             setClusterMode etc should have enums for
-* color         enum
-* outputMode    enum
-* packMode      enum
-* pagedir       enum
-* quadType      enum
-* rankdir       enum
-* rankType      enum
-* shape         Enum for now (could be user-defined; deal with later)
-* smoothType    enum
-* portPos       compass point for now (ignoring complex bs)
-
-* addDouble     double
-* double        double
-
-* escString     string
-* string        string
-* lblString     Treat as escString.
-
-* bool          bool
-
-* int           int
-
-* addPoint      Point (create class) --> Or just accept 2 unsigned ints?
-* point         Point (create class)
-
-* colorList     vector of enums
-* style         vector of enums
-* doubleList    vector of doubles
-* pointList     vector of points
-
-* startType     Enum and unsigned int. Both are optional
-
-// Think about layers afterward.
-* layerList     ???
-* layerRange
-* dirType       ???
-* rect          Deal with later
-* splineType    Deal with later
-* viewPort      Deal with later.
-
-*/
-
 }  // namespace DotWriter
 
 #endif

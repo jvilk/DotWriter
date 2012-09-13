@@ -20,6 +20,17 @@ const char* Mode::strings[] = {"", "major", "KK", "hier", "ipsep"};
 const char* Model::strings[] = {"", "circuit", "subset", "mds"};
 const char* Ordering::strings[] = {"", "out", "in"};
 const char* OutputMode::strings[] = {"", "breadthfirst", "nodesfirst", "edgesfirst"};
+const char* PageDir::strings[] = {"", "BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT"};
+const char* QuadType::strings[] = {"", "normal", "fast", "none"};
+const char* RankType::strings[] = {"", "same", "min", "source", "max", "sink"};
+const char* RankDir::strings[] = {"", "TB", "LR", "BT", "RL"};
+const char* Ratio::strings[] = {"", "fill", "compress", "expand", "auto"};
+const char* SmoothType::strings[] = {"",  "none", "avg_dist", "graph_dist", "power_dist", "rng", "spring", "triangle"};
+const char* SplineType::strings[] = {"", "line", "spline", "polyline", "ortho", "compound", "count"};
+const char* ImageScaleType::strings[] = {"", "width", "height", "both"};
+const char* DirType::strings[] = {"", "forward", "back", "both", "none"};
+const char* CompassPoint::strings[] = {"", "n","ne","e","se","s","sw","w","nw","c"};
+const char* AttributeType::strings[] = {"", "Damping","K","URL","area","arrowhead","arrowsize","arrowtail","aspect","bb","bgcolor","center","charset","clusterrank","color","colorscheme","comment","compound","concentrate","constraint","decorate","defaultdist","dim","dimen","dir","diredgeconstraints","distortion","dpi","edgeurl","edgehref","edgetarget","edgetooltip","epsilon","esep","fillcolor","fixedsize","fontcolor","fontname","fontnames","fontpath","fontsize","forcelabels","gradientangle","group","headurl","headclip","headhref","headlabel","headport","headtarget","headtooltip","height","href","id","image","imagepath","imagescale","label","labelurl","label_scheme","labelangle","labeldistance","labelfloat","labelfontcolor","labelfontname","labelfontsize","labelhref","labeljust","labelloc","labeltarget","labeltooltip","landscape","layer","layers","layerselect","layersep","layout","len","levels","levelsgap","lhead","lheight","lp","ltail","lwidth","margin","maxiter","mclimit","mindist","minlen","mode","model","mosek","nodesep","nojustify","normalize","nslimit","nslimit1","ordering","orientation","outputorder","overlap","overlap_scaling","pack","packmode","pad","page","pagedir","pencolor","penwidth","peripheries","pin","pos","quadtree","quantum","rank","rankdir","ranksep","ratio","rects","regular","remincross","repulsiveforce","resolution","root","rotate","rotation","samehead","sametail","samplepoints","scale","searchsize","sep","shape","showboxes","sides","size","skew","smoothing","sortv","splines","start","style","stylesheet","tailurl","tailclip","tailhref","taillabel","tailport","tailtarget","tailtooltip","target","tooltip","truecolor","vertices","viewport","voro_margin","weight","width","xlabel"};
 
 const char* emptyString = "";
 
@@ -114,5 +125,81 @@ const char* OutputMode::ToString(OutputMode::e val) {
   return emptyString;
 }
 
+const char* PageDir::ToString(PageDir::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* QuadType::ToString(QuadType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* RankType::ToString(RankType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* RankDir::ToString(RankDir::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* Ratio::ToString(Ratio::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* SmoothType::ToString(SmoothType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* SplineType::ToString(SplineType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* ImageScaleType::ToString(ImageScaleType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* DirType::ToString(DirType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* CompassPoint::ToString(CompassPoint::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
+
+const char* AttributeType::ToString(AttributeType::e val) {
+  if (val < COUNT)
+    return strings[val];
+
+  return emptyString;
+}
 
 }  // namespace DotWriter

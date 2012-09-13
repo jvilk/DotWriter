@@ -73,6 +73,23 @@ public:
   static const char* ToString(EdgeStyle::e val);
 };
 
+struct DirType {
+  enum e {
+    DEFAULT,
+    FORWARD,
+    BACK,
+    BOTH,
+    NONE,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(DirType::e val);
+};
+
 struct NodeStyle {
   enum e {
     DEFAULT,
@@ -206,6 +223,78 @@ public:
   static const char* ToString(LabelLoc::e val);
 };
 
+struct PageDir {
+  enum e {
+    DEFAULT,
+    BL, 
+    BR,
+    TL,
+    TR,
+    RB,
+    RT,
+    LB,
+    LT,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(PageDir::e val);
+};
+
+struct QuadType {
+  enum e {
+    DEFAULT,
+    NORMAL,
+    FAST,
+    NONE,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(QuadType::e val);
+};
+
+struct RankType {
+  enum e {
+    DEFAULT,
+    SAME,
+    MIN,
+    SOURCE,
+    MAX,
+    SINK,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(RankType::e val);
+};
+
+struct RankDir {
+  enum e {
+    DEFAULT,
+    TB,
+    LR,
+    BT,
+    RL,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(RankDir::e val);
+};
+
 struct DirEdgeConstraints {
   enum e {
     DEFAULT,
@@ -219,6 +308,28 @@ private:
 
 public:
   static const char* ToString(DirEdgeConstraints::e val);
+};
+
+struct CompassPoint {
+  enum e {
+    DEFAULT,
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW,
+    C,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(CompassPoint::e val);
 };
 
 struct Model {
@@ -282,6 +393,77 @@ private:
 
 public:
   static const char* ToString(Justification::e val);
+};
+
+struct Ratio {
+  enum e {
+    DEFAULT,
+    FILL,
+    COMPRESS,
+    EXPAND,
+    AUTO,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(Ratio::e val);
+};
+
+struct SmoothType {
+  enum e {
+    DEFAULT,
+    NONE,
+    AVG_DIST,
+    GRAPH_DIST,
+    POWER_DIST,
+    RNG,
+    SPRING,
+    TRIANGLE,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(SmoothType::e val);
+};
+
+struct SplineType {
+  enum e {
+    DEFAULT,
+    LINE,
+    SPLINE,
+    POLYLINE,
+    ORTHO,
+    COMPOUND,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(SplineType::e val);
+};
+
+struct ImageScaleType {
+  enum e {
+    DEFAULT,
+    WIDTH,
+    HEIGHT,
+    BOTH,
+    COUNT
+  };
+
+private:
+  static const char* strings[];
+
+public:
+  static const char* ToString(ImageScaleType::e val);
 };
 
 /**
@@ -1119,7 +1301,8 @@ struct AttributeType {
     VORO_MARGIN,
     WEIGHT,
     WIDTH,
-    XLABEL
+    XLABEL,
+    COUNT
   };
 
 private:

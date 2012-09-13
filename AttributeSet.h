@@ -21,6 +21,7 @@
 #include "Attribute.h"
 #include "Enums.h"
 #include "Util.h"
+#include "Node.h"
 
 using std::runtime_error;
 
@@ -65,6 +66,13 @@ protected:
     AddAttribute(attr);
   }
 
+  template<typename T>
+  void AddFirstClassListAttribute(AttributeType::e type,
+    const std::vector<T>& vals) {
+    Attribute* attr = new FirstClassListAttribute<T>(type, vals);
+    AddAttribute(attr);
+  }
+
   template<typename T, typename F>
   void AddEnumAttribute(AttributeType::e type, T val) {
     Attribute* attr = new EnumAttribute<T, F>(type, val);
@@ -79,6 +87,16 @@ protected:
 
   void AddPointAttribute(AttributeType::e type, double x, double y) {
     Attribute* attr = new PointAttribute(type, x, y);
+    AddAttribute(attr);
+  }
+
+  void AddAddDoubleAttribute(AttributeType::e type, double val) {
+    Attribute* attr = new AddDoubleAttribute(type, val);
+    AddAttribute(attr);
+  }
+
+  void AddAddPointAttribute(AttributeType::e type, double x, double y) {
+    Attribute* attr = new class AddPointAttribute(type, x, y);
     AddAttribute(attr);
   }
 };
@@ -286,8 +304,8 @@ public:
    * interpretation is the same as given for sep. This should normally be
    * strictly less than sep. 
    */
-  void SetEsep(double val) {
-    AddFirstClassAttribute<double>(AttributeType::ESEP, val);
+  void SetEsep(double x, double y) {
+    AddAddPointAttribute(AttributeType::ESEP, x, y);
   }
 
   /**
@@ -490,8 +508,7 @@ public:
   }
 
   /**
-   * For graphs, this sets x and y margins of canvas, in inches. If the margin
-   * is a single double, both margins are set equal to the given value.
+   * For graphs, this sets x and y margins of canvas, in inches.
    * 
    * Note that the margin is not part of the drawing but just empty space left
    * around the drawing. It basically corresponds to a translation of drawing,
@@ -505,9 +522,6 @@ public:
    * For nodes, this attribute specifies space left around the node's label. By
    * default, the value is 0.11,0.055.
    */
-  void SetMargin(double val) {
-    AddFirstClassAttribute<double>(AttributeType::MARGIN, val);
-  }
   void SetMargin(double x, double y) {
     AddPointAttribute(AttributeType::MARGIN, x, y);
   }
@@ -855,68 +869,1872 @@ public:
    * to right, then the next row up, from left to right, and so on, until the 
    * topmost row is traversed.
    */
-  void SetPageDir(PageDir::e val);
-  void SetQuadTree(QuadType::e val);
-  void SetQuadTree(bool val);
-  void SetQuantum(double val);
-  void SetRankDir(RankDir::e val);
-  void SetRankSep(double val);
-  void SetRankSep(const vector<double>& val);
-  void SetRatio(double val);
-  void SetRatio(std::string val);
-  void SetReminCross(bool val);
-  void SetRepulsiveForce(double val);
-  void SetResolution(double val);
-  void SetRoot(std::string val);
-  void SetRoot(bool val);
-  void SetRotate(int val);
-  void SetRotation(double val);
-  void SetScale(double val);
-  void SetScale(double x, double y);
-  void SetSearchSize(int val);
-  void SetSearchSize(double val);
-  void SetSep(double val);
-  void SetSep(double x, double y);
-  void SetShowBoses(int val);
-  void SetSize(double val);
-  void SetSize(double x, double y);
-  void SetSmoothing(SmoothType::e val);
-  void SetSortV(int val);
-  void SetSplines(bool val);
-  void SetSplines(std::string val);
-  void SetStart(StartType::e val);
-  void SetStyle(Style::e val);
-  void SetStyleSheet(std::string val);
-  void SetTarget(std::string val);
-  void SetTrueColor(bool val);
+  void SetPageDir(PageDir::e val) {
+    AddEnumAttribute<PageDir::e, PageDir>(AttributeType::PAGEDIR, val);
+  }
+
+  /**
+   * Quadtree scheme to use.
+   */
+  void SetQuadTree(QuadType::e val) {
+    AddEnumAttribute<QuadType::e, QuadType>(AttributeType::QUADTREE, val);
+  }
+
+  /**
+   * If quantum > 0.0, node label dimensions will be rounded to integral
+   * multiples of the quantum. 
+   */
+  void SetQuantum(double val) {
+    AddFirstClassAttribute<double>(AttributeType::QUANTUM, val);
+  }
+
+  /**
+   * Sets direction of graph layout. For example, if rankdir="LR", and barring
+   * cycles, an edge T -> H; will go from left to right. By default, graphs are
+   * laid out from top to bottom.
+   *
+   * This attribute also has a side-effect in determining how record nodes are
+   * interpreted. See record shapes. 
+   */
+  void SetRankDir(RankDir::e val) {
+    AddEnumAttribute<RankDir::e, RankDir>(AttributeType::RANKDIR, val);
+  }
+
+  /**
+   * In dot, this gives the desired rank separation, in inches. This is the
+   * minimum vertical distance between the bottom of the nodes in one rank and
+   * the tops of nodes in the next. If the value contains "equally", the centers
+   * of all ranks are spaced equally apart. Note that both settings are
+   * possible, e.g., ranksep = "1.2 equally".
+   *
+   * In twopi, this attribute specifies the radial separation of concentric
+   * circles. For twopi, ranksep can also be a list of doubles. The first double
+   * specifies the radius of the inner circle; the second double specifies the
+   * increase in radius from the first circle to the second; etc. If there are
+   * more circles than numbers, the last number is used as the increment for the
+   * remainder. 
+   */
+  void SetRankSep(double val) {
+    AddFirstClassAttribute<double>(AttributeType::RANKSEP, val);
+  }
+  void SetRankSep(const std::vector<double>& val) {
+    AddFirstClassListAttribute<double>(AttributeType::RANKSEP, val);
+  }
+
+  /**
+   * Sets the aspect ratio (drawing height/drawing width) for the drawing. Note
+   * that this is adjusted before the size attribute constraints are enforced.
+   * In addition, the calculations usually ignore the node sizes, so the final
+   * drawing size may only approximate what is desired.
+   *
+   * If ratio is numeric, it is taken as the desired aspect ratio. Then, if the
+   * actual aspect ratio is less than the desired ratio, the drawing height is
+   * scaled up to achieve the desired ratio; if the actual ratio is greater than
+   * that desired ratio, the drawing width is scaled up.
+   *
+   * If ratio = "fill" and the size attribute is set, node positions are scaled,
+   * separately in both x and y, so that the final drawing exactly fills the
+   * specified size. If both size values exceed the width and height of the
+   * drawing, then both coordinate values of each node are scaled up
+   * accordingly. However, if either size dimension is smaller than the
+   * corresponding dimension in the drawing, one dimension is scaled up so that
+   * the final drawing has the same aspect ratio as specified by size. Then,
+   * when rendered, the layout will be scaled down uniformly in both dimensions
+   * to fit the given size, which may cause nodes and text to shrink as well.
+   * This may not be what the user wants, but it avoids the hard problem of how
+   * to reposition the nodes in an acceptable fashion to reduce the drawing
+   * size.
+   *
+   * If ratio = "compress" and the size attribute is set, dot attempts to
+   * compress the initial layout to fit in the given size. This achieves a
+   * tighter packing of nodes but reduces the balance and symmetry. This feature
+   * only works in dot.
+   *
+   * If ratio = "expand", the size attribute is set, and both the width and the
+   * height of the graph are less than the value in size, node positions are
+   * scaled uniformly until at least one dimension fits size exactly. Note that
+   * this is distinct from using size as the desired size, as here the drawing
+   * is expanded before edges are generated and all node and text sizes remain
+   * unchanged.
+   *
+   * If ratio = "auto", the page attribute is set and the graph cannot be drawn
+   * on a single page, then size is set to an ``ideal'' value. In particular,
+   * the size in a given dimension will be the smallest integral multiple of the
+   * page size in that dimension which is at least half the current size. The
+   * two dimensions are then scaled independently to the new size. This feature
+   * only works in dot. 
+   */
+  void SetRatio(double val) {
+    AddFirstClassAttribute<double>(AttributeType::RATIO, val);
+  }
+  void SetRatio(Ratio::e val) {
+    AddEnumAttribute<Ratio::e, Ratio>(AttributeType::RATIO, val);
+  }
+
+  /**
+   * If true and there are multiple clusters, run cross minimization a second
+   * time.
+   */
+  void SetReMinCross(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::REMINCROSS, val);
+  }
+
+  /**
+   * The power of the repulsive force used in an extended Fruchterman-Reingold
+   * force directed model. Values larger than 1 tend to reduce the warping
+   * effect at the expense of less clustering. 
+   */
+  void SetRepulsiveForce(double val) {
+    AddFirstClassAttribute<double>(AttributeType::REPULSIVEFORCE, val);
+  }
+
+  /**
+   * This specifies nodes to be used as the center of the layout and the root of
+   * the generated spanning tree. As a graph attribute, this gives the name of
+   * the node. As a node attribute (circo only), it specifies that the node
+   * should be used as a central node. In twopi, this will actually be the
+   * central node. In circo, the block containing the node will be central in
+   * the drawing of its connected component. If not defined, twopi will pick a
+   * most central node, and circo will pick a random node.
+   *
+   * If the root attribute is defined as the empty string, twopi will reset it
+   * to name of the node picked as the root node. 
+   */
+  void SetRoot(Node* node) {
+    //TODO(jvilk): If node is deleted, this is not cleaned up...
+    AddFirstClassAttribute<std::string>(AttributeType::ROOT, node->GetId());
+  }
+
+  /**
+   * If 90, set drawing orientation to landscape. 
+   */
+  void SetRotate(int val) {
+    AddFirstClassAttribute<int>(AttributeType::ROTATE, val);
+  }
+
+  /**
+   * Causes the final layout to be rotated counter-clockwise by the specified
+   * number of degrees. 
+   */
+  void SetRotation(double val) {
+    AddFirstClassAttribute<double>(AttributeType::ROTATION, val);
+  }
+
+  /**
+   * If set, after the initial layout, twopi will scale the layout by the given
+   * factors. The scaling uses the root node of each component as the center of
+   * the scaling. If only a single number is given, this is used for both
+   * factors. 
+   */
+  void SetScale(double val) {
+    SetScale(val, val);
+  }
+  void SetScale(double x, double y) {
+    AddPointAttribute(AttributeType::SCALE, x, y);
+  }
+
+  /**
+   * During network simplex, maximum number of edges with negative cut values to
+   * search when looking for one with minimum cut value. 
+   */
+  void SetSearchSize(int val) {
+    AddFirstClassAttribute<int>(AttributeType::SEARCHSIZE, val);
+  }
+  void SetSearchSize(double val) {
+    AddAddDoubleAttribute(AttributeType::SEARCHSIZE, val);
+  }
+
+  /**
+   * Specifies margin to leave around nodes when removing node overlap. This
+   * guarantees a minimal non-zero distance between nodes.
+   *
+   * If the attribute begins with a plus sign '+', an additive margin is
+   * specified. That is, "+w,h" causes the node's bounding box to be increased
+   * by w points on the left and right sides, and by h points on the top and
+   * bottom. Without a plus sign, the node is scaled by 1 + w in the x 
+   * coordinate and 1 + h in the y coordinate.
+   *
+   * If only a single number is given, this is used for both dimensions.
+   *
+   * If unset but esep is defined, the sep values will be set to the esep values
+   * divided by 0.8. If esep is unset, the default value is used. 
+   */
+  void SetSep(double x, double y) {
+    AddAddPointAttribute(AttributeType::SEP, x, y);
+  }
+
+  /**
+   * Print guide boxes in PostScript at the beginning of routesplines if 1, or
+   * at the end if 2. (Debugging) 
+   */
+  void SetShowBoxes(unsigned val) {
+    if (val > 2) val = 2;
+    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+  }
+
+  /**
+   * Maximum width and height of drawing, in inches.
+   *
+   * If defined and the drawing is larger than the given size, the drawing is
+   * uniformly scaled down so that it fits within the given size.
+   *
+   * If size ends in an exclamation point (!), then it is taken to be the
+   * desired size. In this case, if both dimensions of the drawing are less than
+   * size, the drawing is scaled up uniformly until at least one dimension
+   * equals its dimension in size.
+   *
+   * Note that there is some interaction between the size and ratio attributes. 
+   */
+  void SetSize(double x, double y) {
+    AddPointAttribute(AttributeType::SIZE, x, y);
+  }
+
+  /**
+   * Specifies a post-processing step used to smooth out an uneven distribution
+   * of nodes. 
+   */
+  void SetSmoothing(SmoothType::e val) {
+    AddEnumAttribute<SmoothType::e, SmoothType>(AttributeType::SMOOTHING, val);
+  }
+
+  /**
+   * If packmode indicates an array packing, this attribute specifies an
+   * insertion order among the components, with smaller values inserted first. 
+   */
+  void SetSortV(int val) {
+    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+  }
+
+  /**
+   * Controls how, and if, edges are represented. If true, edges are drawn as
+   * splines routed around nodes; if false, edges are drawn as line segments. If
+   * set to "", no edges are drawn at all.
+   *
+   * (1 March 2007) The values line and spline can be used as synonyms for false
+   * and true, respectively. In addition, the value polyline specifies that
+   * edges should be drawn as polylines.
+   *
+   * (28 Sep 2010) The value ortho specifies edges should be routed as polylines
+   * of axis-aligned segments. Currently, the routing does not handle ports or,
+   * in dot, edge labels.
+   *
+   * By default, the attribute is unset. How this is interpreted depends on the
+   * layout. For dot, the default is to draw edges as splines. For all other
+   * layouts, the default is to draw edges as line segments. Note that for these
+   * latter layouts, if splines="true", this requires non-overlapping nodes (cf.
+   * overlap). If fdp is used for layout and splines="compound", then the edges
+   * are drawn to avoid clusters as well as nodes. 
+   */
+  void SetSplines(SplineType::e val) {
+    AddEnumAttribute<SplineType::e, SplineType>(AttributeType::SPLINES, val);
+  }
+
+  /**
+   * Parameter used to determine the initial layout of nodes. If unset, the
+   * nodes are randomly placed in a unit square with the same seed is always
+   * used for the random number generator, so the initial placement is
+   * repeatable.
+   *
+   * The value has the syntax (style)?(seed)?.
+   *
+   * If style is present, it must be one of the strings "regular", "self", or
+   * "random". In the first case, the nodes are placed regularly about a circle.
+   * In the second case, an abbreviated version of neato is run to obtain the
+   * initial layout. In the last case, the nodes are placed randomly in a unit
+   * square.
+   *
+   * If seed is present, it specifies a seed for the random number generator. If
+   * seed is a positive number, this is used as the seed. If it is anything
+   * else, the current time, and possibly the process id, is used to pick a
+   * seed, thereby making the choice more random. In this case, the seed value
+   * is stored in the graph.
+   *
+   * If the value is just "random", a time-based seed is chosen.
+   *
+   * Note that input positions, specified by a node's pos attribute, are only
+   * used when the style is "random". 
+   *
+   * TODO(jvilk): Make this an object for validation purposes.
+   */
+  void SetStart(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::START, val);
+  }
+
+  /**
+   * Set style information for components of the graph. For cluster subgraphs,
+   * if "filled", the cluster box's background is filled.
+   *
+   * Syntax is styleItem ( ',' styleItem )*
+   * where styleItem = name or name'('args')'
+   * and args  = name ( ',' name )*
+   * and name can be any string of characters not containing a space, a left or
+   * right parenthesis, or a comma. Note that whitespace characters are ignored.
+   *
+   * At present, the recognized style names are "dashed", "dotted", "solid",
+   * "invis" and "bold" for nodes and edges, "tapered" for edges only, and
+   * "filled", "diagonals" and "rounded" for nodes only. The styles "filled" and
+   * "rounded" are recognized for clusters. The style "radial" is recognized for
+   * nodes, clusters and graphs, and indicates a radial-style gradient fill if
+   * applicable. Additional styles are available in device-dependent form. Style
+   * lists are passed to device drivers, which can use this to generate
+   * appropriate output.
+   *
+   * The setlinewidth style value can be used for more control over the width of
+   * node borders and edges than is allowed by bold. This style value takes an
+   * argument, specifying the width of the line in points. For example,
+   * style="bold" is equivalent to style="setlinewidth(2)". The use of
+   * setlinewidth is deprecated; one should use the penwidth attribute instead. 
+   *
+   * TODO(jvilk): Make a custom object for this for validation purposes.
+   */
+  void SetStyle(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+  }
+
+  /**
+   * A URL or pathname specifying an XML style sheet, used in SVG output. 
+   */
+  void SetStyleSheet(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+  }
+
+  /**
+   * If the object has a URL, this attribute determines which window of the
+   * browser is used for the URL. See W3C documentation. 
+   */
+  void SetTarget(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+  }
+
+  /**
+   * If set explicitly to true or false, the value determines whether or not
+   * internal bitmap rendering relies on a truecolor color model or uses a color
+   * palette. If the attribute is unset, truecolor is not used unless there is a
+   * shapefile property for some node in the graph. The output model will use
+   * the input model when possible.
+   *
+   * Use of color palettes results in less memory usage during creation of the
+   * bitmaps and smaller output files.
+   *
+   * Usually, the only time it is necessary to specify the truecolor model is if
+   * the graph uses more than 256 colors. However, if one uses
+   * bgcolor=transparent with a color palette, font antialiasing can show up as
+   * a fuzzy white area around characters. Using truecolor=true avoids this
+   * problem. 
+   */
+  void SetTrueColor(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::TRUECOLOR, val);
+  }
+
+  // TODO(jvilk): Implement this type.
   //void SetViewPort(ViewPort val);
-  void SetVoroMargin(double val);
-  void SetVoroMargin(int val);
+
+  /**
+   * Factor to scale up drawing to allow margin for expansion in Voronoi
+   * technique. dim' = (1+2*margin)*dim. 
+   */
+  void SetVoroMargin(double val) {
+    AddFirstClassAttribute<double>(AttributeType::VORO_MARGIN,val);
+  }
 
 };
 
-class SubgraphAttributeSet {
-private:
-  std::vector<Attribute*> _attributes;
-
+class SubgraphAttributeSet : AttributeSet {
 public:
   SubgraphAttributeSet() { };
+
+  void SetRank(RankType::e val) {
+    AddEnumAttribute<RankType::e, RankType>(AttributeType::RANK, val);
+  }
 };
 
-class NodeAttributeSet {
+class ClusterAttributeSet : AttributeSet {
+public:
+  ClusterAttributeSet() { };
+
+  /**
+   * Spring constant used in virtual physical model. It roughly corresponds to
+   * an ideal edge length (in inches), in that increasing K tends to increase
+   * the distance between nodes. Note that the edge attribute len can be used to
+   * override this value for adjacent nodes. 
+   */
+  void SetK(double val) {
+    AddFirstClassAttribute<double>(AttributeType::K, val);
+  }
+
+  /**
+   * Hyperlinks incorporated into device-dependent output. At present, used in
+   * ps2, cmap, i*map and svg formats. For all these formats, URLs can be
+   * attached to nodes, edges and clusters. URL attributes can also be attached
+   * to the root graph in ps2, cmap and i*map formats. This serves as the base
+   * URL for relative URLs in the former, and as the default image map file in
+   * the latter.
+   * 
+   * For svg, cmapx and imap output, the active area for a node is its visible
+   * image. For example, an unfilled node with no drawn boundary will only be
+   * active on its label. For other output, the active area is its bounding box.
+   * The active area for a cluster is its bounding box. For edges, the active
+   * areas are small circles where the edge contacts its head and tail nodes. In
+   * addition, for svg, cmapx and imap, the active area includes a thin polygon
+   * approximating the edge. The circles may overlap the related node, and the
+   * edge URL dominates. If the edge has a label, this will also be active.
+   * Finally, if the edge has a head or tail label, this will also be active.
+   *
+   * Note that, for edges, the attributes headURL, tailURL, labelURL and edgeURL
+   * allow control of various parts of an edge. Also note that, if active areas
+   * of two edges overlap, it is unspecified which area dominates. 
+   */
+  void SetURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+  }
+
+  /**
+   * Indicates the preferred area for a node or empty cluster when laid out by
+   * patchwork. 
+   */
+  void SetArea(double val) {
+    AddFirstClassAttribute<double>(AttributeType::AREA, val);
+  }
+
+  /**
+   * When attached to the root graph, this color is used as the background for
+   * entire canvas. When a cluster attribute, it is used as the initial
+   * background for the cluster. If a cluster has a filled style, the cluster's
+   * fillcolor will overlay the background color.
+   *
+   * If the value is a colorList, a gradient fill is used. By default, this is a
+   * linear fill; setting style=radial will cause a radial fill. At present,
+   * only two colors are used. If the second color (after a colon) is missing,
+   * the default color is used for it. See also the gradientangle attribute for
+   * setting the gradient angle.
+   *
+   * If no background color is specified for the root graph, no graphics
+   * operation are performed on the background. This works fine for PostScript
+   * but for bitmap output, all bits are initialized to something. This means
+   * that when the bitmap output is included in some other document, all of the
+   * bits within the bitmap's bounding box will be set, overwriting whatever
+   * color or graphics where already on the page. If this effect is not desired,
+   * and you only want to set bits explicitly assigned in drawing the graph, set
+   * bgcolor="transparent". 
+   */
+  void SetBGColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::BGCOLOR, val);
+  }
+  void SetBGColor(const std::vector<Color::e> vals) {
+    AddEnumListAttribute<Color::e, Color>(AttributeType::BGCOLOR, vals);
+  }
+
+  /**
+   * Basic drawing color for graphics, not text. For the latter, use the
+   * fontcolor attribute.
+   *
+   * For edges, the value can either be a single color or a colorList. In the
+   * latter case, the edge is drawn using parallel splines or lines, one for
+   * each color in the list, in the order given. The head arrow, if any, is
+   * drawn using the first color in the list, and the tail arrow, if any, the
+   * second color. This supports the common case of drawing opposing edges, but
+   * using parallel splines instead of separately routed multiedges.
+   * See http://www.graphviz.org/content/attrs#dcolor for more information.
+   */
+  void SetColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::COLOR, val);
+  }
+  
+  /**
+   * Color used to fill the background of a node or cluster assuming
+   * style=filled, or a filled arrowhead. If fillcolor is not defined, color is
+   * used. (For clusters, if color is not defined, bgcolor is used.) If this is
+   * not defined, the default is used, except for shape=point or when the output
+   * format is MIF, which use black by default.
+   *
+   * If the value is a colorList, a gradient fill is used. By default, this is a
+   * linear fill; setting style=radial will cause a radial fill. At present,
+   * only two colors are used. If the second color (after a colon) is missing,
+   * the default color is used for it. See also the gradientangle attribute for
+   * setting the gradient angle.
+   *
+   * Note that a cluster inherits the root graph's attributes if defined. Thus,
+   * if the root graph has defined a fillcolor, this will override a color or
+   * bgcolor attribute set for the cluster. 
+   */
+  void SetFillColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FILLCOLOR, val);
+  }
+  void SetFillColor(const std::vector<Color::e> vals) {
+    AddEnumListAttribute<Color::e, Color>(AttributeType::FILLCOLOR, vals);
+  }
+
+  /**
+   * Color used for text.
+   */  
+  void SetFontColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FONTCOLOR, val);
+  }
+
+  /**
+   * Font used for text. This very much depends on the output format and, for
+   * non-bitmap output such as PostScript or SVG, the availability of the font
+   * when the graph is displayed or printed. As such, it is best to rely on font
+   * faces that are generally available, such as Times-Roman, Helvetica or
+   * Courier.
+   *
+   * If Graphviz was built using the fontconfig library, the latter library will
+   * be used to search for the font. However, if the fontname string contains a
+   * slash character "/", it is treated as a pathname for the font file, though
+   * font lookup will append the usual font suffixes.
+   *
+   * If Graphviz does not use fontconfig, fontname will be considered the name
+   * of a Type 1 or True Type font file. If you specify fontname=schlbk, the
+   * tool will look for a file named schlbk.ttf or schlbk.pfa or schlbk.pfb in
+   * one of the directories specified by the fontpath attribute. The lookup does
+   * support various aliases for the common fonts. 
+   */
+  void SetFontName(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+  }
+
+  /**
+   * Font size, in points, used for text. 
+   */
+  void SetFontSize(double val) {
+    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+  }
+
+  /**
+   * If a gradient fill is being used, this determines the angle of the fill.
+   * For linear fills, the colors transform along a line specified by the angle
+   * and the center of the object. For radial fills, a value of zero causes the
+   * colors to transform radially from the center; for non-zero values, the
+   * colors transform from a point near the object's periphery as specified by
+   * the value.
+   *
+   * If unset, the default angle is 0. 
+   */
+  void SetGradientAngle(int val) {
+    AddFirstClassAttribute<int>(AttributeType::GRADIENTANGLE, val);
+  }
+
+  /**
+   * Justification for cluster labels. If "r", the label is right-justified
+   * within bounding rectangle; if "l", left-justified; else the label is
+   * centered. Note that a subgraph inherits attributes from its parent. Thus,
+   * if the root graph sets labeljust to "l", the subgraph inherits this value. 
+   */
+  void SetLabelJust(Justification::e val) {
+    AddEnumAttribute<Justification::e, Justification>(AttributeType::LABELJUST,
+      val);
+  }
+
+  /**
+   * Vertical placement of labels for nodes, root graphs and clusters.
+   *
+   * For graphs and clusters, only "t" and "b" are allowed, corresponding to
+   * placement at the top and bottom, respectively. By default, root graph
+   * labels go on the bottom and cluster labels go on the top. Note that a
+   * subgraph inherits attributes from its parent. Thus, if the root graph sets
+   * labelloc to "b", the subgraph inherits this value.
+   *
+   * For nodes, this attribute is used only when the height of the node is
+   * larger than the height of its label. If labelloc is set to "t", "c", or
+   * "b", the label is aligned with the top, centered, or aligned with the
+   * bottom of the node, respectively. In the default case, the label is
+   * vertically centered. 
+   */
+  void SetLabelLoc(LabelLoc::e val) {
+    if (val != LabelLoc::C) {
+      AddEnumAttribute<LabelLoc::e, LabelLoc>(AttributeType::LABELLOC, val);
+    }
+  }
+
+  /**
+   * Height of graph or cluster label, in inches.
+   */
+  void SetLHeight(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LHEIGHT, val);
+  }
+
+  /**
+   * Label position, in points. The position indicates the center of the label.
+   */
+  void SetLP(double x, double y) {
+    AddPointAttribute(AttributeType::LP, x, y);
+  }
+
+  /**
+   * Width of graph or cluster label, in inches.
+   */
+  void SetLWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LWIDTH, val);
+  }
+
+  /**
+   * For graphs, this sets x and y margins of canvas, in inches.
+   * 
+   * Note that the margin is not part of the drawing but just empty space left
+   * around the drawing. It basically corresponds to a translation of drawing,
+   * as would be necessary to center a drawing on a page. Nothing is actually
+   * drawn in the margin. To actually extend the background of a drawing, see
+   * the pad attribute.
+   *
+   * For clusters, this specifies the space between the nodes in the cluster and
+   * the cluster bounding box. By default, this is 8 points.
+   *
+   * For nodes, this attribute specifies space left around the node's label. By
+   * default, the value is 0.11,0.055.
+   */
+  void SetMargin(double x, double y) {
+    AddPointAttribute(AttributeType::MARGIN, x, y);
+  }
+
+  /**
+   * By default, the justification of multi-line labels is done within the
+   * largest context that makes sense. Thus, in the label of a polygonal node, a
+   * left-justified line will align with the left side of the node (shifted by
+   * the prescribed margin). In record nodes, left-justified line will line up
+   * with the left side of the enclosing column of fields. If nojustify is
+   * "true", multi-line labels will be justified in the context of itself. For
+   * example, if the attribute is set, the first label line is long, and the
+   * second is shorter and left-justified, the second will align with the
+   * left-most character in the first line, regardless of how large the node
+   * might be.
+   */
+  void SetNoJustify(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+  }
+
+  /**
+   * Color used to draw the bounding box around a cluster. If pencolor is not
+   * defined, color is used. If this is not defined, bgcolor is used. If this is
+   * not defined, the default is used.
+   *
+   * Note that a cluster inherits the root graph's attributes if defined. Thus,
+   * if the root graph has defined a pencolor, this will override a color or
+   * bgcolor attribute set for the cluster. 
+   */
+  void SetPenColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::PENCOLOR, val);
+  }
+
+  /**
+   * Specifies the width of the pen, in points, used to draw lines and curves,
+   * including the boundaries of edges and clusters. The value is inherited by
+   * subclusters. It has no effect on text.
+   *
+   * Previous to 31 January 2008, the effect of penwidth=W was achieved by
+   * including setlinewidth(W) as part of a style specification. If both are
+   * used, penwidth will be used. 
+   */
+  void SetPenWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+  }
+
+  /**
+   * Set number of peripheries used in polygonal shapes and cluster boundaries.
+   * Note that user-defined shapes are treated as a form of box shape, so the
+   * default peripheries value is 1 and the user-defined shape will be drawn in
+   * a bounding rectangle. Setting peripheries=0 will turn this off. Also, 1 is
+   * the maximum peripheries value for clusters. 
+   */
+  void SetPeripheries(int val) {
+    if (val > 1) val = 1;
+    AddFirstClassAttribute<int>(AttributeType::PERIPHERIES, val);
+  }
+
+  /**
+   * If packmode indicates an array packing, this attribute specifies an
+   * insertion order among the components, with smaller values inserted first. 
+   */
+  void SetSortV(int val) {
+    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+  }
+
+  /**
+   * Set style information for components of the graph. For cluster subgraphs,
+   * if "filled", the cluster box's background is filled.
+   *
+   * Syntax is styleItem ( ',' styleItem )*
+   * where styleItem = name or name'('args')'
+   * and args  = name ( ',' name )*
+   * and name can be any string of characters not containing a space, a left or
+   * right parenthesis, or a comma. Note that whitespace characters are ignored.
+   *
+   * At present, the recognized style names are "dashed", "dotted", "solid",
+   * "invis" and "bold" for nodes and edges, "tapered" for edges only, and
+   * "filled", "diagonals" and "rounded" for nodes only. The styles "filled" and
+   * "rounded" are recognized for clusters. The style "radial" is recognized for
+   * nodes, clusters and graphs, and indicates a radial-style gradient fill if
+   * applicable. Additional styles are available in device-dependent form. Style
+   * lists are passed to device drivers, which can use this to generate
+   * appropriate output.
+   *
+   * The setlinewidth style value can be used for more control over the width of
+   * node borders and edges than is allowed by bold. This style value takes an
+   * argument, specifying the width of the line in points. For example,
+   * style="bold" is equivalent to style="setlinewidth(2)". The use of
+   * setlinewidth is deprecated; one should use the penwidth attribute instead. 
+   *
+   * TODO(jvilk): Make a custom object for this for validation purposes.
+   */
+  void SetStyle(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+  }
+
+  /**
+   * If the object has a URL, this attribute determines which window of the
+   * browser is used for the URL. See W3C documentation. 
+   */
+  void SetTarget(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the node or edge. If unset, Graphviz will
+   * use the object's label if defined. Note that if the label is a record
+   * specification or an HTML-like label, the resulting tooltip may be
+   * unhelpful. In this case, if tooltips will be generated, the user should set
+   * a tooltip attribute explicitly. 
+   */
+  void SetTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+  }
+};
+
+class NodeAttributeSet : AttributeSet {
 private:
   std::vector<Attribute*> _attributes;
 
 public:
   NodeAttributeSet() { };
+
+  /**
+   * Hyperlinks incorporated into device-dependent output. At present, used in
+   * ps2, cmap, i*map and svg formats. For all these formats, URLs can be
+   * attached to nodes, edges and clusters. URL attributes can also be attached
+   * to the root graph in ps2, cmap and i*map formats. This serves as the base
+   * URL for relative URLs in the former, and as the default image map file in
+   * the latter.
+   * 
+   * For svg, cmapx and imap output, the active area for a node is its visible
+   * image. For example, an unfilled node with no drawn boundary will only be
+   * active on its label. For other output, the active area is its bounding box.
+   * The active area for a cluster is its bounding box. For edges, the active
+   * areas are small circles where the edge contacts its head and tail nodes. In
+   * addition, for svg, cmapx and imap, the active area includes a thin polygon
+   * approximating the edge. The circles may overlap the related node, and the
+   * edge URL dominates. If the edge has a label, this will also be active.
+   * Finally, if the edge has a head or tail label, this will also be active.
+   *
+   * Note that, for edges, the attributes headURL, tailURL, labelURL and edgeURL
+   * allow control of various parts of an edge. Also note that, if active areas
+   * of two edges overlap, it is unspecified which area dominates. 
+   */
+  void SetURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+  }
+
+  /**
+   * Indicates the preferred area for a node or empty cluster when laid out by
+   * patchwork. 
+   */
+  void SetArea(double val) {
+    AddFirstClassAttribute<double>(AttributeType::AREA, val);
+  }
+
+  /**
+   * Basic drawing color for graphics, not text. For the latter, use the
+   * fontcolor attribute.
+   *
+   * For edges, the value can either be a single color or a colorList. In the
+   * latter case, the edge is drawn using parallel splines or lines, one for
+   * each color in the list, in the order given. The head arrow, if any, is
+   * drawn using the first color in the list, and the tail arrow, if any, the
+   * second color. This supports the common case of drawing opposing edges, but
+   * using parallel splines instead of separately routed multiedges.
+   * See http://www.graphviz.org/content/attrs#dcolor for more information.
+   */
+  void SetColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::COLOR, val);
+  }
+
+  /**
+   * Comments are inserted into output. Device-dependent 
+   */
+  void SetComment(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::COMMENT, val);
+  }
+
+  /**
+   * Distortion factor for shape=polygon. Positive values cause top part to be
+   * larger than bottom; negative values do the opposite. 
+   */
+  void SetDistortion(double val) {
+    AddFirstClassAttribute<double>(AttributeType::DISTORTION, val);
+  }
+
+  /**
+   * Color used to fill the background of a node or cluster assuming
+   * style=filled, or a filled arrowhead. If fillcolor is not defined, color is
+   * used. (For clusters, if color is not defined, bgcolor is used.) If this is
+   * not defined, the default is used, except for shape=point or when the output
+   * format is MIF, which use black by default.
+   *
+   * If the value is a colorList, a gradient fill is used. By default, this is a
+   * linear fill; setting style=radial will cause a radial fill. At present,
+   * only two colors are used. If the second color (after a colon) is missing,
+   * the default color is used for it. See also the gradientangle attribute for
+   * setting the gradient angle.
+   *
+   * Note that a cluster inherits the root graph's attributes if defined. Thus,
+   * if the root graph has defined a fillcolor, this will override a color or
+   * bgcolor attribute set for the cluster. 
+   */
+  void SetFillColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FILLCOLOR, val);
+  }
+  void SetFillColor(const std::vector<Color::e> vals) {
+    AddEnumListAttribute<Color::e, Color>(AttributeType::FILLCOLOR, vals);
+  }
+
+  /**
+   * If true, the node size is specified by the values of the width and height
+   * attributes only and is not expanded to contain the text label. 
+   */
+  void SetFixedSize(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::FIXEDSIZE, val);
+  }
+
+  /**
+   * Color used for text.
+   */  
+  void SetFontColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FONTCOLOR, val);
+  }
+
+  /**
+   * Font used for text. This very much depends on the output format and, for
+   * non-bitmap output such as PostScript or SVG, the availability of the font
+   * when the graph is displayed or printed. As such, it is best to rely on font
+   * faces that are generally available, such as Times-Roman, Helvetica or
+   * Courier.
+   *
+   * If Graphviz was built using the fontconfig library, the latter library will
+   * be used to search for the font. However, if the fontname string contains a
+   * slash character "/", it is treated as a pathname for the font file, though
+   * font lookup will append the usual font suffixes.
+   *
+   * If Graphviz does not use fontconfig, fontname will be considered the name
+   * of a Type 1 or True Type font file. If you specify fontname=schlbk, the
+   * tool will look for a file named schlbk.ttf or schlbk.pfa or schlbk.pfb in
+   * one of the directories specified by the fontpath attribute. The lookup does
+   * support various aliases for the common fonts. 
+   */
+  void SetFontName(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+  }
+
+  /**
+   * Font size, in points, used for text. 
+   */
+  void SetFontSize(double val) {
+    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+  }
+
+  /**
+   * If a gradient fill is being used, this determines the angle of the fill.
+   * For linear fills, the colors transform along a line specified by the angle
+   * and the center of the object. For radial fills, a value of zero causes the
+   * colors to transform radially from the center; for non-zero values, the
+   * colors transform from a point near the object's periphery as specified by
+   * the value.
+   *
+   * If unset, the default angle is 0. 
+   */
+  void SetGradientAngle(int val) {
+    AddFirstClassAttribute<int>(AttributeType::GRADIENTANGLE, val);
+  }
+
+  /**
+   * If the end points of an edge belong to the same group, i.e., have the same
+   * group attribute, parameters are set to avoid crossings and keep the edges
+   * straight.
+   *
+   * TODO(jvilk): Perhaps expose nicely with an object?
+   */
+  void SetGroup(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::GROUP, val);
+  }
+
+  /**
+   * Height of node, in inches. This is taken as the initial, minimum height of
+   * the node. If fixedsize is true, this will be the final height of the node.
+   * Otherwise, if the node label requires more height to fit, the node's height
+   * will be increased to contain the label. Note also that, if the output
+   * format is dot, the value given to height will be the final value.
+   *
+   * If the node shape is regular, the width and height are made identical. In
+   * this case, if either the width or the height is set explicitly, that value
+   * is used. In this case, if both the width or the height are set explicitly,
+   * the maximum of the two values is used. If neither is set explicitly, the
+   * minimum of the two default values is used. 
+   */
+  void SetHeight(double val) {
+    AddFirstClassAttribute<double>(AttributeType::HEIGHT, val);
+  }
+
+  /**
+   * Gives the name of a file containing an image to be displayed inside a node.
+   * The image file must be in one of the recognized formats, typically JPEG,
+   * PNG, GIF, BMP, SVG or Postscript, and be able to be converted into the
+   * desired output format.
+   *
+   * The file must contain the image size information. This is usually trivially
+   * true for the bitmap formats. For PostScript, the file must contain a line
+   * starting with %%BoundingBox: followed by four integers specifying the lower
+   * left x and y coordinates and the upper right x and y coordinates of the
+   * bounding box for the image, the coordinates being in points. An SVG image
+   * file must contain width and height attributes, typically as part of the svg
+   * element. The values for these should have the form of a floating point
+   * number, followed by optional units, e.g., width="76pt". Recognized units
+   * are in, px, pc, pt, cm and mm for inches, pixels, picas, points,
+   * centimeters and millimeters, respectively. The default unit is points.
+   *
+   * Unlike with the shapefile attribute, the image is treated as node content
+   * rather than the entire node. In particular, an image can be contained in a
+   * node of any shape, not just a rectangle. 
+   */
+  void SetImage(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::IMAGE, val);
+  }
+
+  /**
+   * Attribute controlling how an image fills its containing node. In general,
+   * the image is given its natural size, (cf. dpi), and the node size is made
+   * large enough to contain its image, its label, its margin, and its
+   * peripheries. Its width and height will also be at least as large as its
+   * minimum width and height. If, however, fixedsize=true, the width and height
+   * attributes specify the exact size of the node.
+   *
+   * During rendering, in the default case (imagescale=false), the image retains
+   * its natural size. If imagescale=true, the image is uniformly scaled (i.e.,
+   * its aspect ratio is preserved) to fit inside the node. At least one
+   * dimension of the image will be as large as possible given the size of the
+   * node. When imagescale=width, the width of the image is scaled to fill the
+   * node width. The corresponding property holds when imagescale=height. When
+   * imagescale=both, both the height and the width are scaled separately to
+   * fill the node.
+   *
+   * In all cases, if a dimension of the image is larger than the corresponding
+   * dimension of the node, that dimension of the image is scaled down to fit
+   * the node. As with the case of expansion, if imagescale=true, width and
+   * height are scaled uniformly. 
+   */
+  void SetImageScale(ImageScaleType::e val) {
+    AddEnumAttribute<ImageScaleType::e, ImageScaleType>(
+      AttributeType::IMAGESCALE, val);
+  }
+  void SetImageScale(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::IMAGESCALE, val);
+  }
+
+  /**
+   * Vertical placement of labels for nodes, root graphs and clusters.
+   *
+   * For graphs and clusters, only "t" and "b" are allowed, corresponding to
+   * placement at the top and bottom, respectively. By default, root graph
+   * labels go on the bottom and cluster labels go on the top. Note that a
+   * subgraph inherits attributes from its parent. Thus, if the root graph sets
+   * labelloc to "b", the subgraph inherits this value.
+   *
+   * For nodes, this attribute is used only when the height of the node is
+   * larger than the height of its label. If labelloc is set to "t", "c", or
+   * "b", the label is aligned with the top, centered, or aligned with the
+   * bottom of the node, respectively. In the default case, the label is
+   * vertically centered. 
+   */
+  void SetLabelLoc(LabelLoc::e val) {
+    AddEnumAttribute<LabelLoc::e, LabelLoc>(AttributeType::LABELLOC, val);
+  }
+
+  /**
+   * For graphs, this sets x and y margins of canvas, in inches.
+   * 
+   * Note that the margin is not part of the drawing but just empty space left
+   * around the drawing. It basically corresponds to a translation of drawing,
+   * as would be necessary to center a drawing on a page. Nothing is actually
+   * drawn in the margin. To actually extend the background of a drawing, see
+   * the pad attribute.
+   *
+   * For clusters, this specifies the space between the nodes in the cluster and
+   * the cluster bounding box. By default, this is 8 points.
+   *
+   * For nodes, this attribute specifies space left around the node's label. By
+   * default, the value is 0.11,0.055.
+   */
+  void SetMargin(double x, double y) {
+    AddPointAttribute(AttributeType::MARGIN, x, y);
+  }
+
+  /**
+   * By default, the justification of multi-line labels is done within the
+   * largest context that makes sense. Thus, in the label of a polygonal node, a
+   * left-justified line will align with the left side of the node (shifted by
+   * the prescribed margin). In record nodes, left-justified line will line up
+   * with the left side of the enclosing column of fields. If nojustify is
+   * "true", multi-line labels will be justified in the context of itself. For
+   * example, if the attribute is set, the first label line is long, and the
+   * second is shorter and left-justified, the second will align with the
+   * left-most character in the first line, regardless of how large the node
+   * might be.
+   */
+  void SetNoJustify(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+  }
+
+  /**
+   * If the value of the attribute is "out", then the outedges of a node, that
+   * is, edges with the node as its tail node, must appear left-to-right in the
+   * same order in which they are defined in the input. If the value of the
+   * attribute is "in", then the inedges of a node must appear left-to-right in
+   * the same order in which they are defined in the input. If defined as a
+   * graph or subgraph attribute, the value is applied to all nodes in the graph
+   * or subgraph. Note that the graph attribute takes precedence over the node
+   * attribute.
+   */
+  void SetOrdering(Ordering::e val) {
+    AddEnumAttribute<Ordering::e, Ordering>(AttributeType::ORDERING, val);
+  }
+
+  /**
+   * Angle, in degrees, used to rotate polygon node shapes. For any number of
+   * polygon sides, 0 degrees rotation results in a flat base. 
+   */
+  void SetOrientation(double val) {
+    AddFirstClassAttribute<double>(AttributeType::ORIENTATION, val);
+  }
+
+  /**
+   * Specifies the width of the pen, in points, used to draw lines and curves,
+   * including the boundaries of edges and clusters. The value is inherited by
+   * subclusters. It has no effect on text.
+   *
+   * Previous to 31 January 2008, the effect of penwidth=W was achieved by
+   * including setlinewidth(W) as part of a style specification. If both are
+   * used, penwidth will be used. 
+   */
+  void SetPenWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+  }
+
+  /**
+   * Set number of peripheries used in polygonal shapes and cluster boundaries.
+   * Note that user-defined shapes are treated as a form of box shape, so the
+   * default peripheries value is 1 and the user-defined shape will be drawn in
+   * a bounding rectangle. Setting peripheries=0 will turn this off. Also, 1 is
+   * the maximum peripheries value for clusters. 
+   */
+  void SetPeripheries(int val) {
+    AddFirstClassAttribute<int>(AttributeType::PERIPHERIES, val);
+  }
+
+  /**
+   * If true and the node has a pos attribute on input, neato or fdp prevents
+   * the node from moving from the input position. This property can also be
+   * specified in the pos attribute itself (cf. the point type).
+   *
+   * Note: Due to an artifact of the implementation, final coordinates are
+   * translated to the origin. Thus, if you look at the output coordinates given
+   * in the (x)dot or plain format, pinned nodes will not have the same output
+   * coordinates as were given on input. If this is important, a simple
+   * workaround is to maintain the coordinates of a pinned node. The vector
+   * difference between the old and new coordinates will give the translation,
+   * which can then be subtracted from all of the appropriate coordinates. 
+   */
+  void SetPin(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::PIN, val);
+  }
+  
+  /**
+   * Position of node, or spline control points. For nodes, the position
+   * indicates the center of the node. On output, the coordinates are in points.
+   *
+   * In neato and fdp, pos can be used to set the initial position of a node. By
+   * default, the coordinates are assumed to be in inches. However, the -s
+   * command line flag can be used to specify different units. As the output
+   * coordinates are in points, feeding the output of a graph laid out by a
+   * Graphviz program into neato or fdp will almost always require the -s flag.
+   *
+   * When the -n command line flag is used with neato, it is assumed the
+   * positions have been set by one of the layout programs, and are therefore in
+   * points. Thus, neato -n can accept input correctly without requiring a -s
+   * flag and, in fact, ignores any such flag. 
+   */
+  void SetPos(double x, double y) {
+    AddPointAttribute(AttributeType::POS, x, y);
+  }
+  void SetPos(SplineType::e val) {
+    AddEnumAttribute<SplineType::e, SplineType>(AttributeType::POS, val);
+  }
+  void SetPos(QuadType::e val) {
+    AddEnumAttribute<QuadType::e, QuadType>(AttributeType::POS, val);
+  }
+
+  // TODO(jvilk): Implement.
+  // void SetRect
+
+  /**
+   * If true, force polygon to be regular, i.e., the vertices of the polygon
+   * will lie on a circle whose center is the center of the node. 
+   */
+  void SetRegular(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::REGULAR, val);
+  }
+
+  /**
+   * This specifies nodes to be used as the center of the layout and the root of
+   * the generated spanning tree. As a graph attribute, this gives the name of
+   * the node. As a node attribute (circo only), it specifies that the node
+   * should be used as a central node. In twopi, this will actually be the
+   * central node. In circo, the block containing the node will be central in
+   * the drawing of its connected component. If not defined, twopi will pick a
+   * most central node, and circo will pick a random node.
+   *
+   * If the root attribute is defined as the empty string, twopi will reset it
+   * to name of the node picked as the root node. 
+   */
+  void SetRoot(bool val) {
+    //TODO(jvilk): If node is deleted, this is not cleaned up...
+    AddFirstClassAttribute<bool>(AttributeType::ROOT, val);
+  }
+
+  /**
+   * If the input graph defines the vertices attribute, and output is dot or
+   * xdot, this gives the number of points used for a node whose shape is a
+   * circle or ellipse. It plays the same role in neato, when adjusting the
+   * layout to avoid overlapping nodes, and in image maps. 
+   */
+  void SetSamplePoints(unsigned val) {
+    AddFirstClassAttribute<unsigned>(AttributeType::SAMPLEPOINTS, val);
+  }
+
+  /**
+   * Set the shape of a node. 
+   */
+  void SetShape(NodeShape::e val) {
+    AddEnumAttribute<NodeShape::e, NodeShape>(AttributeType::SHAPE, val);
+  }
+
+  /**
+   * Print guide boxes in PostScript at the beginning of routesplines if 1, or
+   * at the end if 2. (Debugging) 
+   */
+  void SetShowBoxes(unsigned val) {
+    if (val > 2) val = 2;
+    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+  }
+
+  /**
+   * Number of sides if shape=polygon.
+   */
+  void SetSides(unsigned val) {
+    AddFirstClassAttribute<unsigned>(AttributeType::SIDES, val);
+  }
+
+  /**
+   * Skew factor for shape=polygon. Positive values skew top of polygon to
+   * right; negative to left. 
+   */
+  void SetSkew(double val) {
+    AddFirstClassAttribute<double>(AttributeType::SKEW, val);
+  }
+
+  /**
+   * If packmode indicates an array packing, this attribute specifies an
+   * insertion order among the components, with smaller values inserted first. 
+   */
+  void SetSortV(int val) {
+    AddFirstClassAttribute<int>(AttributeType::SORTV, val);
+  }
+
+  /**
+   * Set style information for components of the graph. For cluster subgraphs,
+   * if "filled", the cluster box's background is filled.
+   *
+   * Syntax is styleItem ( ',' styleItem )*
+   * where styleItem = name or name'('args')'
+   * and args  = name ( ',' name )*
+   * and name can be any string of characters not containing a space, a left or
+   * right parenthesis, or a comma. Note that whitespace characters are ignored.
+   *
+   * At present, the recognized style names are "dashed", "dotted", "solid",
+   * "invis" and "bold" for nodes and edges, "tapered" for edges only, and
+   * "filled", "diagonals" and "rounded" for nodes only. The styles "filled" and
+   * "rounded" are recognized for clusters. The style "radial" is recognized for
+   * nodes, clusters and graphs, and indicates a radial-style gradient fill if
+   * applicable. Additional styles are available in device-dependent form. Style
+   * lists are passed to device drivers, which can use this to generate
+   * appropriate output.
+   *
+   * The setlinewidth style value can be used for more control over the width of
+   * node borders and edges than is allowed by bold. This style value takes an
+   * argument, specifying the width of the line in points. For example,
+   * style="bold" is equivalent to style="setlinewidth(2)". The use of
+   * setlinewidth is deprecated; one should use the penwidth attribute instead. 
+   *
+   * TODO(jvilk): Make a custom object for this for validation purposes.
+   */
+  void SetStyle(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+  }
+
+  /**
+   * If the object has a URL, this attribute determines which window of the
+   * browser is used for the URL. See W3C documentation. 
+   */
+  void SetTarget(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the node or edge. If unset, Graphviz will
+   * use the object's label if defined. Note that if the label is a record
+   * specification or an HTML-like label, the resulting tooltip may be
+   * unhelpful. In this case, if tooltips will be generated, the user should set
+   * a tooltip attribute explicitly. 
+   */
+  void SetTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+  }
+
+  // TODO(jvilk): Implement this.
+  //SetVertices
+
+  /**
+   * Width of node, in inches. This is taken as the initial, minimum width of
+   * the node. If fixedsize is true, this will be the final width of the node.
+   * Otherwise, if the node label requires more width to fit, the node's width
+   * will be increased to contain the label. Note also that, if the output
+   * format is dot, the value given to width will be the final value.
+   *
+   * If the node shape is regular, the width and height are made identical. In
+   * this case, if either the width or the height is set explicitly, that value
+   * is used. In this case, if both the width or the height are set explicitly,
+   * the maximum of the two values is used. If neither is set explicitly, the
+   * minimum of the two default values is used. 
+   */
+  void SetWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::WIDTH, val);
+  }
+
+  /**
+   * External label for a node or edge. For nodes, the label will be placed
+   * outside of the node but near it. For edges, the label will be placed near
+   * the center of the edge. This can be useful in dot to avoid the occasional
+   * problem when the use of edge labels distorts the layout. For other layouts,
+   * the xlabel attribute can be viewed as a synonym for the label attribute.
+   *
+   * These labels are added after all nodes and edges have been placed. The
+   * labels will be placed so that they do not overlap any node or label. This
+   * means it may not be possible to place all of them. To force placing all of
+   * them, use the forcelabels attribute. 
+   */
+  void SetXLabel(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::XLABEL, val);
+  }
 };
 
-class EdgeAttributeSet {
-private:
-  std::vector<Attribute*> _attributes;
-
+class EdgeAttributeSet : AttributeSet {
 public:
   EdgeAttributeSet() { };
+
+  /**
+   * Hyperlinks incorporated into device-dependent output. At present, used in
+   * ps2, cmap, i*map and svg formats. For all these formats, URLs can be
+   * attached to nodes, edges and clusters. URL attributes can also be attached
+   * to the root graph in ps2, cmap and i*map formats. This serves as the base
+   * URL for relative URLs in the former, and as the default image map file in
+   * the latter.
+   * 
+   * For svg, cmapx and imap output, the active area for a node is its visible
+   * image. For example, an unfilled node with no drawn boundary will only be
+   * active on its label. For other output, the active area is its bounding box.
+   * The active area for a cluster is its bounding box. For edges, the active
+   * areas are small circles where the edge contacts its head and tail nodes. In
+   * addition, for svg, cmapx and imap, the active area includes a thin polygon
+   * approximating the edge. The circles may overlap the related node, and the
+   * edge URL dominates. If the edge has a label, this will also be active.
+   * Finally, if the edge has a head or tail label, this will also be active.
+   *
+   * Note that, for edges, the attributes headURL, tailURL, labelURL and edgeURL
+   * allow control of various parts of an edge. Also note that, if active areas
+   * of two edges overlap, it is unspecified which area dominates. 
+   */
+  void SetURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::URL, val);
+  }
+
+  /**
+   * Style of arrowhead on the head node of an edge. This will only appear if
+   * the dir attribute is "forward" or "both".
+   */
+  void SetArrowHead(EdgeArrowTypeName::e val) {
+    AddEnumAttribute<EdgeArrowTypeName::e, EdgeArrowTypeName>(
+      AttributeType::ARROWHEAD, val);
+  }
+
+  /**
+   * Multiplicative scale factor for arrowheads. 
+   */
+  void SetArrowSize(double val) {
+    AddFirstClassAttribute<double>(AttributeType::ARROWSIZE, val);
+  }
+
+  /**
+   * Style of arrowhead on the tail node of an edge. This will only appear if
+   * the dir attribute is "back" or "both". 
+   */
+  void SetArrowTail(EdgeArrowTypeName::e val) {
+    AddEnumAttribute<EdgeArrowTypeName::e, EdgeArrowTypeName>(
+      AttributeType::ARROWTAIL, val);
+  }
+
+  /**
+   * Basic drawing color for graphics, not text. For the latter, use the
+   * fontcolor attribute.
+   *
+   * For edges, the value can either be a single color or a colorList. In the
+   * latter case, the edge is drawn using parallel splines or lines, one for
+   * each color in the list, in the order given. The head arrow, if any, is
+   * drawn using the first color in the list, and the tail arrow, if any, the
+   * second color. This supports the common case of drawing opposing edges, but
+   * using parallel splines instead of separately routed multiedges.
+   * See http://www.graphviz.org/content/attrs#dcolor for more information.
+   */
+  void SetColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::COLOR, val);
+  }
+  void SetColor(const std::vector<Color::e>& vals) {
+    AddEnumListAttribute<Color::e, Color>(AttributeType::COLOR, vals);
+  }
+
+  /**
+   * Comments are inserted into output. Device-dependent 
+   */
+  void SetComment(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::COMMENT, val);
+  }
+
+  /**
+   * If false, the edge is not used in ranking the nodes.
+   */
+  void SetConstraint(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::CONSTRAINT, val);
+  }
+
+  /**
+   * If true, attach edge label to edge by a 2-segment polyline, underlining the
+   * label, then going to the closest point of spline. 
+   */
+  void SetDecorate(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::DECORATE, val);
+  }
+
+  /**
+   * Set edge type for drawing arrowheads. This indicates which ends of the edge
+   * should be decorated with an arrowhead. The actual style of the arrowhead
+   * can be specified using the arrowhead and arrowtail attributes.
+   */
+  void SetDir(DirType::e val) {
+    AddEnumAttribute<DirType::e, DirType>(AttributeType::DIR, val);
+  }
+
+  /**
+   * If edgeURL is defined, this is the link used for the non-label parts of an
+   * edge. This value overrides any URL defined for the edge. Also, this value
+   * is used near the head or tail node unless overridden by a headURL or
+   * tailURL value, respectively.
+   */
+  void SetEdgeURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::EDGEURL, val);
+  }
+
+  /**
+   * If the edge has a URL or edgeURL attribute, this attribute determines which
+   * window of the browser is used for the URL attached to the non-label part of
+   * the edge. Setting it to "_graphviz" will open a new window if it doesn't
+   * already exist, or reuse it if it does. If undefined, the value of the
+   * target is used. 
+   */
+  void SetEdgeTarget(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::EDGETARGET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the non-label part of an edge. This is used
+   * only if the edge has a URL or edgeURL attribute. 
+   */
+  void SetEdgeTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::EDGETOOLTIP, val);
+  }
+
+  /**
+   * Color used to fill the background of a node or cluster assuming
+   * style=filled, or a filled arrowhead. If fillcolor is not defined, color is
+   * used. (For clusters, if color is not defined, bgcolor is used.) If this is
+   * not defined, the default is used, except for shape=point or when the output
+   * format is MIF, which use black by default.
+   *
+   * If the value is a colorList, a gradient fill is used. By default, this is a
+   * linear fill; setting style=radial will cause a radial fill. At present,
+   * only two colors are used. If the second color (after a colon) is missing,
+   * the default color is used for it. See also the gradientangle attribute for
+   * setting the gradient angle.
+   *
+   * Note that a cluster inherits the root graph's attributes if defined. Thus,
+   * if the root graph has defined a fillcolor, this will override a color or
+   * bgcolor attribute set for the cluster. 
+   */
+  void SetFillColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FILLCOLOR, val);
+  }
+  void SetFillColor(const std::vector<Color::e> vals) {
+    AddEnumListAttribute<Color::e, Color>(AttributeType::FILLCOLOR, vals);
+  }
+
+  /**
+   * Color used for text.
+   */  
+  void SetFontColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::FONTCOLOR, val);
+  }
+
+  /**
+   * Font used for text. This very much depends on the output format and, for
+   * non-bitmap output such as PostScript or SVG, the availability of the font
+   * when the graph is displayed or printed. As such, it is best to rely on font
+   * faces that are generally available, such as Times-Roman, Helvetica or
+   * Courier.
+   *
+   * If Graphviz was built using the fontconfig library, the latter library will
+   * be used to search for the font. However, if the fontname string contains a
+   * slash character "/", it is treated as a pathname for the font file, though
+   * font lookup will append the usual font suffixes.
+   *
+   * If Graphviz does not use fontconfig, fontname will be considered the name
+   * of a Type 1 or True Type font file. If you specify fontname=schlbk, the
+   * tool will look for a file named schlbk.ttf or schlbk.pfa or schlbk.pfb in
+   * one of the directories specified by the fontpath attribute. The lookup does
+   * support various aliases for the common fonts. 
+   */
+  void SetFontName(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::FONTNAME, val);
+  }
+
+  /**
+   * Font size, in points, used for text. 
+   */
+  void SetFontSize(double val) {
+    AddFirstClassAttribute<double>(AttributeType::FONTSIZE, val);
+  }
+
+  /**
+   * If headURL is defined, it is output as part of the head label of the edge.
+   * Also, this value is used near the head node, overriding any URL value. 
+   */
+  void SetHeadURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::HEADURL, val);
+  }
+
+  /**
+   * If true, the head of an edge is clipped to the boundary of the head node;
+   * otherwise, the end of the edge goes to the center of the node, or the
+   * center of a port, if applicable. 
+   */
+  void SetHeadClip(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::HEADCLIP, val);
+  }
+
+  /**
+   * Text label to be placed near head of edge.
+   */
+  void SetHeadLabel(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::HEADLABEL, val);
+  }
+
+  /**
+   * Indicates where on the head node to attach the head of the edge. In the
+   * default case, the edge is aimed towards the center of the node, and then
+   * clipped at the node boundary. 
+   */
+  void SetHeadPort(CompassPoint::e val) {
+    AddEnumAttribute<CompassPoint::e, CompassPoint>(AttributeType::HEADPORT,
+      val);
+  }
+
+  /**
+   * If the edge has a headURL, this attribute determines which window of the
+   * browser is used for the URL. Setting it to "_graphviz" will open a new
+   * window if it doesn't already exist, or reuse it if it does. If undefined,
+   * the value of the target is used. 
+   */
+  void SetHeadTarget(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::HEADTARGET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the head of an edge. This is used only if
+   * the edge has a headURL attribute. 
+   */
+  void SetHeadTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::HEADTOOLTIP, val);
+  }
+
+  /**
+   * If labelURL is defined, this is the link used for the label of an edge.
+   * This value overrides any URL defined for the edge. 
+   */
+  void SetLabelURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::LABELURL, val);
+  }
+
+  /**
+   * This, along with labeldistance, determine where the headlabel (taillabel)
+   * are placed with respect to the head (tail) in polar coordinates. The origin
+   * in the coordinate system is the point where the edge touches the node. The
+   * ray of 0 degrees goes from the origin back along the edge, parallel to the
+   * edge at the origin.
+   *
+   * The angle, in degrees, specifies the rotation from the 0 degree ray, with
+   * positive angles moving counterclockwise and negative angles moving
+   * clockwise. 
+   */
+  void SetLabelAngle(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LABELANGLE, val);
+  }
+
+  /**
+   * Multiplicative scaling factor adjusting the distance that the
+   * headlabel(taillabel) is from the head(tail) node. The default distance is
+   * 10 points. See labelangle for more details. 
+   */
+  void SetLabelDistance(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LABELDISTANCE, val);
+  }
+
+  /**
+   * If true, allows edge labels to be less constrained in position. In
+   * particular, it may appear on top of other edges. 
+   */
+  void SetLabelFloat(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::LABELFLOAT, val);
+  }
+
+  /**
+   * Color used for headlabel and taillabel. If not set, defaults to edge's
+   * fontcolor. 
+   */
+  void SetLabelFontColor(Color::e val) {
+    AddEnumAttribute<Color::e, Color>(AttributeType::LABELFONTCOLOR, val);
+  }
+
+  /**
+   * Font used for headlabel and taillabel. If not set, defaults to edge's
+   * fontname. 
+   */
+  void SetLabelFontName(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::LABELFONTNAME, val);
+  }
+
+  /**
+   * Font size, in points, used for headlabel and taillabel. If not set,
+   * defaults to edge's fontsize. 
+   */
+  void SetLabelFontSize(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LABELFONTSIZE, val);
+  }
+
+  /**
+   * If the edge has a URL or labelURL attribute, this attribute determines
+   * which window of the browser is used for the URL attached to the label.
+   * Setting it to "_graphviz" will open a new window if it doesn't already
+   * exist, or reuse it if it does. If undefined, the value of the target is
+   * used. 
+   */
+  void SetLabelTarget(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::LABELTARGET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to label of an edge. This is used only if the
+   * edge has a URL or labelURL attribute. 
+   */
+  void SetLabelTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::LABELTOOLTIP, val);
+  }
+
+  /**
+   * Preferred edge length, in inches. 
+   */
+  void SetLen(double val) {
+    AddFirstClassAttribute<double>(AttributeType::LEN, val);
+  }
+
+  /**
+   * Logical head of an edge. When compound is true, if lhead is defined and is
+   * the name of a cluster containing the real head, the edge is clipped to the
+   * boundary of the cluster.
+   */
+  void SetLHead(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::LHEAD, val);
+  }
+
+  /**
+   * Label position, in points. The position indicates the center of the label.
+   */
+  void SetLP(double x, double y) {
+    AddPointAttribute(AttributeType::LP, x, y);
+  }
+
+  /**
+   * Logical tail of an edge. When compound is true, if ltail is defined and is
+   * the name of a cluster containing the real tail, the edge is clipped to the
+   * boundary of the cluster.
+   */
+  void SetLTail(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::LTAIL, val);
+  }
+
+  /**
+   * Minimum edge length (rank difference between head and tail). 
+   */
+  void SetMinLen(int val) {
+    AddFirstClassAttribute<int>(AttributeType::MINLEN, val);
+  }
+
+  /**
+   * By default, the justification of multi-line labels is done within the
+   * largest context that makes sense. Thus, in the label of a polygonal node, a
+   * left-justified line will align with the left side of the node (shifted by
+   * the prescribed margin). In record nodes, left-justified line will line up
+   * with the left side of the enclosing column of fields. If nojustify is
+   * "true", multi-line labels will be justified in the context of itself. For
+   * example, if the attribute is set, the first label line is long, and the
+   * second is shorter and left-justified, the second will align with the
+   * left-most character in the first line, regardless of how large the node
+   * might be.
+   */
+  void SetNoJustify(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::NOJUSTIFY, val);
+  }
+
+  /**
+   * Specifies the width of the pen, in points, used to draw lines and curves,
+   * including the boundaries of edges and clusters. The value is inherited by
+   * subclusters. It has no effect on text.
+   *
+   * Previous to 31 January 2008, the effect of penwidth=W was achieved by
+   * including setlinewidth(W) as part of a style specification. If both are
+   * used, penwidth will be used. 
+   */
+  void SetPenWidth(double val) {
+    AddFirstClassAttribute<double>(AttributeType::PENWIDTH, val);
+  }
+
+  /**
+   * Position of node, or spline control points. For nodes, the position
+   * indicates the center of the node. On output, the coordinates are in points.
+   *
+   * In neato and fdp, pos can be used to set the initial position of a node. By
+   * default, the coordinates are assumed to be in inches. However, the -s
+   * command line flag can be used to specify different units. As the output
+   * coordinates are in points, feeding the output of a graph laid out by a
+   * Graphviz program into neato or fdp will almost always require the -s flag.
+   *
+   * When the -n command line flag is used with neato, it is assumed the
+   * positions have been set by one of the layout programs, and are therefore in
+   * points. Thus, neato -n can accept input correctly without requiring a -s
+   * flag and, in fact, ignores any such flag. 
+   */
+  void SetPos(double x, double y) {
+    AddPointAttribute(AttributeType::POS, x, y);
+  }
+  void SetPos(SplineType::e val) {
+    AddEnumAttribute<SplineType::e, SplineType>(AttributeType::POS, val);
+  }
+  void SetPos(QuadType::e val) {
+    AddEnumAttribute<QuadType::e, QuadType>(AttributeType::POS, val);
+  }
+
+  /**
+   * Edges with the same head and the same samehead value are aimed at the same
+   * point on the head. This has no effect on loops.
+   */
+  void SetSameHead(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::SAMEHEAD, val);
+  }
+
+  /**
+   * Edges with the same tail and the same sametail value are aimed at the same
+   * point on the tail. This has no effect on loops.
+   */
+  void SetSameTail(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::SAMETAIL, val);
+  }
+
+  /**
+   * Print guide boxes in PostScript at the beginning of routesplines if 1, or
+   * at the end if 2. (Debugging) 
+   */
+  void SetShowBoxes(unsigned val) {
+    if (val > 2) val = 2;
+    AddFirstClassAttribute<unsigned>(AttributeType::SHOWBOXES, val);
+  }
+
+  /**
+   * Set style information for components of the graph. For cluster subgraphs,
+   * if "filled", the cluster box's background is filled.
+   *
+   * Syntax is styleItem ( ',' styleItem )*
+   * where styleItem = name or name'('args')'
+   * and args  = name ( ',' name )*
+   * and name can be any string of characters not containing a space, a left or
+   * right parenthesis, or a comma. Note that whitespace characters are ignored.
+   *
+   * At present, the recognized style names are "dashed", "dotted", "solid",
+   * "invis" and "bold" for nodes and edges, "tapered" for edges only, and
+   * "filled", "diagonals" and "rounded" for nodes only. The styles "filled" and
+   * "rounded" are recognized for clusters. The style "radial" is recognized for
+   * nodes, clusters and graphs, and indicates a radial-style gradient fill if
+   * applicable. Additional styles are available in device-dependent form. Style
+   * lists are passed to device drivers, which can use this to generate
+   * appropriate output.
+   *
+   * The setlinewidth style value can be used for more control over the width of
+   * node borders and edges than is allowed by bold. This style value takes an
+   * argument, specifying the width of the line in points. For example,
+   * style="bold" is equivalent to style="setlinewidth(2)". The use of
+   * setlinewidth is deprecated; one should use the penwidth attribute instead. 
+   *
+   * TODO(jvilk): Make a custom object for this for validation purposes.
+   */
+  void SetStyle(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLE, val);
+  }
+
+  /**
+   * If tailURL is defined, it is output as part of the tail label of the edge.
+   * Also, this value is used near the tail node, overriding any URL value.
+   */
+  void SetTailURL(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TAILURL, val);
+  }
+
+  /**
+   * If true, the tail of an edge is clipped to the boundary of the tail node;
+   * otherwise, the end of the edge goes to the center of the node, or the
+   * center of a port, if applicable. 
+   */
+  void SetTailClip(bool val) {
+    AddFirstClassAttribute<bool>(AttributeType::TAILCLIP, val);
+  }
+
+  /**
+   * Text label to be placed near tail of edge.
+   */
+  void SetTailLabel(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TAILLABEL, val);
+  }
+
+  /**
+   * Indicates where on the tail node to attach the tail of the edge. 
+   */
+  void SetTailPort(CompassPoint::e val) {
+    AddEnumAttribute<CompassPoint::e, CompassPoint>(AttributeType::TAILPORT,
+      val);
+  }
+
+  /**
+   * If the edge has a tailURL, this attribute determines which window of the
+   * browser is used for the URL. Setting it to "_graphviz" will open a new
+   * window if it doesn't already exist, or reuse it if it does. If undefined,
+   * the value of the target is used. 
+   */
+  void SetTailTarget(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::TAILTARGET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the tail of an edge. This is used only if
+   * the edge has a tailURL attribute. 
+   */
+  void SetTailToolTip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TAILTOOLTIP, val);
+  }  
+
+  /**
+   * If the object has a URL, this attribute determines which window of the
+   * browser is used for the URL. See W3C documentation. 
+   */
+  void SetTarget(std::string val) {
+    AddFirstClassAttribute<std::string>(AttributeType::STYLESHEET, val);
+  }
+
+  /**
+   * Tooltip annotation attached to the node or edge. If unset, Graphviz will
+   * use the object's label if defined. Note that if the label is a record
+   * specification or an HTML-like label, the resulting tooltip may be
+   * unhelpful. In this case, if tooltips will be generated, the user should set
+   * a tooltip attribute explicitly. 
+   */
+  void SetTooltip(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::TOOLTIP, val);
+  }
+
+  /**
+   * Weight of edge. In dot, the heavier the weight, the shorter, straighter and
+   * more vertical the edge is. N.B. Weights in dot must be integers. For other
+   * layouts, a larger weight encourages the layout to make the edge length
+   * closer to that specified by the len attribute. 
+   */
+  void SetWeight(double val) {
+    AddFirstClassAttribute<double>(AttributeType::WEIGHT, val);
+  }
+
+  /**
+   * External label for a node or edge. For nodes, the label will be placed
+   * outside of the node but near it. For edges, the label will be placed near
+   * the center of the edge. This can be useful in dot to avoid the occasional
+   * problem when the use of edge labels distorts the layout. For other layouts,
+   * the xlabel attribute can be viewed as a synonym for the label attribute.
+   *
+   * These labels are added after all nodes and edges have been placed. The
+   * labels will be placed so that they do not overlap any node or label. This
+   * means it may not be possible to place all of them. To force placing all of
+   * them, use the forcelabels attribute. 
+   */
+  void SetXLabel(std::string val) {
+    val = SanitizeString(val);
+    AddFirstClassAttribute<std::string>(AttributeType::XLABEL, val);
+  }
 };
 
 }  //namespace DotWriter
