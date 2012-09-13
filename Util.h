@@ -1,8 +1,8 @@
 /**
  * Contains a number of utility functions.
  */
-#ifndef UTIL_H_
-#define UTIL_H_
+#ifndef DOTWRITER_UTIL_H_
+#define DOTWRITER_UTIL_H_
 
 #include <string>
 

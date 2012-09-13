@@ -13,7 +13,7 @@ namespace DotWriter {
  *
  * Returns false if the operation fails, e.g. due to being unable to open the file.
  */
-bool RootGraph::WriteToFile(std::string& filename) {
+bool RootGraph::WriteToFile(const std::string& filename) {
   //Ensure that we can write to filename.
   std::ofstream outFile;
   outFile.open(filename.c_str(), std::ios::out);

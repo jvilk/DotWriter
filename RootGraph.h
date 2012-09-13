@@ -12,7 +12,7 @@
 
 namespace DotWriter {
 
-class RootGraph : Graph {
+class RootGraph : public Graph {
 private:
   GraphAttributeSet _attributes;
 
@@ -36,7 +36,7 @@ public:
    *
    * Returns true if successful, false otherwise.
    */
-  bool WriteToFile(std::string& filename);
+  bool WriteToFile(const std::string& filename);
 
   virtual void Print(std::ostream& out);
 };

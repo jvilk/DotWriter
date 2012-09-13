@@ -10,5 +10,10 @@
 #include "Graph.h"
 #include "Edge.h"
 #include "Node.h"
+#include "RootGraph.h"
+#include "Subgraph.h"
+#include "Cluster.h"
+#include "AttributeSet.h"
+#include "Attribute.h"
 
 #endif

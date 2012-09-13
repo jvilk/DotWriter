@@ -7,10 +7,11 @@ const std::string& IdManager::GetNodeId() {
   nodeStream << "Node" << GetNextNodeIdNum();
 
   const std::string idStr = nodeStream.str();
-  std::pair<const std::string&, bool> retVal = RegisterId(idStr);
+  bool success;
+  const std::string& val = RegisterId(&success, idStr);
 
-  if (retVal.second) {
-    return retVal.first;
+  if (success) {
+    return val;
   }
 
   // Recurse if the chosen graph ID was already taken. This means that
@@ -23,10 +24,11 @@ const std::string& IdManager::GetSubgraphId() {
   graphStream << "Graph" << GetNextSubgraphIdNum();
 
   const std::string idStr = graphStream.str();
-  std::pair<const std::string&, bool> retVal = RegisterId(idStr);
+  bool success;
+  const std::string& val = RegisterId(&success, idStr);
 
-  if (retVal.second) {
-    return retVal.first;
+  if (success) {
+    return val;
   }
 
   // Recurse if the chosen graph ID was already taken. This means that
@@ -35,23 +37,27 @@ const std::string& IdManager::GetSubgraphId() {
 }
 
 const std::string& IdManager::ValidateCustomId(std::string customId) {
-  std::pair<const std::string&, bool> retVal = RegisterId(customId);
-  if (retVal.second) {
-    return retVal.first;
+  bool success;
+  const std::string& val = RegisterId(&success, customId);
+
+  if (success) {
+    return val;
   }
 
   std::ostringstream oss;
   std::string newCustomId;
 
-  while (!retVal.second) {
+  while (!success) {
     oss << customId << GetNextCustomIdNum(); 
 
     newCustomId = oss.str();
-    retVal = RegisterId(newCustomId);
+    const std::string& val2 = RegisterId(&success, newCustomId);
+    if (success) return val2;
     oss.clear();
   }
 
-  return retVal.first;
+  // Unreachable.
+  return val;
 }
 
 }  // namespace DotWriter

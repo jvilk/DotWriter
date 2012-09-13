@@ -13,7 +13,7 @@
 
 namespace DotWriter {
 
-class Subgraph : Graph {
+class Subgraph : public Graph {
 private:
   SubgraphAttributeSet _attributes;
 

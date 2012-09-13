@@ -6,7 +6,7 @@
 
 namespace DotWriter {
 
-class Cluster : Graph {
+class Cluster : public Graph {
 private:
   ClusterAttributeSet _attributes;
 

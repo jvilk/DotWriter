@@ -38,18 +38,16 @@ private:
   }
 
   /**
-   * Registers the given ID with the ID manager. Returns a pair of:
-   * * Reference to the ID string.
-   * * A boolean that indicates if this ID was unique or not.
-   *
-   * The caller should check the second value. If it is false, then
-   * a new ID must be chosen.
+   * Registers the given ID with the ID manager.
+   * Returns the string, and mutates success with whether or not the
+   * registration succeeded.
    */
-  std::pair<const std::string&, bool> RegisterId(const std::string& id) {
+  const std::string& RegisterId(bool* success, const std::string& id) {
     std::pair<std::set<std::string>::iterator, bool> retVal =
         _existingIds.insert(id);
 
-    return std::pair<const std::string&, bool>(*retVal.first, retVal.second);
+    *success = retVal.second;
+    return *retVal.first;
   }
 
 public:
