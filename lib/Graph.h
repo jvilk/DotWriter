@@ -80,9 +80,8 @@ public:
   /**
    * Create a new subgraph on this graph.
    */
-  Subgraph* AddSubgraph(bool isDigraph = false, std::string label = "");
-  Subgraph* AddSubgraph(bool isDigraph, const std::string& label,
-    const std::string& id);
+  Subgraph* AddSubgraph(const std::string& label = "");
+  Subgraph* AddSubgraph(const std::string& label, const std::string& id);
 
   /**
    * Remove the given subgraph from this graph.
@@ -92,9 +91,8 @@ public:
   /**
    * Create a new cluster on this graph.
    */
-  Cluster* AddCluster(bool isDigraph = false, std::string label = "");
-  Cluster* AddCluster(bool isDigraph, const std::string& label,
-    const std::string& id);
+  Cluster* AddCluster(const std::string& label = "");
+  Cluster* AddCluster(const std::string& label, const std::string& id);
 
   /**
    * Remove the given cluster from this graph.

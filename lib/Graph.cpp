@@ -28,17 +28,16 @@ Graph::~Graph() {
   }
 }
 
-Subgraph* Graph::AddSubgraph(bool isDigraph, std::string label) {
+Subgraph* Graph::AddSubgraph(const std::string& label) {
   Subgraph* sg = new Subgraph(_idManager->GetSubgraphId(), _idManager,
-    isDigraph, label);
+    IsDigraph(), label);
   _subgraphs.push_back(sg);
   return sg;
 }
 
-Subgraph* Graph::AddSubgraph(bool isDigraph, const std::string& label,
-  const std::string& id) {
+Subgraph* Graph::AddSubgraph(const std::string& label, const std::string& id) {
   std::string sanitizedId = _idManager->ValidateCustomId(id);
-  Subgraph* sg = new Subgraph(sanitizedId, _idManager, isDigraph, label);
+  Subgraph* sg = new Subgraph(sanitizedId, _idManager, IsDigraph(), label);
   _subgraphs.push_back(sg);
   return sg;
 }
@@ -53,17 +52,16 @@ void Graph::RemoveSubgraph(Subgraph* subgraph) {
   delete subgraph;
 }
 
-Cluster* Graph::AddCluster(bool isDigraph, std::string label) {
+Cluster* Graph::AddCluster(const std::string& label) {
   Cluster* cluster = new Cluster(_idManager->GetSubgraphId(), _idManager,
-    isDigraph, label);
+    IsDigraph(), label);
   _clusters.push_back(cluster);
   return cluster;
 }
 
-Cluster* Graph::AddCluster(bool isDigraph, const std::string& label,
-  const std::string& id) {
+Cluster* Graph::AddCluster(const std::string& label, const std::string& id) {
   std::string sanitizedId = _idManager->ValidateCustomId(id);
-  Cluster* cluster = new Cluster(sanitizedId, _idManager, isDigraph, label);
+  Cluster* cluster = new Cluster(sanitizedId, _idManager, IsDigraph(), label);
   _clusters.push_back(cluster);
   return cluster;
 }
