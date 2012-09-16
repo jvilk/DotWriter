@@ -69,12 +69,23 @@ public:
   const std::string& GetSubgraphId();
 
   /**
+   * Get a unique cluster ID. Used when a user does not specify an ID.
+   */
+  const std::string& GetClusterId();
+
+  /**
    * This is used to validate IDs specified by the user of the API
    * (e.g. not retrieved through the GetId functions provided by this class).
    * This checks if the ID is unique. If it is not, it will append a number to
    * it until it is unique.
    */
   const std::string& ValidateCustomId(std::string customId);
+
+  /**
+   * Same as 'ValidateCustomId', but ensured that the ID begins with 'cluster'.
+   * This is required, unfortunately, for a subgraph to be treated as a cluster.
+   */
+  const std::string& ValidateCustomClusterId(std::string customId);
 };
 
 }  // namespace DotWriter

@@ -53,14 +53,14 @@ void Graph::RemoveSubgraph(Subgraph* subgraph) {
 }
 
 Cluster* Graph::AddCluster(const std::string& label) {
-  Cluster* cluster = new Cluster(_idManager->GetSubgraphId(), _idManager,
+  Cluster* cluster = new Cluster(_idManager->GetClusterId(), _idManager,
     IsDigraph(), label);
   _clusters.push_back(cluster);
   return cluster;
 }
 
 Cluster* Graph::AddCluster(const std::string& label, const std::string& id) {
-  std::string sanitizedId = _idManager->ValidateCustomId(id);
+  std::string sanitizedId = _idManager->ValidateCustomClusterId(id);
   Cluster* cluster = new Cluster(sanitizedId, _idManager, IsDigraph(), label);
   _clusters.push_back(cluster);
   return cluster;
