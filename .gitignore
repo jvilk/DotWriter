@@ -5,7 +5,7 @@ AUTHORS
 COPYING
 ChangeLog
 INSTALL
-Makefile.in
+*Makefile.in
 NEWS
 README
 aclocal.m4
