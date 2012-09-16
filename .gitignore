@@ -16,3 +16,13 @@ depcomp
 install-sh
 ltmain.sh
 missing
+Makefile
+config.log
+config.status
+lib/.deps/
+lib/.libs/
+*.lo
+*.o
+*.la
+libtool
+

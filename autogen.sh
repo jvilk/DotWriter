@@ -1,2 +1,2 @@
-touch NEWS README AUTHORS ChangeLog
+touch NEWS README AUTHORS ChangeLog COPYING
 autoreconf --force --install
