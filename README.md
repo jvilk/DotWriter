@@ -17,6 +17,15 @@ DotWriter allows you to specify arbitrarily complex graphs that feature:
 It supports most of the attributes listed on the GraphViz webpage:
 http://www.graphviz.org/content/attrs
 
+Building / Installing
+---------------------
+```shell
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
 Todo
 ----
 There are still a number of things that need to be done.
