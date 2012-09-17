@@ -4,7 +4,7 @@
 #include <ostream>
 
 namespace DotWriter {
-  
+
 void Edge::Print(bool isDirected, std::ostream& out) {
   out << _src->GetId() << (isDirected ? "->" : "--") << _dst->GetId();
 

@@ -42,6 +42,13 @@ public:
   }
 
   /**
+   * Get the type of the attribute.
+   */
+  AttributeType::e GetType() {
+    return _type;
+  }
+
+  /**
    * Prints the DOT representation of this attribute to the output stream.
    * (e.g. AttributeName = Value)
    */
