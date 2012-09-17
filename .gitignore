@@ -24,5 +24,6 @@ lib/.libs/
 *.lo
 *.o
 *.la
+*.so
 libtool
 
