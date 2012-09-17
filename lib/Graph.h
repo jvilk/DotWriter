@@ -14,6 +14,7 @@
 #include "Enums.h"
 #include "AttributeSet.h"
 #include "IdManager.h"
+#include "Idable.h"
 
 namespace DotWriter {
 
@@ -25,14 +26,10 @@ class Node;
 /**
  * Represents a graph. It's a bag of nodes and edges, basically.
  */
-class Graph {
+class Graph : public Idable  {
 protected:
   bool _isDigraph;
   IdManager* _idManager;   // Managed by root graph.
-  const std::string& _id;  // Reference to unique ID stored in the _idManager.
-                           // Not really all that important, as you don't
-                           // reference this in the DOT file. Dotty seems to
-                           // want one on the master graph regardless.
   // I use vector since output order matters.
   std::string _label;
   std::vector<Node *> _nodes;
@@ -51,8 +48,9 @@ public:
    */
   Graph(IdManager* idManager, bool isDigraph = false, std::string label = "",
     std::string id = "somegraph") :
+    Idable(idManager->ValidateCustomId(id)),
     _isDigraph(isDigraph), _idManager(idManager),
-    _id(_idManager->ValidateCustomId(id)), _label(label),
+    _label(label),
     _defaultNodeAttributes(NodeAttributeSet()),
     _defaultEdgeAttributes(EdgeAttributeSet()) {
   }
@@ -71,10 +69,6 @@ public:
 
   NodeAttributeSet& GetDefaultNodeAttributes() {
     return _defaultNodeAttributes;
-  }
-
-  const std::string& GetId() {
-    return _id;
   }
 
   /**

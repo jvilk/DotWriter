@@ -1,9 +1,14 @@
 #include "Edge.h"
 #include "Node.h"
+#include "Graph.h"
 
 #include <ostream>
 
 namespace DotWriter {
+
+Edge::Edge(Idable * src, Idable * dst, std::string label) : _src(src),
+  _dst(dst), _label(label) {
+}
 
 void Edge::Print(bool isDirected, std::ostream& out) {
   out << _src->GetId() << (isDirected ? "->" : "--") << _dst->GetId();

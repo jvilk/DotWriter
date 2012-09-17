@@ -15,5 +15,6 @@
 #include "Cluster.h"
 #include "AttributeSet.h"
 #include "Attribute.h"
+#include "Idable.h"
 
 #endif

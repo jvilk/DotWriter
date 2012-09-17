@@ -2,34 +2,32 @@
 #define DOTWRITER_EDGE_H_
 
 #include "AttributeSet.h"
+#include "Idable.h"
 
 namespace DotWriter {
+
+class Graph;
 
 /**
  * Represents an edge in a graph.
  */
 class Edge {
 private:
-  Node * _src;
-  Node * _dst;
+  Idable * _src;
+  Idable * _dst;
   std::string _label;
   EdgeAttributeSet _attributes;
 
 public:
-  Edge(Node * src, Node * dst) : _src(src), _dst(dst), _label("") {
-  }
-
-  Edge(Node * src, Node * dst, const std::string& label) : _src(src), _dst(dst),
-    _label(label) {
-  }
+  Edge(Idable * src, Idable * dst, std::string label = "");
 
   virtual ~Edge() {};
 
-  Node * GetSource() {
+  Idable * GetSource() {
     return _src;
   }
 
-  Node * GetDest() {
+  Idable * GetDest() {
     return _dst;
   }
 
