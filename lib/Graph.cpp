@@ -105,13 +105,13 @@ void Graph::RemoveNode(Node* node) {
   delete node;
 }
 
-Edge* Graph::AddEdge(Node* src, Node* dst) {
+Edge* Graph::AddEdge(Idable* src, Idable* dst) {
   Edge* edge = new Edge(src, dst);
   _edges.push_back(edge);
   return edge;
 }
 
-Edge* Graph::AddEdge(Node* src, Node* dst, const std::string& label) {
+Edge* Graph::AddEdge(Idable* src, Idable* dst, const std::string& label) {
   Edge* edge = new Edge(src, dst, label);
   _edges.push_back(edge);
   return edge;
