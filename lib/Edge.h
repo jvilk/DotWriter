@@ -13,21 +13,21 @@ class Graph;
  */
 class Edge {
 private:
-  Idable * _src;
-  Idable * _dst;
+  Node * _src;
+  Node * _dst;
   std::string _label;
   EdgeAttributeSet _attributes;
 
 public:
-  Edge(Idable * src, Idable * dst, std::string label = "");
+  Edge(Node * src, Node * dst, std::string label = "");
 
   virtual ~Edge() {};
 
-  Idable * GetSource() {
+  Node * GetSource() {
     return _src;
   }
 
-  Idable * GetDest() {
+  Node * GetDest() {
     return _dst;
   }
 

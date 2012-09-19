@@ -6,7 +6,7 @@
 
 namespace DotWriter {
 
-Edge::Edge(Idable * src, Idable * dst, std::string label) : _src(src),
+Edge::Edge(Node * src, Node * dst, std::string label) : _src(src),
   _dst(dst), _label(label) {
 }
 

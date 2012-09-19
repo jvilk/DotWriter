@@ -123,8 +123,8 @@ public:
    * Add an edge to the graph. Returns a reference to the edge that can be
    * manipulated to change edge properties.
    */
-  Edge* AddEdge(Idable* src, Idable* dst);
-  Edge* AddEdge(Idable* src, Idable* dst, const std::string& label);
+  Edge* AddEdge(Node* src, Node* dst);
+  Edge* AddEdge(Node* src, Node* dst, const std::string& label);
 
   /**
    * Removes the edge from the graph. Note that this also deletes the GEdge
