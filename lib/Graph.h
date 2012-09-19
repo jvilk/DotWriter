@@ -38,6 +38,10 @@ protected:
   std::vector<Cluster *> _clusters;
   NodeAttributeSet _defaultNodeAttributes;
   EdgeAttributeSet _defaultEdgeAttributes;
+  // Used as 'tab' in output DOT files.
+  static const char _tabCharacter;
+  // Used to determine how many _tabCharacters are printed per tab level.
+  static const unsigned _tabIncrement;
 
 public:
   /**
@@ -138,13 +142,13 @@ public:
    */
   //void RemoveEdge(Node* src, Node* dst);
 
-  virtual void Print(std::ostream& out) = 0;
+  virtual void Print(std::ostream& out, unsigned tabDepth) = 0;
 
 protected:
   /**
    * Prints nodes, edges, cluster subgraphs, and subgraphs.
    */
-  void PrintNECS(std::ostream& out);
+  void PrintNECS(std::ostream& out, unsigned tabDepth);
 };
 
 

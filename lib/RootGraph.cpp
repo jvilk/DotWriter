@@ -27,16 +27,17 @@ bool RootGraph::WriteToFile(const std::string& filename) {
   return true;
 }
 
-void RootGraph::Print(std::ostream& out) {
+void RootGraph::Print(std::ostream& out, unsigned tabDepth) {
   out << (IsDigraph() ? "digraph " : "graph ") << GetId() << " {\n";
+  std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
 
   if (!_attributes.Empty()) {
-    out << "graph [";
+    out << linePrefix << "graph [";
     _attributes.Print(out);
     out << "];\n";
   }
 
-  PrintNECS(out);
+  PrintNECS(out, tabDepth);
 
   out << "}\n";
 }

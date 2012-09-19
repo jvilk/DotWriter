@@ -30,7 +30,7 @@ public:
     return _attributes;
   }
 
-  virtual void Print(std::ostream& out);
+  virtual void Print(std::ostream& out, unsigned tabDepth);
 };
 
 }  // namespace DotWriter

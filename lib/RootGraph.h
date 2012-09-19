@@ -38,7 +38,7 @@ public:
    */
   bool WriteToFile(const std::string& filename);
 
-  virtual void Print(std::ostream& out);
+  virtual void Print(std::ostream& out, unsigned tabDepth = 1);
 };
 
 }  // namespace DotWriter

@@ -2,18 +2,22 @@
 
 namespace DotWriter {
 
-void Cluster::Print(std::ostream& out) {
-  out << "subgraph " << GetId() << " {\n";
+void Cluster::Print(std::ostream& out, unsigned tabDepth) {
+  std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
+  std::string titlePrefix =
+    std::string((tabDepth-1)*_tabIncrement, _tabCharacter);
+
+  out << titlePrefix << "subgraph " << GetId() << " {\n";
 
   if (!_attributes.Empty()) {
-    out << "graph [";
+    out << linePrefix << "graph [";
     _attributes.Print(out);
     out << "];\n";
   }
 
-  PrintNECS(out);
+  PrintNECS(out, tabDepth);
 
-  out << "}\n";
+  out << titlePrefix << "}\n";
 }
 
 }  // namespace DotWriter

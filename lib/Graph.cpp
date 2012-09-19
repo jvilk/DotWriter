@@ -11,6 +11,10 @@
 
 namespace DotWriter {
 
+// 'Tab' is two spaces
+const char Graph::_tabCharacter = ' ';
+const unsigned Graph::_tabIncrement = 2;
+
 Graph::~Graph() {
   std::vector<Node *>::iterator nodeIt;
   for (nodeIt = _nodes.begin(); nodeIt != _nodes.end(); nodeIt++) {
@@ -127,15 +131,19 @@ void Graph::RemoveEdge(Edge* edge) {
   delete edge;
 }
 
-void Graph::PrintNECS(std::ostream& out) {
+void Graph::PrintNECS(std::ostream& out, unsigned tabDepth) {
+  std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
+
   //Default styles.
   if (!_defaultNodeAttributes.Empty()) {
+    out << linePrefix;
     out << "node [";
     _defaultNodeAttributes.Print(out);
     out << "];";
   }
 
   if (!_defaultEdgeAttributes.Empty()) {
+    out << linePrefix;
     out << "edge [";
     _defaultEdgeAttributes.Print(out);
     out << "];";
@@ -144,6 +152,7 @@ void Graph::PrintNECS(std::ostream& out) {
   //Output nodes
   std::vector<Node*>::iterator nodeIt;
   for (nodeIt = _nodes.begin(); nodeIt != _nodes.end(); nodeIt++) {
+    out << linePrefix;
     Node* node = *nodeIt;
     node->Print(out);
   }
@@ -151,6 +160,7 @@ void Graph::PrintNECS(std::ostream& out) {
   //Output edges
   std::vector<Edge*>::iterator edgeIt;
   for (edgeIt = _edges.begin(); edgeIt != _edges.end(); edgeIt++) {
+    out << linePrefix;
     Edge* edge = *edgeIt;
     edge->Print(IsDigraph(), out);
   }
@@ -159,14 +169,14 @@ void Graph::PrintNECS(std::ostream& out) {
   std::vector<Subgraph*>::iterator sgIt;
   for (sgIt = _subgraphs.begin(); sgIt != _subgraphs.end(); sgIt++) {
     Subgraph* sg = *sgIt;
-    sg->Print(out);
+    sg->Print(out, tabDepth+1);
   }
 
   //Output cluster subgraphs.
   std::vector<Cluster*>::iterator cIt;
   for (cIt = _clusters.begin(); cIt != _clusters.end(); cIt++) {
     Cluster* cluster = *cIt;
-    cluster->Print(out);
+    cluster->Print(out, tabDepth+1);
   }
 }
 
