@@ -10,9 +10,8 @@ void Cluster::Print(std::ostream& out, unsigned tabDepth) {
   out << titlePrefix << "subgraph " << GetId() << " {\n";
 
   if (!_attributes.Empty()) {
-    out << linePrefix << "graph [";
-    _attributes.Print(out);
-    out << "];\n";
+    _attributes.Print(out, linePrefix);
+    out << ";\n";
   }
 
   PrintNECS(out, tabDepth);

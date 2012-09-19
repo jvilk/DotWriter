@@ -32,9 +32,8 @@ void RootGraph::Print(std::ostream& out, unsigned tabDepth) {
   std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
 
   if (!_attributes.Empty()) {
-    out << linePrefix << "graph [";
-    _attributes.Print(out);
-    out << "];\n";
+    _attributes.Print(out, linePrefix);
+    out << ";\n";
   }
 
   PrintNECS(out, tabDepth);

@@ -101,14 +101,16 @@ public:
     AddAttribute(new CustomAttribute(name, val));
   }
 
-  void Print(std::ostream& out) {
+  virtual void Print(std::ostream& out, const std::string& prefix = "",
+    const std::string& postfix = ", ") {
     std::vector<Attribute*>::iterator it;
     for (it = _attributes.begin(); it != _attributes.end(); it++) {
       Attribute* at = *it;
+      out << prefix;
       at->Print(out);
 
       if (it+1 != _attributes.end())
-        out << ",";
+        out << postfix;
     }
   }
 
@@ -214,6 +216,11 @@ protected:
 
 class GraphAttributeSet : public AttributeSet {
 public:
+  virtual void Print(std::ostream& out, const std::string& prefix = "",
+    const std::string& postfix = ";\n") {
+    AttributeSet::Print(out, prefix, postfix);
+  }
+
   GraphAttributeSet() { };
 
   /**
@@ -1243,6 +1250,10 @@ public:
 class SubgraphAttributeSet : public AttributeSet {
 public:
   SubgraphAttributeSet() { };
+  virtual void Print(std::ostream& out, const std::string& prefix = "",
+    const std::string& postfix = ";\n") {
+    AttributeSet::Print(out, prefix, postfix);
+  }
 
   void SetRank(RankType::e val) {
     AddEnumAttribute<RankType::e, RankType>(AttributeType::RANK, val);
@@ -1252,6 +1263,11 @@ public:
 class ClusterAttributeSet : public AttributeSet {
 public:
   ClusterAttributeSet() { };
+
+  virtual void Print(std::ostream& out, const std::string& prefix = "",
+    const std::string& postfix = ";\n") {
+    AttributeSet::Print(out, prefix, postfix);
+  }
 
   /**
    * Spring constant used in virtual physical model. It roughly corresponds to
