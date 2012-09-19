@@ -558,9 +558,7 @@ public:
   /**
    * Width of graph or cluster label, in inches.
    */
-  void SetLWidth(double val) {
-    AddSimpleAttribute<double>(AttributeType::LWIDTH, val);
-  }
+  SIMPLE_ATTRIBUTE(LWIDTH, LWidth, double)
 
   /**
    * For graphs, this sets x and y margins of canvas, in inches.
@@ -584,9 +582,7 @@ public:
   /**
    * Sets the number of iterations used.
    */
-  void SetMaxIter(int val) {
-    AddSimpleAttribute<int>(AttributeType::MAXITER, val);
-  }
+  SIMPLE_ATTRIBUTE(MAXITER, MaxIter, int)
 
   /**
    * Multiplicative scale factor used to alter the MinQuit (default = 8) and
@@ -594,16 +590,12 @@ public:
    * correspond to the number of tries without improvement before quitting and
    * the maximum number of iterations in each pass.
    */
-  void SetMCLimit(double val) {
-    AddSimpleAttribute<double>(AttributeType::MCLIMIT, val);
-  }
+  SIMPLE_ATTRIBUTE(MCLIMIT, MCLimit, double)
 
   /**
    * Specifies the minimum separation between all nodes.
    */
-  void SetMinDist(double val) {
-    AddSimpleAttribute<double>(AttributeType::MINDIST, val);
-  }
+  SIMPLE_ATTRIBUTE(MINDIST, MinDist, double)
 
   /**
    * Technique for optimizing the layout. For neato, if mode is "major", neato
@@ -617,9 +609,7 @@ public:
    * the graph to specify minimum vertical and horizontal distances between
    * nodes. (See the sep attribute.) "len" attribute.
    */
-  void SetMode(Mode::e val) {
-    AddEnumAttribute<Mode::e, Mode>(AttributeType::MODE, val);
-  }
+  ENUM_ATTRIBUTE(MODE, Mode, Mode)
 
   /**
    * This value specifies how the distance matrix is computed for the input
@@ -639,17 +629,13 @@ public:
    * Thus, by supplying a complete graph, the input can specify all of the
    * relevant distances.
    */
-  void SetModel(Model::e val) {
-    AddEnumAttribute<Model::e, Model>(AttributeType::MODEL, val);
-  }
+  ENUM_ATTRIBUTE(MODEL, Model, Model)
 
   /**
    * If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true, the
    * Mosek software (www.mosek.com) is use to solve the ipsep constraints.
    */
-  void SetMosek(bool val) {
-    AddBoolAttribute(AttributeType::MOSEK, val);
-  }
+  BOOL_ATTRIBUTE(MOSEK, Mosek)
 
   /**
    * In dot, this specifies the minimum space between two adjacent nodes in the
@@ -658,9 +644,7 @@ public:
    * For other layouts, this affects the spacing between loops on a single node,
    * or multiedges between a pair of nodes
    */
-  void SetNodeSep(double val) {
-    AddSimpleAttribute<double>(AttributeType::NODESEP, val);
-  }
+  SIMPLE_ATTRIBUTE(NODESEP, NodeSep, double)
 
   /**
    * By default, the justification of multi-line labels is done within the
@@ -674,18 +658,14 @@ public:
    * left-most character in the first line, regardless of how large the node
    * might be.
    */
-  void SetNoJustify(bool val) {
-    AddBoolAttribute(AttributeType::NOJUSTIFY, val);
-  }
+  BOOL_ATTRIBUTE(NOJUSTIFY, NoJustify)
 
   /**
    * If set, normalize coordinates of final layout so that the first point is at
    * the origin, and then rotate the layout so that the first edge is
    * horizontal.
    */
-  void SetNormalize(bool val) {
-    AddBoolAttribute(AttributeType::NORMALIZE, val);
-  }
+  BOOL_ATTRIBUTE(NORMALIZE, Normalize)
 
   /**
    * Used to set number of iterations in network simplex applications. nslimit
@@ -693,12 +673,8 @@ public:
    * defined, # iterations = nslimit(1) * # nodes; otherwise, # iterations =
    * MAXINT.
    */
-  void SetNsLimit(double val) {
-    AddSimpleAttribute<double>(AttributeType::NSLIMIT, val);
-  }
-  void SetNsLimit1(double val) {
-    AddSimpleAttribute<double>(AttributeType::NSLIMIT1, val);
-  }
+  SIMPLE_ATTRIBUTE(NSLIMIT, NsLimit, double)
+  SIMPLE_ATTRIBUTE(NSLIMIT1, NsLimit1, double)
 
   /**
    * If the value of the attribute is "out", then the outedges of a node, that
@@ -710,25 +686,20 @@ public:
    * or subgraph. Note that the graph attribute takes precedence over the node
    * attribute.
    */
-  void SetOrdering(Ordering::e val) {
-    AddEnumAttribute<Ordering::e, Ordering>(AttributeType::ORDERING, val);
-  }
+  ENUM_ATTRIBUTE(ORDERING, Ordering, Ordering)
 
   /**
    * If "[lL]*", set graph orientation to landscape Used only if rotate is not
    * defined.
    * TODO(jvilk): Huh.
    */
-  void SetOrientation(std::string val);
+  SIMPLE_ATTRIBUTE(ORIENTATION, Orientation, std::string)
 
   /**
    * Specify order in which nodes and edges are drawn.
    * TODO(jvilk): What does the value mean...
    */
-  void SetOutputOrder(OutputMode::e val) {
-    AddEnumAttribute<OutputMode::e, OutputMode>(AttributeType::OUTPUTORDER,
-      val);
-  }
+  ENUM_ATTRIBUTE(OUTPUTORDER, OutputOrder, OutputMode)
 
   /**
    * Determines if and how node overlaps should be removed. Nodes are first
@@ -798,9 +769,7 @@ public:
    *
    * TODO(jvilk): Try to add validation code to this...
    */
-  void SetOverlap(std::string val) {
-    AddSimpleAttribute<std::string>(AttributeType::OVERLAP, val);
-  }
+  SIMPLE_ATTRIBUTE(OVERLAP, Overlap, std::string)
 
   /**
    * When overlap=prism, the layout is scaled by this factor, thereby removing a
@@ -811,9 +780,7 @@ public:
    * times the average label size. If overlap_scaling is positive, the layout is
    * scaled by overlap_scaling. If overlap_scaling is zero, no scaling is done.
    */
-  void SetOverlapScaling(double val) {
-    AddSimpleAttribute<double>(AttributeType::OVERLAP_SCALING, val);
-  }
+  SIMPLE_ATTRIBUTE(OVERLAP_SCALING, OverlapScaling, double)
 
   /**
    * This is true if the value of pack is "true" (case-insensitive) or a
@@ -875,9 +842,7 @@ public:
    *
    * TODO(jvilk): Create a custom type for this rather than use a string.
    */
-  void SetPackMode(std::string val) {
-    AddSimpleAttribute<std::string>(AttributeType::PACKMODE, val);
-  }
+  SIMPLE_ATTRIBUTE(PACKMODE, PackMode, std::string)
 
   /**
    * The pad attribute specifies how much, in inches, to extend the drawing area
@@ -924,24 +889,18 @@ public:
    * to right, then the next row up, from left to right, and so on, until the
    * topmost row is traversed.
    */
-  void SetPageDir(PageDir::e val) {
-    AddEnumAttribute<PageDir::e, PageDir>(AttributeType::PAGEDIR, val);
-  }
+  ENUM_ATTRIBUTE(PAGEDIR, PageDir, PageDir)
 
   /**
    * Quadtree scheme to use.
    */
-  void SetQuadTree(QuadType::e val) {
-    AddEnumAttribute<QuadType::e, QuadType>(AttributeType::QUADTREE, val);
-  }
+  ENUM_ATTRIBUTE(QUADTREE, QuadTree, QuadType)
 
   /**
    * If quantum > 0.0, node label dimensions will be rounded to integral
    * multiples of the quantum.
    */
-  void SetQuantum(double val) {
-    AddSimpleAttribute<double>(AttributeType::QUANTUM, val);
-  }
+  SIMPLE_ATTRIBUTE(QUANTUM, Quantum, double)
 
   /**
    * Sets direction of graph layout. For example, if rankdir="LR", and barring
@@ -951,9 +910,7 @@ public:
    * This attribute also has a side-effect in determining how record nodes are
    * interpreted. See record shapes.
    */
-  void SetRankDir(RankDir::e val) {
-    AddEnumAttribute<RankDir::e, RankDir>(AttributeType::RANKDIR, val);
-  }
+  ENUM_ATTRIBUTE(RANKDIR, RankDir, RankDir)
 
   /**
    * In dot, this gives the desired rank separation, in inches. This is the
@@ -1030,18 +987,14 @@ public:
    * If true and there are multiple clusters, run cross minimization a second
    * time.
    */
-  void SetReMinCross(bool val) {
-    AddBoolAttribute(AttributeType::REMINCROSS, val);
-  }
+  BOOL_ATTRIBUTE(REMINCROSS, ReMinCross)
 
   /**
    * The power of the repulsive force used in an extended Fruchterman-Reingold
    * force directed model. Values larger than 1 tend to reduce the warping
    * effect at the expense of less clustering.
    */
-  void SetRepulsiveForce(double val) {
-    AddSimpleAttribute<double>(AttributeType::REPULSIVEFORCE, val);
-  }
+  SIMPLE_ATTRIBUTE(REPULSIVEFORCE, RepulsiveForce, double)
 
   /**
    * This specifies nodes to be used as the center of the layout and the root of
@@ -1060,17 +1013,13 @@ public:
   /**
    * If 90, set drawing orientation to landscape.
    */
-  void SetRotate(int val) {
-    AddSimpleAttribute<int>(AttributeType::ROTATE, val);
-  }
+  SIMPLE_ATTRIBUTE(ROTATE, Rotate, int)
 
   /**
    * Causes the final layout to be rotated counter-clockwise by the specified
    * number of degrees.
    */
-  void SetRotation(double val) {
-    AddSimpleAttribute<double>(AttributeType::ROTATION, val);
-  }
+  SIMPLE_ATTRIBUTE(ROTATION, Rotation, double)
 
   /**
    * If set, after the initial layout, twopi will scale the layout by the given
