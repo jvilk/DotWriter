@@ -134,7 +134,7 @@ void Graph::RemoveEdge(Edge* edge) {
 void Graph::PrintNECS(std::ostream& out, unsigned tabDepth) {
   std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
 
-  //Default styles.
+  // Default styles.
   if (!_defaultNodeAttributes.Empty()) {
     out << linePrefix;
     out << "node [";
@@ -149,7 +149,7 @@ void Graph::PrintNECS(std::ostream& out, unsigned tabDepth) {
     out << "];";
   }
 
-  //Output nodes
+  // Output nodes
   std::vector<Node*>::iterator nodeIt;
   for (nodeIt = _nodes.begin(); nodeIt != _nodes.end(); nodeIt++) {
     out << linePrefix;
@@ -157,26 +157,27 @@ void Graph::PrintNECS(std::ostream& out, unsigned tabDepth) {
     node->Print(out);
   }
 
-  //Output edges
-  std::vector<Edge*>::iterator edgeIt;
-  for (edgeIt = _edges.begin(); edgeIt != _edges.end(); edgeIt++) {
-    out << linePrefix;
-    Edge* edge = *edgeIt;
-    edge->Print(IsDigraph(), out);
-  }
-
-  //Output subgraphs.
+  // Output subgraphs.
   std::vector<Subgraph*>::iterator sgIt;
   for (sgIt = _subgraphs.begin(); sgIt != _subgraphs.end(); sgIt++) {
     Subgraph* sg = *sgIt;
     sg->Print(out, tabDepth+1);
   }
 
-  //Output cluster subgraphs.
+  // Output cluster subgraphs.
   std::vector<Cluster*>::iterator cIt;
   for (cIt = _clusters.begin(); cIt != _clusters.end(); cIt++) {
     Cluster* cluster = *cIt;
     cluster->Print(out, tabDepth+1);
+  }
+
+  // Output edges. We do this *after* subgraphs and clusters, since edges
+  // can connect subgraphs.
+  std::vector<Edge*>::iterator edgeIt;
+  for (edgeIt = _edges.begin(); edgeIt != _edges.end(); edgeIt++) {
+    out << linePrefix;
+    Edge* edge = *edgeIt;
+    edge->Print(IsDigraph(), out);
   }
 }
 
