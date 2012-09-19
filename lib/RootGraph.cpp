@@ -31,6 +31,10 @@ void RootGraph::Print(std::ostream& out, unsigned tabDepth) {
   out << (IsDigraph() ? "digraph " : "graph ") << GetId() << " {\n";
   std::string linePrefix = std::string(tabDepth*_tabIncrement, _tabCharacter);
 
+  if (_label.compare("") != 0) {
+    _attributes.AddCustomAttribute("label", _label);
+  }
+
   if (!_attributes.Empty()) {
     _attributes.Print(out, linePrefix);
     out << ";\n";

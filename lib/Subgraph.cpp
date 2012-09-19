@@ -9,6 +9,10 @@ void Subgraph::Print(std::ostream& out, unsigned tabDepth) {
 
   out << titlePrefix << "subgraph " << GetId() << " {\n";
 
+  if (_label.compare("") != 0) {
+    _attributes.AddCustomAttribute("label", _label);
+  }
+
   if (!_attributes.Empty()) {
     _attributes.Print(out, linePrefix);
     out << ";\n";
