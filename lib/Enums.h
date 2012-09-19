@@ -9,7 +9,7 @@
  *
  * All enums also have a COUNT value which is used for bounds checking. This
  * must be the last item in the enum.
- * 
+ *
  * Author: John Vilk
  */
 
