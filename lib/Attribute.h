@@ -129,7 +129,7 @@ public:
   }
 
   void RemoveValue(T value) {
-    typename std::vector<T>::iterator loc = 
+    typename std::vector<T>::iterator loc =
       std::find(_values.begin(), _values.end(), value);
 
     if (loc != _values.end()) {
@@ -144,7 +144,7 @@ public:
   virtual void Print(std::ostream& out) {
     if (_values.empty()) return;
 
-    out << GetName() << "=";
+    out << GetName() << "=\"";
 
     // Print a colon-separated list of the values.
     typename std::vector<T>::iterator it;
@@ -157,6 +157,7 @@ public:
       if (it+1 != _values.end())
         out << ":";
     }
+    out << "\"";
   }
 };
 
@@ -225,7 +226,7 @@ public:
   }
 
   void RemoveValue(T value) {
-    typename std::vector<T>::iterator loc = 
+    typename std::vector<T>::iterator loc =
       std::find(_values.begin(), _values.end(), value);
 
     if (loc != _values.end()) {
@@ -240,19 +241,20 @@ public:
   virtual void Print(std::ostream& out) {
     if (_values.empty()) return;
 
-    out << GetName() << "=";
+    out << GetName() << "=\"";
 
     // Print a colon-separated list of the values.
     typename std::vector<T>::iterator it;
     for (it = _values.begin(); it != _values.end(); it++) {
       T currentVal = *it;
-      
-      out << "\"" << currentVal << "\"";
+
+      out << currentVal;
 
       // The last value does not need a colon after it.
       if (it+1 != _values.end())
         out << ":";
     }
+    out << "\"";
   }
 };
 
@@ -334,7 +336,7 @@ public:
   }
 
   virtual void Print(std::ostream& out) {
-    out << GetName() << "=";
+    out << GetName() << "=\"";
 
     // This is a *space* separated list.
     std::vector<std::pair<double, double> >::iterator it;
@@ -347,6 +349,7 @@ public:
         out << " ";
       }
     }
+    out << "\"";
   }
 };
 
