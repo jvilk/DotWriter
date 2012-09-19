@@ -150,7 +150,7 @@ public:
     typename std::vector<T>::iterator it;
     for (it = _values.begin(); it != _values.end(); it++) {
       T currentVal = *it;
-      
+
       out << F::ToString(currentVal);
 
       // The last value does not need a colon after it.
