@@ -22,6 +22,9 @@ public:
   RootGraph(bool isDigraph, const std::string& label) :
     Graph(new IdManager(), isDigraph, label), _attributes(GraphAttributeSet())
   {};
+  RootGraph(bool isDigraph, const std::string& label, std::string id) :
+    Graph(new IdManager(), isDigraph, label, id), _attributes(GraphAttributeSet())
+  {};
 
   virtual ~RootGraph() {
     delete _idManager;
