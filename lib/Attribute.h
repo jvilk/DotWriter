@@ -272,7 +272,7 @@ public:
   }
 
   virtual void Print(std::ostream& out) {
-    out << GetName() << "=+" << _value;
+    out << GetName() << "=\"+" << _value << "\"";
   }
 };
 
@@ -294,7 +294,7 @@ public:
   }
 
   virtual void Print(std::ostream& out) {
-    out << GetName() << "=" << _x << "," << _y;
+    out << GetName() << "=\"" << _x << "," << _y << "\"";
   }
 };
 
@@ -316,7 +316,7 @@ public:
   }
 
   virtual void Print(std::ostream& out) {
-    out << GetName() << "=+" << _x << "," << _y;
+    out << GetName() << "=\"+" << _x << "," << _y << "\"";
   }
 };
 
