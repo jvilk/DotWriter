@@ -1258,6 +1258,8 @@ public:
     AttributeSet::Print(out, prefix, postfix);
   }
 
+  ENUM_ATTRIBUTE(RANK, Rank, RankType)
+
   /**
    * Spring constant used in virtual physical model. It roughly corresponds to
    * an ideal edge length (in inches), in that increasing K tends to increase
