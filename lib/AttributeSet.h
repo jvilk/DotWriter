@@ -36,7 +36,7 @@ using std::runtime_error;
     return GetSimpleAttribute<TYPE>(AttributeType::ATTYPENAME); \
   }
 
-#define SANITIZED_STRING_ATTRIBUTE(ATTYPENAME, GETSETNAME) \
+#define STRING_ATTRIBUTE(ATTYPENAME, GETSETNAME) \
   void Set##GETSETNAME (std::string val) { \
     val = SanitizeString(val); \
     AddSimpleAttribute< std::string >(AttributeType::ATTYPENAME, val); \
@@ -63,6 +63,15 @@ using std::runtime_error;
   EnumAttribute<ENUMTYPENAME::e, ENUMTYPENAME>* Get##GETSETNAME () { \
     return GetEnumAttribute<ENUMTYPENAME::e, ENUMTYPENAME>(AttributeType::ATTYPENAME); \
   }
+
+#define DOUBLE_ATTRIBUTE(ATTYPENAME, GETSETNAME) \
+  SIMPLE_ATTRIBUTE(ATTYPENAME, GETSETNAME, double)
+
+#define INT_ATTRIBUTE(ATTYPENAME, GETSETNAME) \
+  SIMPLE_ATTRIBUTE(ATTYPENAME, GETSETNAME, int)
+
+#define UNSIGNED_ATTRIBUTE(ATTYPENAME, GETSETNAME) \
+  SIMPLE_ATTRIBUTE(ATTYPENAME, GETSETNAME, unsigned)
 
 namespace DotWriter {
 
@@ -228,7 +237,7 @@ public:
    * limited to this factor of its potential motion. By being less than 1.0, the
    * system tends to ``cool'', thereby preventing cycling.
    */
-  SIMPLE_ATTRIBUTE(DAMPING, Damping, double)
+  DOUBLE_ATTRIBUTE(DAMPING, Damping)
 
   /**
    * Spring constant used in virtual physical model. It roughly corresponds to
@@ -236,7 +245,7 @@ public:
    * the distance between nodes. Note that the edge attribute len can be used to
    * override this value for adjacent nodes.
    */
-  SIMPLE_ATTRIBUTE(K, K, double)
+  DOUBLE_ATTRIBUTE(K, K)
 
   /**
    * Hyperlinks incorporated into device-dependent output. At present, used in
@@ -260,7 +269,7 @@ public:
    * allow control of various parts of an edge. Also note that, if active areas
    * of two edges overlap, it is unspecified which area dominates.
    */
-  SANITIZED_STRING_ATTRIBUTE(URL, URL)
+  STRING_ATTRIBUTE(URL, URL)
 
   /**
    * When attached to the root graph, this color is used as the background for
@@ -317,7 +326,7 @@ public:
   /**
    * Comments are inserted into output. Device-dependent
    */
-  SIMPLE_ATTRIBUTE(COMMENT, Comment, std::string)
+  STRING_ATTRIBUTE(COMMENT, Comment)
 
   /**
    * If true, allow edges between clusters. (See lhead and ltail)
@@ -336,7 +345,7 @@ public:
    * If set too small, connected components may overlap. Only applicable if
    * pack=false.
    */
-  SIMPLE_ATTRIBUTE(DEFAULTDIST, DefaultDist, double)
+  DOUBLE_ATTRIBUTE(DEFAULTDIST, DefaultDist)
 
   /**
    * Set the number of dimensions used for the layout. The maximum value allowed
@@ -380,13 +389,13 @@ public:
    * guarantee that the dimensions in the output correspond to the correct
    * number of points or inches.
    */
-  SIMPLE_ATTRIBUTE(DPI, DPI, double)
+  DOUBLE_ATTRIBUTE(DPI, DPI)
 
   /**
    * Terminating condition. If the length squared of all energy gradients are <
    * epsilon, the algorithm stops.
    */
-  SIMPLE_ATTRIBUTE(EPSILON, Epsilon, double)
+  DOUBLE_ATTRIBUTE(EPSILON, Epsilon)
 
   /**
    * Margin used around polygons for purposes of spline edge routing. The
@@ -420,7 +429,7 @@ public:
    * one of the directories specified by the fontpath attribute. The lookup does
    * support various aliases for the common fonts.
    */
-  SIMPLE_ATTRIBUTE(FONTNAME, FontName, std::string)
+  STRING_ATTRIBUTE(FONTNAME, FontName)
 
   /**
    * Allows user control of how basic fontnames are represented in SVG output.
@@ -433,7 +442,7 @@ public:
    * as "Nimbus Roman No9 L". These last two options are useful with SVG viewers
    * that support these richer fontname spaces.
    */
-  SIMPLE_ATTRIBUTE(FONTNAMES, FontNames, std::string)
+  STRING_ATTRIBUTE(FONTNAMES, FontNames)
 
   /**
    * Directory list used by libgd to search for bitmap fonts if Graphviz was not
@@ -442,12 +451,12 @@ public:
    * If not set, libgd uses its compiled-in font path. Note that fontpath is an
    * attribute of the root graph.
    */
-  SIMPLE_ATTRIBUTE(FONTPATH, FontPath, std::string)
+  STRING_ATTRIBUTE(FONTPATH, FontPath)
 
   /**
    * Font size, in points, used for text.
    */
-  SIMPLE_ATTRIBUTE(FONTSIZE, FontSize, double)
+  DOUBLE_ATTRIBUTE(FONTSIZE, FontSize)
 
   /**
    * If true, all xlabel attributes are placed, even if there is some overlap
@@ -465,7 +474,7 @@ public:
    *
    * If unset, the default angle is 0.
    */
-  SIMPLE_ATTRIBUTE(GRADIENTANGLE, GradientAngle, int)
+  INT_ATTRIBUTE(GRADIENTANGLE, GradientAngle)
 
   /**
    * Specifies a list of directories in which to look for image files as
@@ -479,7 +488,7 @@ public:
    * TODO(jvilk): Make this a list attribute so the user doesn't have to worry
    * about OS-specifiy malarky.
    */
-  SIMPLE_ATTRIBUTE(IMAGEPATH, ImagePath, std::string)
+  STRING_ATTRIBUTE(IMAGEPATH, ImagePath)
 
   /**
    * The value indicates whether to treat a node whose name has the form
@@ -535,12 +544,12 @@ public:
    * This attribute takes precedence over the -K flag or the actual command name
    * used.
    */
-  SIMPLE_ATTRIBUTE(LAYOUT, Layout, std::string)
+  STRING_ATTRIBUTE(LAYOUT, Layout)
 
   /**
    * Number of levels allowed in the multilevel scheme.
    */
-  SIMPLE_ATTRIBUTE(LEVELS, Levels, int)
+  INT_ATTRIBUTE(LEVELS, Levels)
 
   /**
    * Specifies strictness of level constraints in neato when mode="ipsep" or
@@ -548,12 +557,12 @@ public:
    * separation between levels. On the other hand, negative values will relax
    * the constraints by allowing some overlap between the levels.
    */
-  SIMPLE_ATTRIBUTE(LEVELSGAP, LevelsGap, double)
+  DOUBLE_ATTRIBUTE(LEVELSGAP, LevelsGap)
 
   /**
    * Height of graph or cluster label, in inches.
    */
-  SIMPLE_ATTRIBUTE(LHEIGHT, LHeight, double)
+  DOUBLE_ATTRIBUTE(LHEIGHT, LHeight)
 
   /**
    * Label position, in points. The position indicates the center of the label.
@@ -565,7 +574,7 @@ public:
   /**
    * Width of graph or cluster label, in inches.
    */
-  SIMPLE_ATTRIBUTE(LWIDTH, LWidth, double)
+  DOUBLE_ATTRIBUTE(LWIDTH, LWidth)
 
   /**
    * For graphs, this sets x and y margins of canvas, in inches.
@@ -589,7 +598,7 @@ public:
   /**
    * Sets the number of iterations used.
    */
-  SIMPLE_ATTRIBUTE(MAXITER, MaxIter, int)
+  INT_ATTRIBUTE(MAXITER, MaxIter)
 
   /**
    * Multiplicative scale factor used to alter the MinQuit (default = 8) and
@@ -597,12 +606,12 @@ public:
    * correspond to the number of tries without improvement before quitting and
    * the maximum number of iterations in each pass.
    */
-  SIMPLE_ATTRIBUTE(MCLIMIT, MCLimit, double)
+  DOUBLE_ATTRIBUTE(MCLIMIT, MCLimit)
 
   /**
    * Specifies the minimum separation between all nodes.
    */
-  SIMPLE_ATTRIBUTE(MINDIST, MinDist, double)
+  DOUBLE_ATTRIBUTE(MINDIST, MinDist)
 
   /**
    * Technique for optimizing the layout. For neato, if mode is "major", neato
@@ -651,7 +660,7 @@ public:
    * For other layouts, this affects the spacing between loops on a single node,
    * or multiedges between a pair of nodes
    */
-  SIMPLE_ATTRIBUTE(NODESEP, NodeSep, double)
+  DOUBLE_ATTRIBUTE(NODESEP, NodeSep)
 
   /**
    * By default, the justification of multi-line labels is done within the
@@ -680,8 +689,8 @@ public:
    * defined, # iterations = nslimit(1) * # nodes; otherwise, # iterations =
    * MAXINT.
    */
-  SIMPLE_ATTRIBUTE(NSLIMIT, NsLimit, double)
-  SIMPLE_ATTRIBUTE(NSLIMIT1, NsLimit1, double)
+  DOUBLE_ATTRIBUTE(NSLIMIT, NsLimit)
+  DOUBLE_ATTRIBUTE(NSLIMIT1, NsLimit1)
 
   /**
    * If the value of the attribute is "out", then the outedges of a node, that
@@ -700,7 +709,7 @@ public:
    * defined.
    * TODO(jvilk): Huh.
    */
-  SIMPLE_ATTRIBUTE(ORIENTATION, Orientation, std::string)
+  STRING_ATTRIBUTE(ORIENTATION, Orientation)
 
   /**
    * Specify order in which nodes and edges are drawn.
@@ -776,7 +785,7 @@ public:
    *
    * TODO(jvilk): Try to add validation code to this...
    */
-  SIMPLE_ATTRIBUTE(OVERLAP, Overlap, std::string)
+  STRING_ATTRIBUTE(OVERLAP, Overlap)
 
   /**
    * When overlap=prism, the layout is scaled by this factor, thereby removing a
@@ -787,7 +796,7 @@ public:
    * times the average label size. If overlap_scaling is positive, the layout is
    * scaled by overlap_scaling. If overlap_scaling is zero, no scaling is done.
    */
-  SIMPLE_ATTRIBUTE(OVERLAP_SCALING, OverlapScaling, double)
+  DOUBLE_ATTRIBUTE(OVERLAP_SCALING, OverlapScaling)
 
   /**
    * This is true if the value of pack is "true" (case-insensitive) or a
@@ -849,7 +858,7 @@ public:
    *
    * TODO(jvilk): Create a custom type for this rather than use a string.
    */
-  SIMPLE_ATTRIBUTE(PACKMODE, PackMode, std::string)
+  STRING_ATTRIBUTE(PACKMODE, PackMode)
 
   /**
    * The pad attribute specifies how much, in inches, to extend the drawing area
@@ -907,7 +916,7 @@ public:
    * If quantum > 0.0, node label dimensions will be rounded to integral
    * multiples of the quantum.
    */
-  SIMPLE_ATTRIBUTE(QUANTUM, Quantum, double)
+  DOUBLE_ATTRIBUTE(QUANTUM, Quantum)
 
   /**
    * Sets direction of graph layout. For example, if rankdir="LR", and barring
@@ -1001,7 +1010,7 @@ public:
    * force directed model. Values larger than 1 tend to reduce the warping
    * effect at the expense of less clustering.
    */
-  SIMPLE_ATTRIBUTE(REPULSIVEFORCE, RepulsiveForce, double)
+  DOUBLE_ATTRIBUTE(REPULSIVEFORCE, RepulsiveForce)
 
   /**
    * This specifies nodes to be used as the center of the layout and the root of
@@ -1020,13 +1029,13 @@ public:
   /**
    * If 90, set drawing orientation to landscape.
    */
-  SIMPLE_ATTRIBUTE(ROTATE, Rotate, int)
+  INT_ATTRIBUTE(ROTATE, Rotate)
 
   /**
    * Causes the final layout to be rotated counter-clockwise by the specified
    * number of degrees.
    */
-  SIMPLE_ATTRIBUTE(ROTATION, Rotation, double)
+  DOUBLE_ATTRIBUTE(ROTATION, Rotation)
 
   /**
    * If set, after the initial layout, twopi will scale the layout by the given
@@ -1107,7 +1116,7 @@ public:
    * If packmode indicates an array packing, this attribute specifies an
    * insertion order among the components, with smaller values inserted first.
    */
-  SIMPLE_ATTRIBUTE(SORTV, SortV, int)
+  INT_ATTRIBUTE(SORTV, SortV)
 
   /**
    * Controls how, and if, edges are represented. If true, edges are drawn as
@@ -1158,7 +1167,7 @@ public:
    *
    * TODO(jvilk): Make this an object for validation purposes.
    */
-  SIMPLE_ATTRIBUTE(START, Start, std::string)
+  STRING_ATTRIBUTE(START, Start)
 
   /**
    * Set style information for components of the graph. For cluster subgraphs,
@@ -1187,18 +1196,18 @@ public:
    *
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
-  SIMPLE_ATTRIBUTE(STYLE, Style, std::string)
+  STRING_ATTRIBUTE(STYLE, Style)
 
   /**
    * A URL or pathname specifying an XML style sheet, used in SVG output.
    */
-  SIMPLE_ATTRIBUTE(STYLESHEET, StyleSheet, std::string)
+  STRING_ATTRIBUTE(STYLESHEET, StyleSheet)
 
   /**
    * If the object has a URL, this attribute determines which window of the
    * browser is used for the URL. See W3C documentation.
    */
-  SIMPLE_ATTRIBUTE(TARGET, Target, std::string)
+  STRING_ATTRIBUTE(TARGET, Target)
 
   /**
    * If set explicitly to true or false, the value determines whether or not
@@ -1225,7 +1234,7 @@ public:
    * Factor to scale up drawing to allow margin for expansion in Voronoi
    * technique. dim' = (1+2*margin)*dim.
    */
-  SIMPLE_ATTRIBUTE(VORO_MARGIN, VoroMargin, double)
+  DOUBLE_ATTRIBUTE(VORO_MARGIN, VoroMargin)
 
 };
 
@@ -1255,7 +1264,7 @@ public:
    * the distance between nodes. Note that the edge attribute len can be used to
    * override this value for adjacent nodes.
    */
-  SIMPLE_ATTRIBUTE(K, K, double)
+  DOUBLE_ATTRIBUTE(K, K)
 
   /**
    * Hyperlinks incorporated into device-dependent output. At present, used in
@@ -1279,13 +1288,13 @@ public:
    * allow control of various parts of an edge. Also note that, if active areas
    * of two edges overlap, it is unspecified which area dominates.
    */
-  SANITIZED_STRING_ATTRIBUTE(URL, URL)
+  STRING_ATTRIBUTE(URL, URL)
 
   /**
    * Indicates the preferred area for a node or empty cluster when laid out by
    * patchwork.
    */
-  SIMPLE_ATTRIBUTE(AREA, Area, double)
+  DOUBLE_ATTRIBUTE(AREA, Area)
 
   /**
    * When attached to the root graph, this color is used as the background for
@@ -1376,12 +1385,12 @@ public:
    * one of the directories specified by the fontpath attribute. The lookup does
    * support various aliases for the common fonts.
    */
-  SIMPLE_ATTRIBUTE(FONTNAME, FontName, std::string)
+  STRING_ATTRIBUTE(FONTNAME, FontName)
 
   /**
    * Font size, in points, used for text.
    */
-  SIMPLE_ATTRIBUTE(FONTSIZE, FontSize, double)
+  DOUBLE_ATTRIBUTE(FONTSIZE, FontSize)
 
   /**
    * If a gradient fill is being used, this determines the angle of the fill.
@@ -1393,7 +1402,7 @@ public:
    *
    * If unset, the default angle is 0.
    */
-  SIMPLE_ATTRIBUTE(GRADIENTANGLE, GradientAngle, int)
+  INT_ATTRIBUTE(GRADIENTANGLE, GradientAngle)
 
   /**
    * Justification for cluster labels. If "r", the label is right-justified
@@ -1427,7 +1436,7 @@ public:
   /**
    * Height of graph or cluster label, in inches.
    */
-  SIMPLE_ATTRIBUTE(LHEIGHT, LHeight, double)
+  DOUBLE_ATTRIBUTE(LHEIGHT, LHeight)
 
   /**
    * Label position, in points. The position indicates the center of the label.
@@ -1439,7 +1448,7 @@ public:
   /**
    * Width of graph or cluster label, in inches.
    */
-  SIMPLE_ATTRIBUTE(LWIDTH, LWidth, double)
+  DOUBLE_ATTRIBUTE(LWIDTH, LWidth)
 
   /**
    * For graphs, this sets x and y margins of canvas, in inches.
@@ -1494,7 +1503,7 @@ public:
    * including setlinewidth(W) as part of a style specification. If both are
    * used, penwidth will be used.
    */
-  SIMPLE_ATTRIBUTE(PENWIDTH, PenWidth, double)
+  DOUBLE_ATTRIBUTE(PENWIDTH, PenWidth)
 
   /**
    * Set number of peripheries used in polygonal shapes and cluster boundaries.
@@ -1512,7 +1521,7 @@ public:
    * If packmode indicates an array packing, this attribute specifies an
    * insertion order among the components, with smaller values inserted first.
    */
-  SIMPLE_ATTRIBUTE(SORTV, SortV, int)
+  INT_ATTRIBUTE(SORTV, SortV)
 
   /**
    * Set style information for components of the graph. For cluster subgraphs,
@@ -1541,13 +1550,13 @@ public:
    *
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
-  SIMPLE_ATTRIBUTE(STYLE, Style, std::string)
+  STRING_ATTRIBUTE(STYLE, Style)
 
   /**
    * If the object has a URL, this attribute determines which window of the
    * browser is used for the URL. See W3C documentation.
    */
-  SIMPLE_ATTRIBUTE(TARGET, Target, std::string)
+  STRING_ATTRIBUTE(TARGET, Target)
 
   /**
    * Tooltip annotation attached to the node or edge. If unset, Graphviz will
@@ -1556,7 +1565,7 @@ public:
    * unhelpful. In this case, if tooltips will be generated, the user should set
    * a tooltip attribute explicitly.
    */
-  SIMPLE_ATTRIBUTE(TOOLTIP, Tooltip, std::string)
+  STRING_ATTRIBUTE(TOOLTIP, Tooltip)
 };
 
 class NodeAttributeSet : public AttributeSet {
@@ -1588,13 +1597,13 @@ public:
    * allow control of various parts of an edge. Also note that, if active areas
    * of two edges overlap, it is unspecified which area dominates.
    */
-  SANITIZED_STRING_ATTRIBUTE(URL, URL)
+  STRING_ATTRIBUTE(URL, URL)
 
   /**
    * Indicates the preferred area for a node or empty cluster when laid out by
    * patchwork.
    */
-  SIMPLE_ATTRIBUTE(AREA, Area, double)
+  DOUBLE_ATTRIBUTE(AREA, Area)
 
   /**
    * Basic drawing color for graphics, not text. For the latter, use the
@@ -1613,13 +1622,13 @@ public:
   /**
    * Comments are inserted into output. Device-dependent
    */
-  SIMPLE_ATTRIBUTE(COMMENT, Comment, std::string)
+  STRING_ATTRIBUTE(COMMENT, Comment)
 
   /**
    * Distortion factor for shape=polygon. Positive values cause top part to be
    * larger than bottom; negative values do the opposite.
    */
-  SIMPLE_ATTRIBUTE(DISTORTION, Distortion, double)
+  DOUBLE_ATTRIBUTE(DISTORTION, Distortion)
 
   /**
    * Color used to fill the background of a node or cluster assuming
@@ -1674,12 +1683,12 @@ public:
    * one of the directories specified by the fontpath attribute. The lookup does
    * support various aliases for the common fonts.
    */
-  SIMPLE_ATTRIBUTE(FONTNAME, FontName, std::string)
+  STRING_ATTRIBUTE(FONTNAME, FontName)
 
   /**
    * Font size, in points, used for text.
    */
-  SIMPLE_ATTRIBUTE(FONTSIZE, FontSize, double)
+  DOUBLE_ATTRIBUTE(FONTSIZE, FontSize)
 
   /**
    * If a gradient fill is being used, this determines the angle of the fill.
@@ -1691,7 +1700,7 @@ public:
    *
    * If unset, the default angle is 0.
    */
-  SIMPLE_ATTRIBUTE(GRADIENTANGLE, GradientAngle, int)
+  INT_ATTRIBUTE(GRADIENTANGLE, GradientAngle)
 
   /**
    * If the end points of an edge belong to the same group, i.e., have the same
@@ -1700,7 +1709,7 @@ public:
    *
    * TODO(jvilk): Perhaps expose nicely with an object?
    */
-  SIMPLE_ATTRIBUTE(GROUP, Group, std::string)
+  STRING_ATTRIBUTE(GROUP, Group)
 
   /**
    * Height of node, in inches. This is taken as the initial, minimum height of
@@ -1715,7 +1724,7 @@ public:
    * the maximum of the two values is used. If neither is set explicitly, the
    * minimum of the two default values is used.
    */
-  SIMPLE_ATTRIBUTE(HEIGHT, Height, double)
+  DOUBLE_ATTRIBUTE(HEIGHT, Height)
 
   /**
    * Gives the name of a file containing an image to be displayed inside a node.
@@ -1738,7 +1747,7 @@ public:
    * rather than the entire node. In particular, an image can be contained in a
    * node of any shape, not just a rectangle.
    */
-  SIMPLE_ATTRIBUTE(IMAGE, Image, std::string)
+  STRING_ATTRIBUTE(IMAGE, Image)
 
   /**
    * Attribute controlling how an image fills its containing node. In general,
@@ -1836,7 +1845,7 @@ public:
    * Angle, in degrees, used to rotate polygon node shapes. For any number of
    * polygon sides, 0 degrees rotation results in a flat base.
    */
-  SIMPLE_ATTRIBUTE(ORIENTATION, Orientation, double)
+  DOUBLE_ATTRIBUTE(ORIENTATION, Orientation)
 
   /**
    * Specifies the width of the pen, in points, used to draw lines and curves,
@@ -1847,7 +1856,7 @@ public:
    * including setlinewidth(W) as part of a style specification. If both are
    * used, penwidth will be used.
    */
-  SIMPLE_ATTRIBUTE(PENWIDTH, PenWidth, double)
+  DOUBLE_ATTRIBUTE(PENWIDTH, PenWidth)
 
   /**
    * Set number of peripheries used in polygonal shapes and cluster boundaries.
@@ -1856,7 +1865,7 @@ public:
    * a bounding rectangle. Setting peripheries=0 will turn this off. Also, 1 is
    * the maximum peripheries value for clusters.
    */
-  SIMPLE_ATTRIBUTE(PERIPHERIES, Peripheries, int)
+  INT_ATTRIBUTE(PERIPHERIES, Peripheries)
 
   /**
    * If true and the node has a pos attribute on input, neato or fdp prevents
@@ -1929,7 +1938,7 @@ public:
    * circle or ellipse. It plays the same role in neato, when adjusting the
    * layout to avoid overlapping nodes, and in image maps.
    */
-  SIMPLE_ATTRIBUTE(SAMPLEPOINTS, SamplePoints, unsigned)
+  UNSIGNED_ATTRIBUTE(SAMPLEPOINTS, SamplePoints)
 
   /**
    * Set the shape of a node.
@@ -1948,19 +1957,19 @@ public:
   /**
    * Number of sides if shape=polygon.
    */
-  SIMPLE_ATTRIBUTE(SIDES, Sides, unsigned)
+  UNSIGNED_ATTRIBUTE(SIDES, Sides)
 
   /**
    * Skew factor for shape=polygon. Positive values skew top of polygon to
    * right; negative to left.
    */
-  SIMPLE_ATTRIBUTE(SKEW, Skew, double)
+  DOUBLE_ATTRIBUTE(SKEW, Skew)
 
   /**
    * If packmode indicates an array packing, this attribute specifies an
    * insertion order among the components, with smaller values inserted first.
    */
-  SIMPLE_ATTRIBUTE(SORTV, SortV, int)
+  INT_ATTRIBUTE(SORTV, SortV)
 
   /**
    * Set style information for components of the graph. For cluster subgraphs,
@@ -1989,13 +1998,13 @@ public:
    *
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
-  SIMPLE_ATTRIBUTE(STYLE, Style, std::string)
+  STRING_ATTRIBUTE(STYLE, Style)
 
   /**
    * If the object has a URL, this attribute determines which window of the
    * browser is used for the URL. See W3C documentation.
    */
-  SIMPLE_ATTRIBUTE(TARGET, Target, std::string)
+  STRING_ATTRIBUTE(TARGET, Target)
 
   /**
    * Tooltip annotation attached to the node or edge. If unset, Graphviz will
@@ -2004,7 +2013,7 @@ public:
    * unhelpful. In this case, if tooltips will be generated, the user should set
    * a tooltip attribute explicitly.
    */
-  SANITIZED_STRING_ATTRIBUTE(TOOLTIP, Tooltip)
+  STRING_ATTRIBUTE(TOOLTIP, Tooltip)
 
   // TODO(jvilk): Implement this.
   //SetVertices
@@ -2022,7 +2031,7 @@ public:
    * the maximum of the two values is used. If neither is set explicitly, the
    * minimum of the two default values is used.
    */
-  SIMPLE_ATTRIBUTE(WIDTH, Width, double)
+  DOUBLE_ATTRIBUTE(WIDTH, Width)
 
   /**
    * External label for a node or edge. For nodes, the label will be placed
@@ -2036,7 +2045,7 @@ public:
    * means it may not be possible to place all of them. To force placing all of
    * them, use the forcelabels attribute.
    */
-  SANITIZED_STRING_ATTRIBUTE(XLABEL, XLabel)
+  STRING_ATTRIBUTE(XLABEL, XLabel)
 };
 
 class EdgeAttributeSet : public AttributeSet {
@@ -2065,7 +2074,7 @@ public:
    * allow control of various parts of an edge. Also note that, if active areas
    * of two edges overlap, it is unspecified which area dominates.
    */
-  SANITIZED_STRING_ATTRIBUTE(URL, URL)
+  STRING_ATTRIBUTE(URL, URL)
 
   /**
    * Style of arrowhead on the head node of an edge. This will only appear if
@@ -2076,7 +2085,7 @@ public:
   /**
    * Multiplicative scale factor for arrowheads.
    */
-  SIMPLE_ATTRIBUTE(ARROWSIZE, ArrowSize, double)
+  DOUBLE_ATTRIBUTE(ARROWSIZE, ArrowSize)
 
   /**
    * Style of arrowhead on the tail node of an edge. This will only appear if
@@ -2106,7 +2115,7 @@ public:
   /**
    * Comments are inserted into output. Device-dependent
    */
-  SIMPLE_ATTRIBUTE(COMMENT, Comment, std::string)
+  STRING_ATTRIBUTE(COMMENT, Comment)
 
   /**
    * If false, the edge is not used in ranking the nodes.
@@ -2132,7 +2141,7 @@ public:
    * is used near the head or tail node unless overridden by a headURL or
    * tailURL value, respectively.
    */
-  SANITIZED_STRING_ATTRIBUTE(EDGEURL, EdgeURL)
+  STRING_ATTRIBUTE(EDGEURL, EdgeURL)
 
   /**
    * If the edge has a URL or edgeURL attribute, this attribute determines which
@@ -2141,13 +2150,13 @@ public:
    * already exist, or reuse it if it does. If undefined, the value of the
    * target is used.
    */
-  SANITIZED_STRING_ATTRIBUTE(EDGETARGET, EdgeTarget)
+  STRING_ATTRIBUTE(EDGETARGET, EdgeTarget)
 
   /**
    * Tooltip annotation attached to the non-label part of an edge. This is used
    * only if the edge has a URL or edgeURL attribute.
    */
-  SANITIZED_STRING_ATTRIBUTE(EDGETOOLTIP, EdgeTooltip)
+  STRING_ATTRIBUTE(EDGETOOLTIP, EdgeTooltip)
 
   /**
    * Color used to fill the background of a node or cluster assuming
@@ -2196,18 +2205,18 @@ public:
    * one of the directories specified by the fontpath attribute. The lookup does
    * support various aliases for the common fonts.
    */
-  SIMPLE_ATTRIBUTE(FONTNAME, FontName, std::string)
+  STRING_ATTRIBUTE(FONTNAME, FontName)
 
   /**
    * Font size, in points, used for text.
    */
-  SIMPLE_ATTRIBUTE(FONTSIZE, FontSize, double)
+  DOUBLE_ATTRIBUTE(FONTSIZE, FontSize)
 
   /**
    * If headURL is defined, it is output as part of the head label of the edge.
    * Also, this value is used near the head node, overriding any URL value.
    */
-  SANITIZED_STRING_ATTRIBUTE(HEADURL, HeadURL)
+  STRING_ATTRIBUTE(HEADURL, HeadURL)
 
   /**
    * If true, the head of an edge is clipped to the boundary of the head node;
@@ -2219,7 +2228,7 @@ public:
   /**
    * Text label to be placed near head of edge.
    */
-  SANITIZED_STRING_ATTRIBUTE(HEADLABEL, HeadLabel)
+  STRING_ATTRIBUTE(HEADLABEL, HeadLabel)
 
   /**
    * Indicates where on the head node to attach the head of the edge. In the
@@ -2234,19 +2243,19 @@ public:
    * window if it doesn't already exist, or reuse it if it does. If undefined,
    * the value of the target is used.
    */
-  SANITIZED_STRING_ATTRIBUTE(HEADTARGET, HeadTarget)
+  STRING_ATTRIBUTE(HEADTARGET, HeadTarget)
 
   /**
    * Tooltip annotation attached to the head of an edge. This is used only if
    * the edge has a headURL attribute.
    */
-  SANITIZED_STRING_ATTRIBUTE(HEADTOOLTIP, HeadTooltip)
+  STRING_ATTRIBUTE(HEADTOOLTIP, HeadTooltip)
 
   /**
    * If labelURL is defined, this is the link used for the label of an edge.
    * This value overrides any URL defined for the edge.
    */
-  SANITIZED_STRING_ATTRIBUTE(LABELURL, LabelURL)
+  STRING_ATTRIBUTE(LABELURL, LabelURL)
 
   /**
    * This, along with labeldistance, determine where the headlabel (taillabel)
@@ -2259,14 +2268,14 @@ public:
    * positive angles moving counterclockwise and negative angles moving
    * clockwise.
    */
-  SIMPLE_ATTRIBUTE(LABELANGLE, LabelAngle, double)
+  DOUBLE_ATTRIBUTE(LABELANGLE, LabelAngle)
 
   /**
    * Multiplicative scaling factor adjusting the distance that the
    * headlabel(taillabel) is from the head(tail) node. The default distance is
    * 10 points. See labelangle for more details.
    */
-  SIMPLE_ATTRIBUTE(LABELDISTANCE, LabelDistance, double)
+  DOUBLE_ATTRIBUTE(LABELDISTANCE, LabelDistance)
 
   /**
    * If true, allows edge labels to be less constrained in position. In
@@ -2284,13 +2293,13 @@ public:
    * Font used for headlabel and taillabel. If not set, defaults to edge's
    * fontname.
    */
-  SIMPLE_ATTRIBUTE(LABELFONTNAME, LabelFontName, std::string)
+  STRING_ATTRIBUTE(LABELFONTNAME, LabelFontName)
 
   /**
    * Font size, in points, used for headlabel and taillabel. If not set,
    * defaults to edge's fontsize.
    */
-  SIMPLE_ATTRIBUTE(LABELFONTSIZE, LabelFontSize, double)
+  DOUBLE_ATTRIBUTE(LABELFONTSIZE, LabelFontSize)
 
   /**
    * If the edge has a URL or labelURL attribute, this attribute determines
@@ -2299,25 +2308,25 @@ public:
    * exist, or reuse it if it does. If undefined, the value of the target is
    * used.
    */
-  SANITIZED_STRING_ATTRIBUTE(LABELTARGET, LabelTarget)
+  STRING_ATTRIBUTE(LABELTARGET, LabelTarget)
 
   /**
    * Tooltip annotation attached to label of an edge. This is used only if the
    * edge has a URL or labelURL attribute.
    */
-  SANITIZED_STRING_ATTRIBUTE(LABELTOOLTIP, LabelTooltip)
+  STRING_ATTRIBUTE(LABELTOOLTIP, LabelTooltip)
 
   /**
    * Preferred edge length, in inches.
    */
-  SIMPLE_ATTRIBUTE(LEN, Len, double)
+  DOUBLE_ATTRIBUTE(LEN, Len)
 
   /**
    * Logical head of an edge. When compound is true, if lhead is defined and is
    * the name of a cluster containing the real head, the edge is clipped to the
    * boundary of the cluster.
    */
-  SIMPLE_ATTRIBUTE(LHEAD, LHead, std::string)
+  STRING_ATTRIBUTE(LHEAD, LHead)
 
   /**
    * Label position, in points. The position indicates the center of the label.
@@ -2331,12 +2340,12 @@ public:
    * the name of a cluster containing the real tail, the edge is clipped to the
    * boundary of the cluster.
    */
-  SIMPLE_ATTRIBUTE(LTAIL, LTail, std::string)
+  STRING_ATTRIBUTE(LTAIL, LTail)
 
   /**
    * Minimum edge length (rank difference between head and tail).
    */
-  SIMPLE_ATTRIBUTE(MINLEN, MinLen, int)
+  INT_ATTRIBUTE(MINLEN, MinLen)
 
   /**
    * By default, the justification of multi-line labels is done within the
@@ -2361,7 +2370,7 @@ public:
    * including setlinewidth(W) as part of a style specification. If both are
    * used, penwidth will be used.
    */
-  SIMPLE_ATTRIBUTE(PENWIDTH, PenWidth, double)
+  DOUBLE_ATTRIBUTE(PENWIDTH, PenWidth)
 
   /**
    * Position of node, or spline control points. For nodes, the position
@@ -2392,13 +2401,13 @@ public:
    * Edges with the same head and the same samehead value are aimed at the same
    * point on the head. This has no effect on loops.
    */
-  SIMPLE_ATTRIBUTE(SAMEHEAD, SameHead, std::string)
+  STRING_ATTRIBUTE(SAMEHEAD, SameHead)
 
   /**
    * Edges with the same tail and the same sametail value are aimed at the same
    * point on the tail. This has no effect on loops.
    */
-  SIMPLE_ATTRIBUTE(SAMETAIL, SameTail, std::string)
+  STRING_ATTRIBUTE(SAMETAIL, SameTail)
 
   /**
    * Print guide boxes in PostScript at the beginning of routesplines if 1, or
@@ -2436,13 +2445,13 @@ public:
    *
    * TODO(jvilk): Make a custom object for this for validation purposes.
    */
-  SIMPLE_ATTRIBUTE(STYLE, Style, std::string)
+  STRING_ATTRIBUTE(STYLE, Style)
 
   /**
    * If tailURL is defined, it is output as part of the tail label of the edge.
    * Also, this value is used near the tail node, overriding any URL value.
    */
-  SANITIZED_STRING_ATTRIBUTE(TAILURL, TailURL)
+  STRING_ATTRIBUTE(TAILURL, TailURL)
 
   /**
    * If true, the tail of an edge is clipped to the boundary of the tail node;
@@ -2454,7 +2463,7 @@ public:
   /**
    * Text label to be placed near tail of edge.
    */
-  SANITIZED_STRING_ATTRIBUTE(TAILLABEL, TailLabel)
+  STRING_ATTRIBUTE(TAILLABEL, TailLabel)
 
   /**
    * Indicates where on the tail node to attach the tail of the edge.
@@ -2467,19 +2476,19 @@ public:
    * window if it doesn't already exist, or reuse it if it does. If undefined,
    * the value of the target is used.
    */
-  SIMPLE_ATTRIBUTE(TAILTARGET, TailTarget, std::string)
+  STRING_ATTRIBUTE(TAILTARGET, TailTarget)
 
   /**
    * Tooltip annotation attached to the tail of an edge. This is used only if
    * the edge has a tailURL attribute.
    */
-  SANITIZED_STRING_ATTRIBUTE(TAILTOOLTIP, TailToolTip)
+  STRING_ATTRIBUTE(TAILTOOLTIP, TailToolTip)
 
   /**
    * If the object has a URL, this attribute determines which window of the
    * browser is used for the URL. See W3C documentation.
    */
-  SIMPLE_ATTRIBUTE(TARGET, Target, std::string)
+  STRING_ATTRIBUTE(TARGET, Target)
 
   /**
    * Tooltip annotation attached to the node or edge. If unset, Graphviz will
@@ -2488,7 +2497,7 @@ public:
    * unhelpful. In this case, if tooltips will be generated, the user should set
    * a tooltip attribute explicitly.
    */
-  SANITIZED_STRING_ATTRIBUTE(TOOLTIP, Tooltip)
+  STRING_ATTRIBUTE(TOOLTIP, Tooltip)
 
   /**
    * Weight of edge. In dot, the heavier the weight, the shorter, straighter and
@@ -2496,7 +2505,7 @@ public:
    * layouts, a larger weight encourages the layout to make the edge length
    * closer to that specified by the len attribute.
    */
-  SIMPLE_ATTRIBUTE(WEIGHT, Weight, double)
+  DOUBLE_ATTRIBUTE(WEIGHT, Weight)
 
   /**
    * External label for a node or edge. For nodes, the label will be placed
@@ -2510,7 +2519,7 @@ public:
    * means it may not be possible to place all of them. To force placing all of
    * them, use the forcelabels attribute.
    */
-  SIMPLE_ATTRIBUTE(XLABEL, XLabel, std::string)
+  STRING_ATTRIBUTE(XLABEL, XLabel)
 };
 
 }  //namespace DotWriter
