@@ -18,7 +18,7 @@ void ReplaceAll(std::string& str, const std::string& from,
 /**
  * Takes a string and escapes necessary characters for output to a
  * DOT file.
- * 
+ *
  * Currently, it just escapes quotation marks with a forward slash.
  *
  * This is used to sanitize IDs and labels during DOT file writing.
