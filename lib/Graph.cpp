@@ -139,14 +139,14 @@ void Graph::PrintNECS(std::ostream& out, unsigned tabDepth) {
     out << linePrefix;
     out << "node [";
     _defaultNodeAttributes.Print(out);
-    out << "];";
+    out << "];\n";
   }
 
   if (!_defaultEdgeAttributes.Empty()) {
     out << linePrefix;
     out << "edge [";
     _defaultEdgeAttributes.Print(out);
-    out << "];";
+    out << "];\n";
   }
 
   // Output nodes
