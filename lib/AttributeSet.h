@@ -124,7 +124,9 @@ public:
   }
 
   void AddCustomAttribute(const std::string& name, const std::string& val) {
-    AddAttribute(new CustomAttribute(name, val));
+    std::string val_sanitized = val;
+    SanitizeString(val_sanitized);
+    AddAttribute(new CustomAttribute(name, val_sanitized));
   }
 
   virtual void Print(std::ostream& out, const std::string& prefix = "",
