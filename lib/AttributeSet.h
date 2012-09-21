@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <ostream>
 #include <stdexcept>
-#include <vector>
+#include <map>
 
 #include "Attribute.h"
 #include "Enums.h"
@@ -78,14 +78,20 @@ namespace DotWriter {
 class Node;
 class AttributeSet {
 private:
-  std::vector<Attribute*> _attributes;
+  std::map<AttributeType::e, StandardAttribute*> _standardAttributes;
+  std::map<std::string, CustomAttribute*> _customAttributes;
 
-  Attribute* GetAttribute(AttributeType::e val) {
-    std::vector<Attribute*>::iterator it;
-    for (it = _attributes.begin(); it != _attributes.end(); it++) {
-      Attribute* at = *it;
-      if (at->GetType() == val)
-        return at;
+  StandardAttribute* GetAttribute(AttributeType::e name) {
+    if (_standardAttributes.find(name) != _standardAttributes.end()) {
+      return _standardAttributes[name];
+    }
+
+    return NULL;
+  }
+
+  CustomAttribute* GetAttribute(std::string name) {
+    if (_customAttributes.find(name) != _customAttributes.end()) {
+      return _customAttributes[name];
     }
 
     return NULL;
@@ -96,14 +102,21 @@ public:
   }
 
   virtual ~AttributeSet() {
-    std::vector<Attribute*>::iterator it;
-    for (it = _attributes.begin(); it != _attributes.end(); it++) {
-      delete *it;
+    std::map<AttributeType::e, StandardAttribute*>::iterator it;
+    for (it = _standardAttributes.begin(); it != _standardAttributes.end();
+      it++) {
+      delete it->second;
+    }
+
+    std::map<std::string, CustomAttribute*>::iterator it2;
+    for (it2 = _customAttributes.begin(); it2 != _customAttributes.end();
+      it++) {
+      delete it->second;
     }
   }
 
   bool Empty() {
-    return _attributes.empty();
+    return _customAttributes.empty() && _standardAttributes.empty();
   }
 
   void AddCustomAttribute(const std::string& name, const std::string& val) {
@@ -112,35 +125,54 @@ public:
 
   virtual void Print(std::ostream& out, const std::string& prefix = "",
     const std::string& postfix = ", ") {
-    std::vector<Attribute*>::iterator it;
-    for (it = _attributes.begin(); it != _attributes.end(); it++) {
-      Attribute* at = *it;
+    std::map<AttributeType::e, StandardAttribute*>::iterator it;
+    for (it = _standardAttributes.begin(); it != _standardAttributes.end();
+      it++) {
+      Attribute* at = it->second;
       out << prefix;
       at->Print(out);
 
-      if (it+1 != _attributes.end())
+      if (++it != _standardAttributes.end() || !_customAttributes.empty())
         out << postfix;
+
+      // HACKFIX: Apparently I can't do it+1 in the above conditional, so I
+      // have to ++it.
+      it--;
+    }
+
+    std::map<std::string, CustomAttribute*>::iterator it2;
+    for (it2 = _customAttributes.begin(); it2 != _customAttributes.end();
+      it2++) {
+      Attribute* at = it2->second;
+      out << prefix;
+      at->Print(out);
+
+      if (++it2 != _customAttributes.end())
+        out << postfix;
+
+      it2--;
     }
   }
 
 protected:
-  void AddAttribute(Attribute* attribute) {
-    _attributes.push_back(attribute);
+  void AddAttribute(StandardAttribute* attribute) {
+    AttributeType::e key = attribute->GetType();
+    if (_standardAttributes.find(key) != _standardAttributes.end())
+      delete _standardAttributes[key];
+
+    _standardAttributes[key] = attribute;
   }
 
-  void RemoveAttribute(Attribute* attribute) {
-    std::vector<Attribute*>::iterator it =
-      std::find(_attributes.begin(), _attributes.end(), attribute);
+  void AddAttribute(CustomAttribute* attribute) {
+    std::string key = attribute->GetName();
+    if (_customAttributes.find(key) != _customAttributes.end())
+      delete _customAttributes[key];
 
-    if (it != _attributes.end()) {
-      _attributes.erase(it);
-    }
-
-    delete attribute;
+    _customAttributes[attribute->GetName()] = attribute;
   }
 
   void AddBoolAttribute(AttributeType::e type, bool val) {
-    Attribute* attr = new BoolAttribute(type, val);
+    StandardAttribute* attr = new BoolAttribute(type, val);
     AddAttribute(attr);
   }
 
@@ -151,7 +183,7 @@ protected:
 
   template<typename T>
   void AddSimpleAttribute(AttributeType::e type, T val) {
-    Attribute* attr = new SimpleAttribute<T>(type, val);
+    StandardAttribute* attr = new SimpleAttribute<T>(type, val);
     AddAttribute(attr);
   }
 
@@ -164,13 +196,13 @@ protected:
   template<typename T>
   void AddSimpleListAttribute(AttributeType::e type,
     const std::vector<T>& vals) {
-    Attribute* attr = new SimpleListAttribute<T>(type, vals);
+    StandardAttribute* attr = new SimpleListAttribute<T>(type, vals);
     AddAttribute(attr);
   }
 
   template<typename T, typename F>
   void AddEnumAttribute(AttributeType::e type, T val) {
-    Attribute* attr = new EnumAttribute<T, F>(type, val);
+    StandardAttribute* attr = new EnumAttribute<T, F>(type, val);
     AddAttribute(attr);
   }
 
@@ -182,7 +214,7 @@ protected:
 
   template<typename T, typename F>
   void AddEnumListAttribute(AttributeType::e type, const std::vector<T>& val) {
-    Attribute* attr = new EnumListAttribute<T, F>(type, val);
+    StandardAttribute* attr = new EnumListAttribute<T, F>(type, val);
     AddAttribute(attr);
   }
 
@@ -193,7 +225,7 @@ protected:
   }
 
   void AddPointAttribute(AttributeType::e type, double x, double y) {
-    Attribute* attr = new PointAttribute(type, x, y);
+    StandardAttribute* attr = new PointAttribute(type, x, y);
     AddAttribute(attr);
   }
 
@@ -203,7 +235,7 @@ protected:
   }
 
   void AddAddDoubleAttribute(AttributeType::e type, double val) {
-    Attribute* attr = new AddDoubleAttribute(type, val);
+    StandardAttribute* attr = new AddDoubleAttribute(type, val);
     AddAttribute(attr);
   }
 
@@ -213,7 +245,7 @@ protected:
   }
 
   void AddAddPointAttribute(AttributeType::e type, double x, double y) {
-    Attribute* attr = new class AddPointAttribute(type, x, y);
+    StandardAttribute* attr = new class AddPointAttribute(type, x, y);
     AddAttribute(attr);
   }
 
