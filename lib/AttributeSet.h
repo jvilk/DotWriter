@@ -102,16 +102,20 @@ public:
   }
 
   virtual ~AttributeSet() {
-    std::map<AttributeType::e, StandardAttribute*>::iterator it;
-    for (it = _standardAttributes.begin(); it != _standardAttributes.end();
-      it++) {
-      delete it->second;
+    {
+      std::map<AttributeType::e, StandardAttribute*>::iterator it;
+      for (it = _standardAttributes.begin(); it != _standardAttributes.end();
+        it++) {
+        delete it->second;
+      }
     }
 
-    std::map<std::string, CustomAttribute*>::iterator it2;
-    for (it2 = _customAttributes.begin(); it2 != _customAttributes.end();
-      it++) {
-      delete it->second;
+    {
+      std::map<std::string, CustomAttribute*>::iterator it;
+      for (it = _customAttributes.begin(); it != _customAttributes.end();
+        it++) {
+        delete it->second;
+      }
     }
   }
 
@@ -125,32 +129,36 @@ public:
 
   virtual void Print(std::ostream& out, const std::string& prefix = "",
     const std::string& postfix = ", ") {
-    std::map<AttributeType::e, StandardAttribute*>::iterator it;
-    for (it = _standardAttributes.begin(); it != _standardAttributes.end();
-      it++) {
-      Attribute* at = it->second;
-      out << prefix;
-      at->Print(out);
+    {
+      std::map<AttributeType::e, StandardAttribute*>::iterator it;
+      for (it = _standardAttributes.begin(); it != _standardAttributes.end();
+        it++) {
+        Attribute* at = it->second;
+        out << prefix;
+        at->Print(out);
 
-      if (++it != _standardAttributes.end() || !_customAttributes.empty())
-        out << postfix;
+        if (++it != _standardAttributes.end() || !_customAttributes.empty())
+          out << postfix;
 
-      // HACKFIX: Apparently I can't do it+1 in the above conditional, so I
-      // have to ++it.
-      it--;
+        // HACKFIX: Apparently I can't do it+1 in the above conditional, so I
+        // have to ++it.
+        it--;
+      }
     }
 
-    std::map<std::string, CustomAttribute*>::iterator it2;
-    for (it2 = _customAttributes.begin(); it2 != _customAttributes.end();
-      it2++) {
-      Attribute* at = it2->second;
-      out << prefix;
-      at->Print(out);
+    {
+      std::map<std::string, CustomAttribute*>::iterator it;
+      for (it = _customAttributes.begin(); it != _customAttributes.end();
+        it++) {
+        Attribute* at = it->second;
+        out << prefix;
+        at->Print(out);
 
-      if (++it2 != _customAttributes.end())
-        out << postfix;
+        if (++it != _customAttributes.end())
+          out << postfix;
 
-      it2--;
+        it--;
+      }
     }
   }
 
